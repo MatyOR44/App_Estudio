@@ -9,54 +9,80 @@
     <meta name="theme-color" content="#4A90E2">
 
     <style>
-        /* --- DISEÑO VISUAL GENERAL (CSS) --- */
+        /* --- 1. VARIABLES GLOBALES (MODO CLARO POR DEFECTO) --- */
         :root {
-            --primario: #4A90E2; --primario-oscuro: #357ABD;
-            --fondo: #F4F7F6; --texto: #333333; --tarjeta: #FFFFFF;
-            --exito: #2ECC71; --alerta: #F39C12; --peligro: #E74C3C;
-            --gris: #BDC3C7; --secundario: #95a5a6;
+            --primario: #4A90E2; 
+            --primario-oscuro: #357ABD;
+            --fondo: #F4F7F6; 
+            --texto: #333333; 
+            --tarjeta: #FFFFFF;
+            --exito: #2ECC71; 
+            --alerta: #F39C12; 
+            --peligro: #E74C3C;
+            --gris: #BDC3C7; 
+            --secundario: #95a5a6;
             --fondo-kanban: #eef2f5;
             --pomodoro-bg: #2c3e50;
+            --borde: #ddd;
         }
 
-        body { font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background-color: var(--fondo); color: var(--texto); margin: 0; padding: 20px; display: flex; justify-content: center; }
+        /* --- 2. VARIABLES GLOBALES (MODO OSCURO NATIVO) --- */
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --fondo: #121212; --texto: #E0E0E0; --tarjeta: #1E1E1E;
+                --fondo-kanban: #181818; --pomodoro-bg: #1A1A1A;
+                --borde: #333333; --secundario: #555555;
+            }
+            input[type="text"], input[type="email"], input[type="password"], input[type="date"], input[type="file"], textarea, select {
+                background-color: #2C2C2C !important; color: #E0E0E0 !important; border-color: #444 !important;
+            }
+            .tarea-card, .evento-card, .caja-numero, .checklist, .item-repaso, .texto-respuesta { background-color: #252525 !important; border-color: #333 !important; color: #E0E0E0 !important; }
+            .tarea-card h4, .evento-card h4, .item-repaso h3 { color: #FFFFFF !important; }
+            .tarea-card p, .evento-tipo, .caja-numero p, .item-repaso p { color: #AAAAAA !important; }
+            .btn-mover { background-color: #333 !important; color: #DDD !important; }
+            .btn-mover:hover { background-color: #444 !important; }
+            .btn-mover.destacado { background-color: var(--primario) !important; color: white !important; }
+            .kanban-columna h3 { color: var(--primario) !important; border-bottom-color: #333 !important; }
+            .tarea-selector { background-color: #2C2C2C !important; color: #FFF !important; border-color: #444 !important; }
+            .subtarea { color: #CCC !important; }
+            .subtarea.completada { color: #666 !important; }
+            .panel-backup { border-top-color: #333 !important; }
+            .btn-backup { border-color: #555 !important; color: #CCC !important; }
+        }
+
+        /* --- DISEÑO VISUAL GENERAL --- */
+        body { font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background-color: var(--fondo); color: var(--texto); margin: 0; padding: 20px; padding-bottom: 90px; display: flex; justify-content: center; transition: background-color 0.3s, color 0.3s; }
         .contenedor { max-width: 800px; width: 100%; }
         h1 { text-align: center; color: var(--primario); margin-bottom: 20px; position: relative;}
         
-        #vistaLogin { background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); max-width: 400px; margin: 50px auto; text-align: center; }
+        #vistaLogin { background: var(--tarjeta); padding: 30px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); max-width: 400px; margin: 50px auto; text-align: center; }
         .btn-logout { position: absolute; right: 0; top: 5px; background-color: #e74c3c; color: white; border: none; padding: 6px 12px; border-radius: 6px; font-size: 12px; font-weight: bold; cursor: pointer; }
         .app-header { position: relative; display: flex; justify-content: center; align-items: center; margin-bottom: 20px; }
         
-        .pomodoro-widget { background-color: var(--pomodoro-bg); color: white; padding: 15px 20px; text-align: center; margin-top: 20px; margin-bottom: 20px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
-        .pomodoro-display { font-size: 54px; font-weight: bold; font-family: 'Courier New', Courier, monospace; margin: 5px 0 15px 0; letter-spacing: 3px; }
-        .pomodoro-modos { display: flex; gap: 5px; margin-bottom: 15px; background: rgba(0,0,0,0.2); border-radius: 8px; padding: 5px; }
-        .btn-pomodoro { flex: 1; padding: 8px 2px; background: none; border: none; color: white; font-size: 13px; font-weight: bold; cursor: pointer; border-radius: 5px; transition: 0.2s; }
-        .btn-pomodoro.activo { background-color: var(--primario); }
-        .pomodoro-controles { display: flex; gap: 10px; }
-        .btn-p-accion { flex: 2; padding: 12px; border: none; border-radius: 8px; font-size: 16px; font-weight: bold; color: white; background-color: var(--exito); cursor: pointer; }
-        .btn-p-reset { flex: 1; padding: 12px; border: none; border-radius: 8px; font-size: 16px; font-weight: bold; color: white; background-color: transparent; border: 2px solid #7f8c8d; cursor: pointer; }
-        .btn-p-accion:active, .btn-p-reset:active { opacity: 0.8; }
-
-        .navegacion { display: flex; margin-bottom: 20px; background-color: #e1e8ed; border-radius: 8px; overflow-x: auto; white-space: nowrap; }
-        .tab-btn { flex: 1; padding: 12px 15px; text-align: center; background: none; border: none; font-size: 14px; font-weight: bold; color: #7f8c8d; cursor: pointer; transition: 0.3s; }
-        .tab-btn.activo { background-color: var(--primario); color: white; }
+        .navegacion { position: fixed; bottom: 0; left: 0; width: 100%; background-color: var(--tarjeta); box-shadow: 0 -2px 10px rgba(0,0,0,0.1); display: flex; justify-content: space-around; padding: 8px 0 15px 0; z-index: 1000; border-radius: 16px 16px 0 0; }
+        .tab-btn { flex: 1; display: flex; flex-direction: column; align-items: center; background: none; border: none; font-size: 11px; font-weight: 600; color: #95a5a6; cursor: pointer; transition: 0.2s; }
+        .tab-btn i { font-size: 22px; margin-bottom: 4px; font-style: normal; transition: 0.2s; filter: grayscale(100%); opacity: 0.6; }
+        .tab-btn.activo { color: var(--primario); }
+        .tab-btn.activo i { filter: grayscale(0%); opacity: 1; transform: scale(1.1); }
 
         .tarjeta { background-color: var(--tarjeta); border-radius: 12px; padding: 20px; margin-bottom: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
         h2 { color: var(--primario-oscuro); margin-top: 0; font-size: 20px; }
 
-        input[type="text"], input[type="email"], input[type="password"], input[type="date"], textarea, select { width: 100%; padding: 12px; margin-bottom: 10px; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; font-size: 16px; font-family: inherit; }
+        input[type="text"], input[type="email"], input[type="password"], input[type="date"], input[type="file"], textarea, select { width: 100%; padding: 12px; margin-bottom: 10px; border: 1px solid var(--borde); border-radius: 8px; box-sizing: border-box; font-size: 16px; font-family: inherit; background-color: #fff; }
         textarea { resize: vertical; min-height: 80px; }
 
         .btn-principal { width: 100%; padding: 14px; border: none; border-radius: 8px; font-size: 16px; font-weight: bold; color: white; background-color: var(--primario); cursor: pointer; transition: opacity 0.2s; }
-        .btn-principal:active { opacity: 0.8; }
+        .btn-principal:disabled { background-color: var(--gris); cursor: not-allowed; }
+        .btn-principal:active:not(:disabled) { opacity: 0.8; }
         .btn-revelar { background-color: var(--secundario); margin-bottom: 15px; }
 
-        .panel-backup { display: flex; gap: 10px; margin-top: 20px; padding-top: 15px; border-top: 1px solid #eee; }
-        .btn-backup { flex: 1; padding: 10px; border: 2px solid var(--secundario); border-radius: 8px; background: transparent; color: #2c3e50; font-weight: bold; cursor: pointer; transition: 0.2s; }
+        .panel-backup { display: flex; gap: 10px; margin-top: 20px; padding-top: 15px; border-top: 1px solid var(--borde); }
+        .btn-backup { flex: 1; padding: 10px; border: 2px solid var(--secundario); border-radius: 8px; background: transparent; color: var(--texto); font-weight: bold; cursor: pointer; transition: 0.2s; }
         .btn-backup:active { background-color: var(--secundario); color: white; }
 
+        /* REPASO */
         .item-repaso { border-left: 4px solid var(--primario); background-color: #f9f9f9; padding: 15px; margin-bottom: 15px; border-radius: 0 8px 8px 0; }
-        .item-repaso h3 { margin: 0 0 5px 0; font-size: 18px; }
+        .item-repaso h3 { margin: 0 0 5px 0; font-size: 18px; display: flex; align-items: center; justify-content: space-between; }
         .item-repaso p { margin: 0 0 10px 0; font-size: 14px; color: #666; }
         .texto-respuesta { margin: 0 0 15px 0; padding: 15px; background-color: #ecf0f1; border-radius: 8px; border-left: 4px solid var(--alerta); font-size: 15px; white-space: pre-wrap; color: #2c3e50; overflow-x: auto; }
         .botones-calificacion { display: flex; gap: 10px; }
@@ -65,25 +91,26 @@
         .btn-normal { background-color: var(--alerta); }
         .btn-dificil { background-color: var(--peligro); }
         .btn-eliminar { background-color: var(--peligro); color: white; border: none; padding: 6px 10px; border-radius: 4px; cursor: pointer; font-size: 12px; font-weight: bold; }
+        .btn-voz { background: none; border: none; font-size: 20px; cursor: pointer; padding: 5px; border-radius: 50%; transition: 0.2s; }
+        .btn-voz:active { background-color: rgba(0,0,0,0.1); }
 
         .mensaje-vacio { text-align: center; color: #7f8c8d; font-style: italic; }
         .tabla-progreso { width: 100%; border-collapse: collapse; font-size: 14px; }
-        .tabla-progreso th, .tabla-progreso td { text-align: left; padding: 10px 5px; border-bottom: 1px solid #eee; }
+        .tabla-progreso th, .tabla-progreso td { text-align: left; padding: 10px 5px; border-bottom: 1px solid var(--borde); }
         .tabla-progreso th { color: var(--primario); font-weight: bold; }
         .fecha-futura { color: #2980b9; font-weight: bold; }
         .fecha-hoy { color: var(--alerta); font-weight: bold; }
         .fecha-pasada { color: var(--peligro); font-weight: bold; }
         .oculto { display: none !important; }
 
+        /* KANBAN */
         .kanban-contenedor { display: flex; gap: 15px; overflow-x: auto; padding-bottom: 10px; min-height: 400px; }
         .kanban-columna { flex: 1; min-width: 260px; background-color: var(--fondo-kanban); border-radius: 10px; padding: 15px; display: flex; flex-direction: column; }
-        .kanban-columna h3 { text-align: center; color: var(--primario-oscuro); margin-top: 0; margin-bottom: 15px; font-size: 16px; text-transform: uppercase; letter-spacing: 1px; border-bottom: 2px solid #ddd; padding-bottom: 10px; }
-        
+        .kanban-columna h3 { text-align: center; color: var(--primario-oscuro); margin-top: 0; margin-bottom: 15px; font-size: 16px; text-transform: uppercase; letter-spacing: 1px; border-bottom: 2px solid var(--borde); padding-bottom: 10px; }
         .tarea-card { background-color: white; border-radius: 8px; padding: 15px; margin-bottom: 12px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); border-left: 4px solid var(--gris); }
         .col-por-hacer .tarea-card { border-left-color: var(--peligro); }
         .col-en-progreso .tarea-card { border-left-color: var(--alerta); }
         .col-terminado .tarea-card { border-left-color: var(--exito); opacity: 0.8; }
-        
         .tarea-card h4 { margin: 0 0 5px 0; font-size: 16px; color: #2c3e50; }
         .tarea-card p { margin: 0 0 10px 0; font-size: 13px; color: #7f8c8d; }
         
@@ -93,21 +120,20 @@
         .btn-mover.destacado { background-color: var(--primario); color: white; }
         .btn-mover.destacado:hover { background-color: var(--primario-oscuro); }
 
-        .checklist { margin: 10px 0; display: flex; flex-direction: column; gap: 8px; background-color: #fcfcfc; padding: 10px; border-radius: 6px; border: 1px solid #eee; }
+        .checklist { margin: 10px 0; display: flex; flex-direction: column; gap: 8px; background-color: #fcfcfc; padding: 10px; border-radius: 6px; border: 1px solid var(--borde); }
         .subtarea { font-size: 13px; color: #34495e; display: flex; align-items: center; gap: 8px; cursor: pointer; transition: 0.2s; }
         .subtarea.completada { text-decoration: line-through; color: #bdc3c7; }
         .subtarea input[type="checkbox"] { width: 16px; height: 16px; margin: 0; cursor: pointer; }
 
+        /* EVENTOS */
         .panel-fechas-clave { display: flex; gap: 10px; overflow-x: auto; padding: 10px 0; margin-bottom: 15px; }
-        .evento-card { min-width: 150px; background-color: #fff; border: 1px solid #ddd; border-radius: 8px; padding: 12px; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.02); position: relative; }
+        .evento-card { min-width: 150px; background-color: #fff; border: 1px solid var(--borde); border-radius: 8px; padding: 12px; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.02); position: relative; }
         .evento-card h4 { margin: 0 0 5px 0; font-size: 14px; color: #333; }
         .evento-tipo { font-size: 12px; text-transform: uppercase; font-weight: bold; color: #7f8c8d; display: block; margin-bottom: 5px; }
         .evento-dias { font-size: 22px; font-weight: bold; margin: 5px 0 0 0; }
-        
         .dias-lejos { color: var(--exito); }
         .dias-medio { color: var(--alerta); }
         .dias-cerca { color: var(--peligro); }
-        
         .btn-borrar-evento { position: absolute; top: 5px; right: 5px; background: none; border: none; color: #ccc; cursor: pointer; font-size: 14px; }
         .btn-borrar-evento:hover { color: var(--peligro); }
 
@@ -115,13 +141,25 @@
         .form-fila > * { flex: 1; }
         @media (max-width: 600px) { .form-fila { flex-direction: column; } }
 
+        /* ESTADÍSTICAS */
         .grafico-contenedor { position: relative; height: 300px; width: 100%; margin-bottom: 30px; }
         .estadisticas-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
         @media (max-width: 650px) { .estadisticas-grid { grid-template-columns: 1fr; } }
         .resumen-numeros { display: flex; gap: 15px; margin-bottom: 25px; }
-        .caja-numero { flex: 1; background: #fff; border: 1px solid #ddd; border-radius: 8px; padding: 15px; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
+        .caja-numero { flex: 1; background: #fff; border: 1px solid var(--borde); border-radius: 8px; padding: 15px; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
         .caja-numero h3 { margin: 0 0 5px 0; font-size: 28px; color: var(--primario); }
         .caja-numero p { margin: 0; font-size: 12px; color: #7f8c8d; text-transform: uppercase; font-weight: bold; }
+
+        /* POMODORO */
+        .pomodoro-widget { background-color: var(--pomodoro-bg); color: white; padding: 15px 20px; text-align: center; margin-top: 20px; margin-bottom: 20px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .pomodoro-display { font-size: 54px; font-weight: bold; font-family: 'Courier New', Courier, monospace; margin: 5px 0 15px 0; letter-spacing: 3px; }
+        .pomodoro-modos { display: flex; gap: 5px; margin-bottom: 15px; background: rgba(0,0,0,0.2); border-radius: 8px; padding: 5px; }
+        .btn-pomodoro { flex: 1; padding: 8px 2px; background: none; border: none; color: white; font-size: 13px; font-weight: bold; cursor: pointer; border-radius: 5px; transition: 0.2s; }
+        .btn-pomodoro.activo { background-color: var(--primario); }
+        .pomodoro-controles { display: flex; gap: 10px; }
+        .btn-p-accion { flex: 2; padding: 12px; border: none; border-radius: 8px; font-size: 16px; font-weight: bold; color: white; background-color: var(--exito); cursor: pointer; }
+        .btn-p-reset { flex: 1; padding: 12px; border: none; border-radius: 8px; font-size: 16px; font-weight: bold; color: white; background-color: transparent; border: 2px solid #7f8c8d; cursor: pointer; }
+        .btn-p-accion:active, .btn-p-reset:active { opacity: 0.8; }
     </style>
 
     <script>window.MathJax = { tex: { inlineMath: [['$', '$'], ['\\(', '\\)']], displayMath: [['$$', '$$'], ['\\[', '\\]']] } };</script>
@@ -149,20 +187,17 @@
                 <button class="btn-logout" onclick="cerrarSesion()">Cerrar Sesión</button>
             </div>
 
-            <div class="navegacion">
-                <button class="tab-btn activo" id="btnTabRepaso" onclick="cambiarVista('repaso')">Repaso Diario</button>
-                <button class="tab-btn" id="btnTabCursada" onclick="cambiarVista('cursada')">Gestor de Cursada</button>
-                <button class="tab-btn" id="btnTabProgreso" onclick="cambiarVista('progreso')">Mi Progreso</button>
-                <button class="tab-btn" id="btnTabEstadisticas" onclick="cambiarVista('estadisticas')">Estadísticas</button>
-            </div>
-
             <div id="vistaRepaso">
                 <div class="tarjeta">
                     <h2>Agregar Tarjeta de Repaso</h2>
                     <input type="text" id="inputMateria" placeholder="Materia (Ej. Electrotecnia)">
                     <input type="text" id="inputTema" placeholder="Pregunta o Concepto">
-                    <textarea id="inputRespuesta" placeholder="Respuesta (Podés usar sintaxis LaTeX entre símbolos de $ para ecuaciones...)"></textarea>
-                    <button class="btn-principal" onclick="agregarTema()">Guardar Tarjeta</button>
+                    <textarea id="inputRespuesta" placeholder="Respuesta (Podés usar LaTeX entre símbolos de $ para ecuaciones...)"></textarea>
+                    
+                    <label style="font-size: 13px; color: #7f8c8d; font-weight: bold; margin-bottom: 5px; display: block;">Adjuntar imagen o gráfico (Opcional):</label>
+                    <input type="file" id="inputImagen" accept="image/*" style="margin-bottom: 15px;">
+                    
+                    <button class="btn-principal" id="btnGuardarTarjeta" onclick="agregarTema()">Guardar Tarjeta</button>
                 </div>
                 <div class="tarjeta">
                     <h2>Para Repasar Hoy</h2>
@@ -171,16 +206,27 @@
             </div>
 
             <div id="vistaCursada" class="oculto">
-                <div class="tarjeta" style="background-color: #f4f9fcf0; border: 1px solid #d4e6f1;">
+                <div class="tarjeta" style="background-color: transparent; border: 1px solid var(--borde);">
                     <h2>Fechas Clave (Exámenes y Entregas)</h2>
                     <div class="form-fila">
                         <input type="text" id="inputEventoMateria" placeholder="Materia (Ej. Cálculo Numérico)">
                         <select id="inputEventoTipo">
-                            <option value="Parcial 1">Parcial 1</option>
-                            <option value="Parcial 2">Parcial 2</option>
-                            <option value="Entrega TP">Entrega TP</option>
-                            <option value="Final">Examen Final</option>
-                        </select>
+    				<option value="Parcial 1">Parcial 1</option>
+    				<option value="Parcial 2">Parcial 2</option>
+    				<option value="Parcial 3">Parcial 3</option>
+    				<option value="Entrega TP 1">Entrega TP N°1</option>
+    				<option value="Entrega TP 2">Entrega TP N°2</option>
+    				<option value="Entrega TP 3">Entrega TP N°3</option>
+    				<option value="Entrega TP 4">Entrega TP N°4</option>
+    				<option value="Entrega TP 5">Entrega TP N°5</option>
+    				<option value="Entrega TP 6">Entrega TP N°6</option>
+    				<option value="Entrega TP 7">Entrega TP N°7</option>
+    				<option value="Entrega TP 8">Entrega TP N°8</option>
+    				<option value="Entrega TP 9">Entrega TP N°9</option>
+    				<option value="Entrega TP 10">Entrega TP N°10</option>
+    				<option value="Entrega TFI">Entrega TFI (Integrador)</option>
+    				<option value="Final">Examen Final</option>
+			</select>
                         <input type="date" id="inputEventoFecha">
                     </div>
                     <button class="btn-principal" style="background-color: #3498db;" onclick="agregarEvento()">Registrar Fecha</button>
@@ -267,10 +313,27 @@
                 </div>
             </div>
 
+            <div class="navegacion">
+                <button class="tab-btn activo" id="btnTabRepaso" onclick="cambiarVista('repaso')">
+                    <i>🧠</i><span>Repaso</span>
+                </button>
+                <button class="tab-btn" id="btnTabCursada" onclick="cambiarVista('cursada')">
+                    <i>📅</i><span>Cursada</span>
+                </button>
+                <button class="tab-btn" id="btnTabProgreso" onclick="cambiarVista('progreso')">
+                    <i>📚</i><span>Progreso</span>
+                </button>
+                <button class="tab-btn" id="btnTabEstadisticas" onclick="cambiarVista('estadisticas')">
+                    <i>📊</i><span>Métricas</span>
+                </button>
+            </div>
+
         </div> </div> <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
         import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
-        import { getFirestore, doc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+        import { getFirestore, doc, setDoc, onSnapshot, enableIndexedDbPersistence } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+        
+        // --- CHAU FIREBASE STORAGE. USAMOS COMPRESIÓN BASE64 ---
 
         const firebaseConfig = {
             apiKey: "AIzaSyCIXKUvH-gqs1-X6Ja2q-c22TJStySqiPM",
@@ -285,7 +348,12 @@
         const auth = getAuth(app);
         const db = getFirestore(app);
 
-        // --- BASES DE DATOS LOCALES ---
+        // Habilitamos Persistencia Offline
+        enableIndexedDbPersistence(db).catch((err) => {
+            console.log("No se pudo habilitar offline:", err.code);
+        });
+
+        // --- BASES DE DATOS ---
         let baseDeDatos = []; let baseDeDatosCursada = []; let baseDeDatosEventos = [];
         let unsubscribeNube = null; let graficoKanban = null; let graficoRepasos = null;
 
@@ -327,15 +395,10 @@
             }
         });
 
-        // --- NUEVO MOTOR DE GUARDADO CON ALERTA DE ERROR ---
         function guardarDatosEnNube() {
             if(auth.currentUser) {
-                setDoc(doc(db, "usuarios", auth.currentUser.uid), {
-                    repasos: baseDeDatos, cursada: baseDeDatosCursada, eventos: baseDeDatosEventos
-                }).catch((error) => {
-                    console.error("Error al guardar en Firebase:", error);
-                    alert("⚠️ Error al guardar en la nube. Revisá las Reglas de seguridad en Firebase Console.");
-                });
+                setDoc(doc(db, "usuarios", auth.currentUser.uid), { repasos: baseDeDatos, cursada: baseDeDatosCursada, eventos: baseDeDatosEventos })
+                .catch((error) => { console.error(error); alert("⚠️ Error al guardar en la nube."); });
             }
         }
 
@@ -375,29 +438,148 @@
             else if (vistaDestino === 'cursada') { document.getElementById('vistaCursada').classList.remove('oculto'); document.getElementById('btnTabCursada').classList.add('activo'); renderizarEventos(); renderizarKanban(); } 
             else if (vistaDestino === 'progreso') { document.getElementById('vistaProgreso').classList.remove('oculto'); document.getElementById('btnTabProgreso').classList.add('activo'); renderizarProgreso(); } 
             else if (vistaDestino === 'estadisticas') { document.getElementById('vistaEstadisticas').classList.remove('oculto'); document.getElementById('btnTabEstadisticas').classList.add('activo'); renderizarEstadisticas(); }
+            
+            window.scrollTo({top: 0, behavior: 'smooth'});
         }
 
         window.irACrearFlashcards = function(materia, tema) { window.cambiarVista('repaso'); document.getElementById('inputMateria').value = materia; document.getElementById('inputTema').value = tema; document.getElementById('inputRespuesta').focus(); }
 
-        // --- EVENTOS (CORREGIDOS PARA MOSTRAR AL INSTANTE) ---
+        // --- MOTOR DE VOZ ---
+        window.reproducirAudio = function(texto) {
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.cancel();
+                let textoLimpio = texto.replace(/\$/g, '');
+                const utterance = new SpeechSynthesisUtterance(textoLimpio);
+                utterance.lang = 'es-AR';
+                utterance.rate = 0.95;
+                window.speechSynthesis.speak(utterance);
+            } else { alert("Tu navegador no soporta el motor de voz."); }
+        }
+
+        // --- COMPRESIÓN DE IMÁGENES BASE64 ---
+        // Esta función agarra la foto pesada, la dibuja en chiquito en un lienzo invisible y la convierte en texto gratuito
+        window.comprimirImagen = function(archivo, maxWidth, maxHeight, quality) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.readAsDataURL(archivo);
+                reader.onload = (event) => {
+                    const img = new Image();
+                    img.src = event.target.result;
+                    img.onload = () => {
+                        const canvas = document.createElement('canvas');
+                        let width = img.width; let height = img.height;
+                        if (width > height) { if (width > maxWidth) { height = Math.round((height *= maxWidth / width)); width = maxWidth; } } 
+                        else { if (height > maxHeight) { width = Math.round((width *= maxHeight / height)); height = maxHeight; } }
+                        canvas.width = width; canvas.height = height;
+                        const ctx = canvas.getContext('2d');
+                        ctx.drawImage(img, 0, 0, width, height);
+                        resolve(canvas.toDataURL('image/jpeg', quality)); // Devuelve el texto Base64
+                    };
+                    img.onerror = (error) => reject(error);
+                };
+                reader.onerror = (error) => reject(error);
+            });
+        }
+
+        // --- REPASO ESPACIADO CON IMÁGENES COMPRIMIDAS ---
+        window.agregarTema = async function() {
+            const inputMateria = document.getElementById('inputMateria').value.trim(); 
+            const inputTema = document.getElementById('inputTema').value.trim(); 
+            const inputRespuesta = document.getElementById('inputRespuesta').value.trim();
+            const btnGuardar = document.getElementById('btnGuardarTarjeta');
+            const archivoImagen = document.getElementById('inputImagen').files[0];
+
+            if (inputMateria === "" || inputTema === "") { alert("Completá Materia y Concepto."); return; }
+
+            btnGuardar.innerText = "⏳ Procesando...";
+            btnGuardar.disabled = true;
+
+            let imagenBase64 = null;
+
+            if (archivoImagen) {
+                try {
+                    btnGuardar.innerText = "⏳ Comprimiendo imagen...";
+                    // Achicamos la imagen a máx 800px y bajamos calidad al 70% para no saturar Firestore
+                    imagenBase64 = await window.comprimirImagen(archivoImagen, 800, 800, 0.7);
+                } catch (error) {
+                    alert("Error al procesar la imagen. Se guardará la tarjeta sin foto.");
+                    console.error(error);
+                }
+            }
+
+            baseDeDatos.push({ 
+                id: Date.now(), materia: inputMateria, titulo: inputTema, respuesta: inputRespuesta, 
+                imagenUrl: imagenBase64, // Ahora es el texto super comprimido, no una URL paga
+                n: 0, ef: 2.5, intervalo: 1, fechaProximoRepaso: calcularProximaFecha(1) 
+            });
+            
+            renderizarRepasosHoy(); 
+            guardarDatosEnNube(); 
+            
+            document.getElementById('inputMateria').value = ''; document.getElementById('inputTema').value = ''; 
+            document.getElementById('inputRespuesta').value = ''; document.getElementById('inputImagen').value = '';
+            btnGuardar.innerText = "Guardar Tarjeta";
+            btnGuardar.disabled = false;
+            
+            alert("¡Tarjeta guardada!");
+        }
+
+        window.procesarRepaso = function(idTema, calidad) {
+            const index = baseDeDatos.findIndex(tema => tema.id === idTema); let tema = baseDeDatos[index];
+            if (calidad < 3) { tema.n = 0; tema.intervalo = 1; } 
+            else { if (tema.n === 0) tema.intervalo = 1; else if (tema.n === 1) tema.intervalo = 6; else tema.intervalo = Math.round(tema.intervalo * tema.ef); tema.n += 1; }
+            tema.ef = Math.max(1.3, tema.ef + (0.1 - (5 - calidad) * (0.08 + (5 - calidad) * 0.02)));
+            tema.fechaProximoRepaso = calcularProximaFecha(tema.intervalo); baseDeDatos[index] = tema; 
+            renderizarRepasosHoy(); guardarDatosEnNube(); 
+        }
+
+        window.eliminarTema = function(idTema) { if (confirm("¿Borrar esta tarjeta?")) { baseDeDatos = baseDeDatos.filter(tema => tema.id !== idTema); renderizarProgreso(); renderizarRepasosHoy(); guardarDatosEnNube(); } }
+        window.mostrarRespuesta = function(idTema) { document.getElementById(`btn-revelar-${idTema}`).classList.add('oculto'); document.getElementById(`respuesta-${idTema}`).classList.remove('oculto'); document.getElementById(`botones-${idTema}`).classList.remove('oculto'); }
+
+        function renderizarRepasosHoy() {
+            const contenedor = document.getElementById('listaRepasos'); contenedor.innerHTML = ''; 
+            const fechaHoy = obtenerFechaHoy(); const temasPendientes = baseDeDatos.filter(tema => tema.fechaProximoRepaso <= fechaHoy);
+
+            if (temasPendientes.length === 0) { contenedor.innerHTML = '<p class="mensaje-vacio">¡Todo al día! No hay tarjetas para repasar hoy.</p>'; return; }
+
+            temasPendientes.forEach(tema => {
+                const div = document.createElement('div'); div.className = 'item-repaso';
+                let textoRespuesta = tema.respuesta ? tema.respuesta : "";
+                
+                let htmlImagen = tema.imagenUrl ? `<img src="${tema.imagenUrl}" style="max-width: 100%; border-radius: 8px; margin-bottom: 10px; display: block;">` : '';
+                if (!textoRespuesta && !htmlImagen) textoRespuesta = "<i>(No se agregó respuesta ni imagen)</i>";
+
+                let textoAudio = tema.titulo.replace(/'/g, "");
+                let btnVoz = `<button class="btn-voz" title="Escuchar" onclick="reproducirAudio('${textoAudio}')">🔊</button>`;
+
+                div.innerHTML = `
+                    <p><strong>${tema.materia}</strong></p>
+                    <h3><span>${tema.titulo}</span> ${btnVoz}</h3>
+                    <button id="btn-revelar-${tema.id}" class="btn-principal btn-revelar" onclick="mostrarRespuesta(${tema.id})">Ver Respuesta</button>
+                    <div id="respuesta-${tema.id}" class="texto-respuesta oculto">
+                        ${htmlImagen}
+                        ${textoRespuesta}
+                    </div>
+                    <div id="botones-${tema.id}" class="botones-calificacion oculto">
+                        <button class="btn-calificar btn-dificil" onclick="procesarRepaso(${tema.id}, 3)">Difícil</button>
+                        <button class="btn-calificar btn-normal" onclick="procesarRepaso(${tema.id}, 4)">Normal</button>
+                        <button class="btn-calificar btn-facil" onclick="procesarRepaso(${tema.id}, 5)">Fácil</button>
+                    </div>
+                `;
+                contenedor.appendChild(div);
+            });
+
+            if (window.MathJax) MathJax.typesetPromise([contenedor]).catch(err => console.log('Error en MathJax: ' + err.message));
+        }
+
+        // --- EVENTOS Y KANBAN ---
         window.agregarEvento = function() {
             const materia = document.getElementById('inputEventoMateria').value.trim(); const tipo = document.getElementById('inputEventoTipo').value; const fecha = document.getElementById('inputEventoFecha').value;
             if (materia === "" || fecha === "") { alert("Por favor, ingresá materia y fecha."); return; }
-            
             baseDeDatosEventos.push({ id: Date.now(), materia: materia, tipo: tipo, fecha: fecha });
-            renderizarEventos(); // Solución al problema de visualización
-            guardarDatosEnNube(); 
-            
-            document.getElementById('inputEventoMateria').value = ''; document.getElementById('inputEventoFecha').value = '';
+            renderizarEventos(); guardarDatosEnNube(); document.getElementById('inputEventoMateria').value = ''; document.getElementById('inputEventoFecha').value = '';
         }
-        window.borrarEvento = function(idEvento) {
-            if (confirm("¿Borrar esta fecha clave?")) { 
-                baseDeDatosEventos = baseDeDatosEventos.filter(e => e.id !== idEvento); 
-                renderizarEventos(); // Solución al problema de visualización
-                guardarDatosEnNube(); 
-            }
-        }
-
+        window.borrarEvento = function(idEvento) { if (confirm("¿Borrar esta fecha clave?")) { baseDeDatosEventos = baseDeDatosEventos.filter(e => e.id !== idEvento); renderizarEventos(); guardarDatosEnNube(); } }
         function renderizarEventos() {
             const contenedor = document.getElementById('listaEventos'); contenedor.innerHTML = '';
             if (baseDeDatosEventos.length === 0) { contenedor.innerHTML = '<p class="mensaje-vacio" style="width: 100%;">No hay exámenes ni entregas registradas.</p>'; return; }
@@ -415,49 +597,17 @@
             });
         }
 
-        // --- GESTOR DE CURSADA (CORREGIDO PARA MOSTRAR AL INSTANTE) ---
         window.agregarTareaKanban = function() {
             const materia = document.getElementById('inputKanbanMateria').value.trim(); const unidad = document.getElementById('inputKanbanUnidad').value.trim(); const tema = document.getElementById('inputKanbanTema').value.trim();
             if (materia === "" || tema === "") { alert("Ingresá Materia y Tema."); return; }
-            baseDeDatosCursada.push({
-                id: Date.now(), materia: materia, unidad: unidad, tema: tema, estado: "por_hacer", fecha_objetivo: null,
-                subtareas: [ { id: 1, nombre: "Lectura de Teoría", completada: false }, { id: 2, nombre: "Resolución de TP", completada: false }, { id: 3, nombre: "Resumen / Apuntes", completada: false }, { id: 4, nombre: "Crear Flashcards", completada: false } ]
-            });
-            
-            renderizarKanban(); // Solución al problema de visualización
-            guardarDatosEnNube(); 
-            document.getElementById('inputKanbanUnidad').value = ''; document.getElementById('inputKanbanTema').value = '';
+            baseDeDatosCursada.push({ id: Date.now(), materia: materia, unidad: unidad, tema: tema, estado: "por_hacer", fecha_objetivo: null, subtareas: [ { id: 1, nombre: "Lectura de Teoría", completada: false }, { id: 2, nombre: "Resolución de TP", completada: false }, { id: 3, nombre: "Resumen / Apuntes", completada: false }, { id: 4, nombre: "Crear Flashcards", completada: false } ] });
+            renderizarKanban(); guardarDatosEnNube(); document.getElementById('inputKanbanUnidad').value = ''; document.getElementById('inputKanbanTema').value = '';
         }
-
-        window.cambiarEstadoTarea = function(idTarea, nuevoEstado) {
-            const index = baseDeDatosCursada.findIndex(t => t.id === idTarea);
-            if (index !== -1) { 
-                baseDeDatosCursada[index].estado = nuevoEstado; 
-                renderizarKanban(); 
-                guardarDatosEnNube(); 
-            }
-        }
-
-        window.toggleSubtarea = function(idTarea, indexSubtarea) {
-            const indexTarea = baseDeDatosCursada.findIndex(t => t.id === idTarea);
-            if (indexTarea !== -1) {
-                baseDeDatosCursada[indexTarea].subtareas[indexSubtarea].completada = !baseDeDatosCursada[indexTarea].subtareas[indexSubtarea].completada;
-                renderizarKanban();
-                guardarDatosEnNube();
-            }
-        }
-
-        window.borrarTareaKanban = function(idTarea) {
-            if (confirm("¿Borrar este tema del programa?")) { 
-                baseDeDatosCursada = baseDeDatosCursada.filter(t => t.id !== idTarea); 
-                renderizarKanban();
-                guardarDatosEnNube(); 
-            }
-        }
-
+        window.cambiarEstadoTarea = function(idTarea, nuevoEstado) { const index = baseDeDatosCursada.findIndex(t => t.id === idTarea); if (index !== -1) { baseDeDatosCursada[index].estado = nuevoEstado; renderizarKanban(); guardarDatosEnNube(); } }
+        window.toggleSubtarea = function(idTarea, indexSubtarea) { const indexTarea = baseDeDatosCursada.findIndex(t => t.id === idTarea); if (indexTarea !== -1) { baseDeDatosCursada[indexTarea].subtareas[indexSubtarea].completada = !baseDeDatosCursada[indexTarea].subtareas[indexSubtarea].completada; renderizarKanban(); guardarDatosEnNube(); } }
+        window.borrarTareaKanban = function(idTarea) { if (confirm("¿Borrar este tema del programa?")) { baseDeDatosCursada = baseDeDatosCursada.filter(t => t.id !== idTarea); renderizarKanban(); guardarDatosEnNube(); } }
         window.autoPlanificar = function() {
-            const hoy = new Date(); hoy.setHours(0,0,0,0); let materiasModificadas = 0;
-            const materiasUnicas = [...new Set(baseDeDatosCursada.map(t => t.materia))];
+            const hoy = new Date(); hoy.setHours(0,0,0,0); let materiasModificadas = 0; const materiasUnicas = [...new Set(baseDeDatosCursada.map(t => t.materia))];
             materiasUnicas.forEach(materia => {
                 const eventosMateria = baseDeDatosEventos.filter(e => e.materia.toLowerCase().trim() === materia.toLowerCase().trim()).sort((a, b) => new Date(a.fecha) - new Date(b.fecha));
                 const proximoEvento = eventosMateria.find(e => new Date(e.fecha) >= hoy);
@@ -465,26 +615,16 @@
                     const fechaExamen = new Date(proximoEvento.fecha); fechaExamen.setMinutes(fechaExamen.getMinutes() + fechaExamen.getTimezoneOffset());
                     const tareasPendientes = baseDeDatosCursada.filter(t => t.materia === materia && t.estado === 'por_hacer');
                     if (tareasPendientes.length > 0) {
-                        materiasModificadas++;
-                        const diasTotales = Math.ceil((fechaExamen.getTime() - hoy.getTime()) / (1000 * 3600 * 24));
-                        const diasDisponibles = Math.max(1, diasTotales - 2); 
-                        const intervaloDias = Math.floor(diasDisponibles / tareasPendientes.length);
+                        materiasModificadas++; const diasTotales = Math.ceil((fechaExamen.getTime() - hoy.getTime()) / (1000 * 3600 * 24)); const diasDisponibles = Math.max(1, diasTotales - 2); const intervaloDias = Math.floor(diasDisponibles / tareasPendientes.length);
                         tareasPendientes.forEach((tarea, index) => {
-                            const diasASumar = (index) * Math.max(1, intervaloDias);
-                            const fechaObj = new Date(hoy); fechaObj.setDate(fechaObj.getDate() + diasASumar);
-                            const indexReal = baseDeDatosCursada.findIndex(t => t.id === tarea.id);
-                            baseDeDatosCursada[indexReal].fecha_objetivo = fechaObj.toISOString().split('T')[0];
-                            const diasParaObjetivo = Math.ceil((fechaObj.getTime() - hoy.getTime()) / (1000 * 3600 * 24));
-                            if (diasParaObjetivo <= 3) { baseDeDatosCursada[indexReal].estado = 'en_progreso'; }
+                            const diasASumar = (index) * Math.max(1, intervaloDias); const fechaObj = new Date(hoy); fechaObj.setDate(fechaObj.getDate() + diasASumar);
+                            const indexReal = baseDeDatosCursada.findIndex(t => t.id === tarea.id); baseDeDatosCursada[indexReal].fecha_objetivo = fechaObj.toISOString().split('T')[0];
+                            const diasParaObjetivo = Math.ceil((fechaObj.getTime() - hoy.getTime()) / (1000 * 3600 * 24)); if (diasParaObjetivo <= 3) { baseDeDatosCursada[indexReal].estado = 'en_progreso'; }
                         });
                     }
                 }
             });
-            if (materiasModificadas > 0) { 
-                renderizarKanban();
-                guardarDatosEnNube(); 
-                alert("¡Cronograma generado! Tareas distribuidas."); 
-            } else { alert("No se encontraron coincidencias o no hay temas 'Por Hacer'."); }
+            if (materiasModificadas > 0) { renderizarKanban(); guardarDatosEnNube(); alert("¡Cronograma generado! Tareas distribuidas."); } else { alert("No se encontraron coincidencias o no hay temas 'Por Hacer'."); }
         }
 
         function renderizarFocoDiario() {
@@ -492,23 +632,14 @@
             const enProgreso = baseDeDatosCursada.filter(t => t.estado === 'en_progreso');
             if (enProgreso.length === 0) { contenedor.innerHTML = '<p class="mensaje-vacio">No tenés temas "En Progreso".</p>'; return; }
             let hayTareasPendientes = false;
-
             enProgreso.forEach(tarea => {
-                const subtareasPendientes = tarea.subtareas.filter(s => !s.completada);
-                const crearFlashcardsSub = tarea.subtareas.find(s => s.nombre === "Crear Flashcards");
-                const mostarBotonFlashcards = (crearFlashcardsSub && crearFlashcardsSub.completada);
-                
+                const subtareasPendientes = tarea.subtareas.filter(s => !s.completada); const crearFlashcardsSub = tarea.subtareas.find(s => s.nombre === "Crear Flashcards"); const mostarBotonFlashcards = (crearFlashcardsSub && crearFlashcardsSub.completada);
                 if (subtareasPendientes.length > 0 || mostarBotonFlashcards) {
-                    hayTareasPendientes = true;
-                    const div = document.createElement('div'); div.style.marginBottom = '12px'; div.style.padding = '12px'; div.style.backgroundColor = '#fdfdfd'; div.style.border = '1px solid #eee'; div.style.borderRadius = '8px';
-                    let htmlSubtareas = '';
-                    tarea.subtareas.forEach((sub, index) => {
-                        if (!sub.completada) { htmlSubtareas += `<label class="subtarea" style="margin-top: 8px;"><input type="checkbox" onchange="toggleSubtarea(${tarea.id}, ${index})"> ${sub.nombre}</label>`; }
-                    });
-                    let btnPuente = '';
-                    if (mostarBotonFlashcards) { btnPuente = `<button class="btn-principal" style="padding: 8px; font-size: 13px; margin-top: 10px; background-color: var(--alerta);" onclick="irACrearFlashcards('${tarea.materia}', '${tarea.tema}')">🪄 Generar Tarjetas en Repaso</button>`; }
+                    hayTareasPendientes = true; const div = document.createElement('div'); div.style.marginBottom = '12px'; div.style.padding = '12px'; div.className = 'tarea-card';
+                    let htmlSubtareas = ''; tarea.subtareas.forEach((sub, index) => { if (!sub.completada) { htmlSubtareas += `<label class="subtarea" style="margin-top: 8px;"><input type="checkbox" onchange="toggleSubtarea(${tarea.id}, ${index})"> ${sub.nombre}</label>`; } });
+                    let btnPuente = ''; if (mostarBotonFlashcards) { btnPuente = `<button class="btn-principal" style="padding: 8px; font-size: 13px; margin-top: 10px; background-color: var(--alerta);" onclick="irACrearFlashcards('${tarea.materia}', '${tarea.tema}')">🪄 Generar Tarjetas en Repaso</button>`; }
                     const textoUnidad = tarea.unidad ? `${tarea.unidad} - ` : '';
-                    div.innerHTML = `<strong style="color: var(--primario-oscuro); font-size: 15px; display: block; border-bottom: 1px solid #eee; padding-bottom: 5px; margin-bottom: 5px;">${tarea.materia}</strong><span style="font-size: 14px; font-weight: 500; color: #2c3e50;">${textoUnidad}${tarea.tema}</span>${htmlSubtareas} ${btnPuente}`;
+                    div.innerHTML = `<strong style="color: var(--primario-oscuro); font-size: 15px; display: block; border-bottom: 1px solid var(--borde); padding-bottom: 5px; margin-bottom: 5px;">${tarea.materia}</strong><span style="font-size: 14px; font-weight: 500;">${textoUnidad}${tarea.tema}</span>${htmlSubtareas} ${btnPuente}`;
                     contenedor.appendChild(div);
                 }
             });
@@ -520,112 +651,20 @@
             colPorHacer.innerHTML = ''; colEnProgreso.innerHTML = ''; colTerminado.innerHTML = '';
             baseDeDatosCursada.forEach(tarea => {
                 const div = document.createElement('div'); div.className = 'tarea-card'; const textoUnidad = tarea.unidad ? `${tarea.unidad} - ` : '';
-                let htmlChecklist = '';
-                if (tarea.subtareas && tarea.subtareas.length > 0) {
-                    htmlChecklist = '<div class="checklist">';
-                    tarea.subtareas.forEach((sub, index) => {
-                        const claseCompletada = sub.completada ? 'completada' : ''; const inputChecked = sub.completada ? 'checked' : '';
-                        htmlChecklist += `<label class="subtarea ${claseCompletada}"><input type="checkbox" onchange="toggleSubtarea(${tarea.id}, ${index})" ${inputChecked}> ${sub.nombre}</label>`;
-                    });
-                    htmlChecklist += '</div>';
-                }
-                let htmlFechaObj = '';
-                if (tarea.fecha_objetivo) { const partes = tarea.fecha_objetivo.split('-'); htmlFechaObj = `<div style="font-size: 11px; color: var(--alerta); margin-bottom: 8px; font-weight: bold; background: #fdf2e9; display: inline-block; padding: 2px 6px; border-radius: 4px;">📅 Objetivo: ${partes[2]}/${partes[1]}</div>`; }
-
+                let htmlChecklist = ''; if (tarea.subtareas && tarea.subtareas.length > 0) { htmlChecklist = '<div class="checklist">'; tarea.subtareas.forEach((sub, index) => { const claseCompletada = sub.completada ? 'completada' : ''; const inputChecked = sub.completada ? 'checked' : ''; htmlChecklist += `<label class="subtarea ${claseCompletada}"><input type="checkbox" onchange="toggleSubtarea(${tarea.id}, ${index})" ${inputChecked}> ${sub.nombre}</label>`; }); htmlChecklist += '</div>'; }
+                let htmlFechaObj = ''; if (tarea.fecha_objetivo) { const partes = tarea.fecha_objetivo.split('-'); htmlFechaObj = `<div style="font-size: 11px; color: var(--alerta); margin-bottom: 8px; font-weight: bold; background: #fdf2e9; display: inline-block; padding: 2px 6px; border-radius: 4px;">📅 Objetivo: ${partes[2]}/${partes[1]}</div>`; }
                 let botonesDireccionales = '<div class="controles-kanban">';
                 if (tarea.estado === 'por_hacer') { botonesDireccionales += `<button class="btn-mover destacado" style="flex: 1;" onclick="cambiarEstadoTarea(${tarea.id}, 'en_progreso')">Comenzar ➡️</button>`; } 
                 else if (tarea.estado === 'en_progreso') { botonesDireccionales += `<button class="btn-mover" onclick="cambiarEstadoTarea(${tarea.id}, 'por_hacer')">⬅️ Volver</button><button class="btn-mover destacado" onclick="cambiarEstadoTarea(${tarea.id}, 'terminado')">Terminar ➡️</button>`; } 
                 else if (tarea.estado === 'terminado') { botonesDireccionales += `<button class="btn-mover" style="flex: 1;" onclick="cambiarEstadoTarea(${tarea.id}, 'en_progreso')">⬅️ Regresar a Progreso</button>`; }
                 botonesDireccionales += `</div>`;
-
                 div.innerHTML = `<button class="btn-borrar-evento" style="top: 15px; right: 15px;" onclick="borrarTareaKanban(${tarea.id})">✖</button><p style="margin-right: 20px;"><strong>${tarea.materia}</strong></p>${htmlFechaObj}<h4>${textoUnidad}${tarea.tema}</h4>${htmlChecklist} ${botonesDireccionales}`;
                 if (tarea.estado === 'por_hacer') colPorHacer.appendChild(div); else if (tarea.estado === 'en_progreso') colEnProgreso.appendChild(div); else if (tarea.estado === 'terminado') colTerminado.appendChild(div);
             });
             renderizarFocoDiario();
         }
 
-        // --- REPASO ESPACIADO ---
-        window.agregarTema = function() {
-            const inputMateria = document.getElementById('inputMateria').value.trim(); const inputTema = document.getElementById('inputTema').value.trim(); const inputRespuesta = document.getElementById('inputRespuesta').value.trim();
-            if (inputMateria === "" || inputTema === "") { alert("Completá Materia y Concepto."); return; }
-            baseDeDatos.push({ id: Date.now(), materia: inputMateria, titulo: inputTema, respuesta: inputRespuesta, n: 0, ef: 2.5, intervalo: 1, fechaProximoRepaso: calcularProximaFecha(1) });
-            
-            renderizarRepasosHoy(); 
-            guardarDatosEnNube(); 
-            document.getElementById('inputMateria').value = ''; document.getElementById('inputTema').value = ''; document.getElementById('inputRespuesta').value = ''; alert("Tarjeta guardada.");
-        }
-
-        window.procesarRepaso = function(idTema, calidad) {
-            const index = baseDeDatos.findIndex(tema => tema.id === idTema); let tema = baseDeDatos[index];
-            if (calidad < 3) { tema.n = 0; tema.intervalo = 1; } 
-            else { if (tema.n === 0) tema.intervalo = 1; else if (tema.n === 1) tema.intervalo = 6; else tema.intervalo = Math.round(tema.intervalo * tema.ef); tema.n += 1; }
-            tema.ef = Math.max(1.3, tema.ef + (0.1 - (5 - calidad) * (0.08 + (5 - calidad) * 0.02)));
-            tema.fechaProximoRepaso = calcularProximaFecha(tema.intervalo); baseDeDatos[index] = tema; 
-            
-            renderizarRepasosHoy();
-            guardarDatosEnNube(); 
-        }
-
-        window.eliminarTema = function(idTema) {
-            if (confirm("¿Borrar esta tarjeta?")) { 
-                baseDeDatos = baseDeDatos.filter(tema => tema.id !== idTema); 
-                renderizarProgreso(); 
-                renderizarRepasosHoy();
-                guardarDatosEnNube(); 
-            }
-        }
-
-        // Funciones del backup manual local
-        window.exportarDatos = function() {
-            const datosCompletos = { repasos: baseDeDatos, cursada: baseDeDatosCursada, eventos: baseDeDatosEventos };
-            const url = URL.createObjectURL(new Blob([JSON.stringify(datosCompletos)], { type: 'application/json' }));
-            const link = document.createElement('a'); link.href = url; link.download = 'app_estudio_backup.json'; document.body.appendChild(link); link.click(); document.body.removeChild(link); URL.revokeObjectURL(url);
-        }
-        window.importarDatos = function(event) {
-            const archivo = event.target.files[0]; if (!archivo) return;
-            if (!confirm("⚠️ Importar un backup pisará los datos en la NUBE. ¿Continuar?")) { event.target.value = ''; return; }
-            const lector = new FileReader();
-            lector.onload = function(e) {
-                try {
-                    const datosImportados = JSON.parse(e.target.result);
-                    if (datosImportados.repasos) { baseDeDatos = datosImportados.repasos; baseDeDatosCursada = datosImportados.cursada || []; baseDeDatosEventos = datosImportados.eventos || []; } 
-                    else if (Array.isArray(datosImportados)) { baseDeDatos = datosImportados; }
-                    guardarDatosEnNube(); alert("¡Backup restaurado y subido a la nube!");
-                } catch (error) { alert("Error al leer el archivo JSON."); }
-            };
-            lector.readAsText(archivo); event.target.value = ''; 
-        }
-
-        window.mostrarRespuesta = function(idTema) {
-            document.getElementById(`btn-revelar-${idTema}`).classList.add('oculto'); document.getElementById(`respuesta-${idTema}`).classList.remove('oculto'); document.getElementById(`botones-${idTema}`).classList.remove('oculto');
-        }
-
-        function renderizarRepasosHoy() {
-            const contenedor = document.getElementById('listaRepasos'); contenedor.innerHTML = ''; 
-            const fechaHoy = obtenerFechaHoy(); const temasPendientes = baseDeDatos.filter(tema => tema.fechaProximoRepaso <= fechaHoy);
-
-            if (temasPendientes.length === 0) { contenedor.innerHTML = '<p class="mensaje-vacio">¡Todo al día! No hay tarjetas para repasar hoy.</p>'; return; }
-
-            temasPendientes.forEach(tema => {
-                const div = document.createElement('div'); div.className = 'item-repaso';
-                const textoRespuesta = tema.respuesta ? tema.respuesta : "<i>(No se agregó respuesta)</i>";
-                div.innerHTML = `
-                    <p><strong>${tema.materia}</strong></p>
-                    <h3>${tema.titulo}</h3>
-                    <button id="btn-revelar-${tema.id}" class="btn-principal btn-revelar" onclick="mostrarRespuesta(${tema.id})">Ver Respuesta</button>
-                    <div id="respuesta-${tema.id}" class="texto-respuesta oculto">${textoRespuesta}</div>
-                    <div id="botones-${tema.id}" class="botones-calificacion oculto">
-                        <button class="btn-calificar btn-dificil" onclick="procesarRepaso(${tema.id}, 3)">Difícil</button>
-                        <button class="btn-calificar btn-normal" onclick="procesarRepaso(${tema.id}, 4)">Normal</button>
-                        <button class="btn-calificar btn-facil" onclick="procesarRepaso(${tema.id}, 5)">Fácil</button>
-                    </div>
-                `;
-                contenedor.appendChild(div);
-            });
-
-            if (window.MathJax) MathJax.typesetPromise([contenedor]).catch(err => console.log('Error en MathJax: ' + err.message));
-        }
-
+        // --- BACKUP Y PROGRESO ---
         function renderizarProgreso() {
             const cuerpoTabla = document.getElementById('cuerpoTablaProgreso'); cuerpoTabla.innerHTML = ''; 
             if (baseDeDatos.length === 0) { cuerpoTabla.innerHTML = '<tr><td colspan="4" class="mensaje-vacio">Sin tarjetas.</td></tr>'; return; }
@@ -639,6 +678,26 @@
             });
         }
 
+        window.exportarDatos = function() {
+            const datosCompletos = { repasos: baseDeDatos, cursada: baseDeDatosCursada, eventos: baseDeDatosEventos };
+            const url = URL.createObjectURL(new Blob([JSON.stringify(datosCompletos)], { type: 'application/json' })); const link = document.createElement('a');
+            link.href = url; link.download = 'app_estudio_backup.json'; document.body.appendChild(link); link.click(); document.body.removeChild(link); URL.revokeObjectURL(url);
+        }
+        window.importarDatos = function(event) {
+            const archivo = event.target.files[0]; if (!archivo) return;
+            if (!confirm("⚠️ Importar un backup pisará los datos en la NUBE. ¿Continuar?")) { event.target.value = ''; return; }
+            const lector = new FileReader();
+            lector.onload = function(e) {
+                try {
+                    const datosImportados = JSON.parse(e.target.result);
+                    if (datosImportados.repasos) { baseDeDatos = datosImportados.repasos; baseDeDatosCursada = datosImportados.cursada || []; baseDeDatosEventos = datosImportados.eventos || []; } else if (Array.isArray(datosImportados)) { baseDeDatos = datosImportados; }
+                    guardarDatosEnNube(); alert("¡Backup restaurado y subido a la nube!");
+                } catch (error) { alert("Error al leer el archivo JSON."); }
+            };
+            lector.readAsText(archivo); event.target.value = ''; 
+        }
+
+        // --- ESTADÍSTICAS ---
         function renderizarEstadisticas() {
             document.getElementById('statTotalTemas').innerText = baseDeDatosCursada.length; document.getElementById('statTotalTarjetas').innerText = baseDeDatos.length;
             const countPorHacer = baseDeDatosCursada.filter(t => t.estado === 'por_hacer').length; const countEnProgreso = baseDeDatosCursada.filter(t => t.estado === 'en_progreso').length; const countTerminado = baseDeDatosCursada.filter(t => t.estado === 'terminado').length;
@@ -647,9 +706,10 @@
             if (graficoKanban) graficoKanban.destroy(); if (graficoRepasos) graficoRepasos.destroy();
 
             const ctxKanban = document.getElementById('chartKanban').getContext('2d');
-            graficoKanban = new Chart(ctxKanban, { type: 'doughnut', data: { labels: ['Por Hacer', 'En Progreso', 'Terminado'], datasets: [{ data: [countPorHacer, countEnProgreso, countTerminado], backgroundColor: ['#E74C3C', '#F39C12', '#2ECC71'], borderWidth: 0 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } } } });
+            graficoKanban = new Chart(ctxKanban, { type: 'doughnut', data: { labels: ['Por Hacer', 'En Progreso', 'Terminado'], datasets: [{ data: [countPorHacer, countEnProgreso, countTerminado], backgroundColor: ['#E74C3C', '#F39C12', '#2ECC71'], borderWidth: 0 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { color: 'var(--texto)' } } } } });
+            
             const ctxRepasos = document.getElementById('chartRepasos').getContext('2d');
-            graficoRepasos = new Chart(ctxRepasos, { type: 'bar', data: { labels: ['Atrasados', 'Para Hoy', 'Futuros'], datasets: [{ label: 'Tarjetas', data: [countAtrasados, countHoy, countFuturos], backgroundColor: ['#E74C3C', '#F39C12', '#4A90E2'], borderRadius: 6 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } } } });
+            graficoRepasos = new Chart(ctxRepasos, { type: 'bar', data: { labels: ['Atrasados', 'Para Hoy', 'Futuros'], datasets: [{ label: 'Tarjetas', data: [countAtrasados, countHoy, countFuturos], backgroundColor: ['#E74C3C', '#F39C12', '#4A90E2'], borderRadius: 6 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, ticks: { stepSize: 1, color: 'var(--texto)' } }, x: { ticks: { color: 'var(--texto)' } } } } });
         }
 
         if ('serviceWorker' in navigator) { window.addEventListener('load', () => { navigator.serviceWorker.register('./service-worker.js').catch(err => console.log('Fallo SW:', err)); }); }
