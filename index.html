@@ -56,7 +56,6 @@
         h1 { text-align: center; color: var(--primario); margin-bottom: 20px; position: relative;}
         
         #vistaLogin { background: var(--tarjeta); padding: 30px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); max-width: 400px; margin: 50px auto; text-align: center; }
-        .btn-logout { position: absolute; right: 0; top: 5px; background-color: #e74c3c; color: white; border: none; padding: 6px 12px; border-radius: 6px; font-size: 12px; font-weight: bold; cursor: pointer; }
         .app-header { position: relative; display: flex; justify-content: center; align-items: center; margin-bottom: 20px; }
         
         .navegacion { position: fixed; bottom: 0; left: 0; width: 100%; background-color: var(--tarjeta); box-shadow: 0 -2px 10px rgba(0,0,0,0.1); display: flex; justify-content: space-around; padding: 8px 0 15px 0; z-index: 1000; border-radius: 16px 16px 0 0; }
@@ -183,8 +182,7 @@
         <div id="appPrincipal" class="oculto">
             
             <div class="app-header">
-                <h1 style="margin: 0;">Mi Plan de Estudio</h1>
-                <button class="btn-logout" onclick="cerrarSesion()">Cerrar Sesión</button>
+    		<h1 style="margin: 0;">Mi Plan de Estudio</h1>
             </div>
 
             <div id="vistaRepaso">
@@ -314,19 +312,22 @@
             </div>
 
             <div class="navegacion">
-                <button class="tab-btn activo" id="btnTabRepaso" onclick="cambiarVista('repaso')">
-                    <i>🧠</i><span>Repaso</span>
-                </button>
-                <button class="tab-btn" id="btnTabCursada" onclick="cambiarVista('cursada')">
-                    <i>📅</i><span>Cursada</span>
-                </button>
-                <button class="tab-btn" id="btnTabProgreso" onclick="cambiarVista('progreso')">
-                    <i>📚</i><span>Progreso</span>
-                </button>
-                <button class="tab-btn" id="btnTabEstadisticas" onclick="cambiarVista('estadisticas')">
-                    <i>📊</i><span>Métricas</span>
-                </button>
-            </div>
+    		<button class="tab-btn activo" id="btnTabRepaso" onclick="cambiarVista('repaso')">
+        		<i>🧠</i><span>Repaso</span>
+   		 </button>
+    		<button class="tab-btn" id="btnTabCursada" onclick="cambiarVista('cursada')">
+       			 <i>📅</i><span>Cursada</span>
+    		</button>
+   		 <button class="tab-btn" id="btnTabProgreso" onclick="cambiarVista('progreso')">
+        		<i>📚</i><span>Progreso</span>
+    		</button>
+    		<button class="tab-btn" id="btnTabEstadisticas" onclick="cambiarVista('estadisticas')">
+        		<i>📊</i><span>Métricas</span>
+    		</button>
+    		<button class="tab-btn" onclick="cerrarSesion()" style="color: var(--peligro);">
+       			 <i>🚪</i><span>Salir</span>
+    		</button>
+	</div>
 
         </div> </div> <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
