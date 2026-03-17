@@ -1,0 +1,658 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>App de Repaso y Organización</title>
+    
+    <link rel="manifest" href="./manifest.json">
+    <meta name="theme-color" content="#4A90E2">
+
+    <style>
+        /* --- DISEÑO VISUAL GENERAL (CSS) --- */
+        :root {
+            --primario: #4A90E2; --primario-oscuro: #357ABD;
+            --fondo: #F4F7F6; --texto: #333333; --tarjeta: #FFFFFF;
+            --exito: #2ECC71; --alerta: #F39C12; --peligro: #E74C3C;
+            --gris: #BDC3C7; --secundario: #95a5a6;
+            --fondo-kanban: #eef2f5;
+            --pomodoro-bg: #2c3e50;
+        }
+
+        body { font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background-color: var(--fondo); color: var(--texto); margin: 0; padding: 20px; display: flex; justify-content: center; }
+        .contenedor { max-width: 800px; width: 100%; }
+        h1 { text-align: center; color: var(--primario); margin-bottom: 20px; position: relative;}
+        
+        #vistaLogin { background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); max-width: 400px; margin: 50px auto; text-align: center; }
+        .btn-logout { position: absolute; right: 0; top: 5px; background-color: #e74c3c; color: white; border: none; padding: 6px 12px; border-radius: 6px; font-size: 12px; font-weight: bold; cursor: pointer; }
+        .app-header { position: relative; display: flex; justify-content: center; align-items: center; margin-bottom: 20px; }
+        
+        .pomodoro-widget { background-color: var(--pomodoro-bg); color: white; padding: 15px 20px; text-align: center; margin-top: 20px; margin-bottom: 20px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .pomodoro-display { font-size: 54px; font-weight: bold; font-family: 'Courier New', Courier, monospace; margin: 5px 0 15px 0; letter-spacing: 3px; }
+        .pomodoro-modos { display: flex; gap: 5px; margin-bottom: 15px; background: rgba(0,0,0,0.2); border-radius: 8px; padding: 5px; }
+        .btn-pomodoro { flex: 1; padding: 8px 2px; background: none; border: none; color: white; font-size: 13px; font-weight: bold; cursor: pointer; border-radius: 5px; transition: 0.2s; }
+        .btn-pomodoro.activo { background-color: var(--primario); }
+        .pomodoro-controles { display: flex; gap: 10px; }
+        .btn-p-accion { flex: 2; padding: 12px; border: none; border-radius: 8px; font-size: 16px; font-weight: bold; color: white; background-color: var(--exito); cursor: pointer; }
+        .btn-p-reset { flex: 1; padding: 12px; border: none; border-radius: 8px; font-size: 16px; font-weight: bold; color: white; background-color: transparent; border: 2px solid #7f8c8d; cursor: pointer; }
+        .btn-p-accion:active, .btn-p-reset:active { opacity: 0.8; }
+
+        .navegacion { display: flex; margin-bottom: 20px; background-color: #e1e8ed; border-radius: 8px; overflow-x: auto; white-space: nowrap; }
+        .tab-btn { flex: 1; padding: 12px 15px; text-align: center; background: none; border: none; font-size: 14px; font-weight: bold; color: #7f8c8d; cursor: pointer; transition: 0.3s; }
+        .tab-btn.activo { background-color: var(--primario); color: white; }
+
+        .tarjeta { background-color: var(--tarjeta); border-radius: 12px; padding: 20px; margin-bottom: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+        h2 { color: var(--primario-oscuro); margin-top: 0; font-size: 20px; }
+
+        input[type="text"], input[type="email"], input[type="password"], input[type="date"], textarea, select { width: 100%; padding: 12px; margin-bottom: 10px; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; font-size: 16px; font-family: inherit; }
+        textarea { resize: vertical; min-height: 80px; }
+
+        .btn-principal { width: 100%; padding: 14px; border: none; border-radius: 8px; font-size: 16px; font-weight: bold; color: white; background-color: var(--primario); cursor: pointer; transition: opacity 0.2s; }
+        .btn-principal:active { opacity: 0.8; }
+        .btn-revelar { background-color: var(--secundario); margin-bottom: 15px; }
+
+        .panel-backup { display: flex; gap: 10px; margin-top: 20px; padding-top: 15px; border-top: 1px solid #eee; }
+        .btn-backup { flex: 1; padding: 10px; border: 2px solid var(--secundario); border-radius: 8px; background: transparent; color: #2c3e50; font-weight: bold; cursor: pointer; transition: 0.2s; }
+        .btn-backup:active { background-color: var(--secundario); color: white; }
+
+        .item-repaso { border-left: 4px solid var(--primario); background-color: #f9f9f9; padding: 15px; margin-bottom: 15px; border-radius: 0 8px 8px 0; }
+        .item-repaso h3 { margin: 0 0 5px 0; font-size: 18px; }
+        .item-repaso p { margin: 0 0 10px 0; font-size: 14px; color: #666; }
+        .texto-respuesta { margin: 0 0 15px 0; padding: 15px; background-color: #ecf0f1; border-radius: 8px; border-left: 4px solid var(--alerta); font-size: 15px; white-space: pre-wrap; color: #2c3e50; overflow-x: auto; }
+        .botones-calificacion { display: flex; gap: 10px; }
+        .btn-calificar { flex: 1; padding: 10px; border: none; border-radius: 6px; color: white; font-weight: bold; cursor: pointer; }
+        .btn-facil { background-color: var(--exito); }
+        .btn-normal { background-color: var(--alerta); }
+        .btn-dificil { background-color: var(--peligro); }
+        .btn-eliminar { background-color: var(--peligro); color: white; border: none; padding: 6px 10px; border-radius: 4px; cursor: pointer; font-size: 12px; font-weight: bold; }
+
+        .mensaje-vacio { text-align: center; color: #7f8c8d; font-style: italic; }
+        .tabla-progreso { width: 100%; border-collapse: collapse; font-size: 14px; }
+        .tabla-progreso th, .tabla-progreso td { text-align: left; padding: 10px 5px; border-bottom: 1px solid #eee; }
+        .tabla-progreso th { color: var(--primario); font-weight: bold; }
+        .fecha-futura { color: #2980b9; font-weight: bold; }
+        .fecha-hoy { color: var(--alerta); font-weight: bold; }
+        .fecha-pasada { color: var(--peligro); font-weight: bold; }
+        .oculto { display: none !important; }
+
+        .kanban-contenedor { display: flex; gap: 15px; overflow-x: auto; padding-bottom: 10px; min-height: 400px; }
+        .kanban-columna { flex: 1; min-width: 260px; background-color: var(--fondo-kanban); border-radius: 10px; padding: 15px; display: flex; flex-direction: column; }
+        .kanban-columna h3 { text-align: center; color: var(--primario-oscuro); margin-top: 0; margin-bottom: 15px; font-size: 16px; text-transform: uppercase; letter-spacing: 1px; border-bottom: 2px solid #ddd; padding-bottom: 10px; }
+        
+        .tarea-card { background-color: white; border-radius: 8px; padding: 15px; margin-bottom: 12px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); border-left: 4px solid var(--gris); }
+        .col-por-hacer .tarea-card { border-left-color: var(--peligro); }
+        .col-en-progreso .tarea-card { border-left-color: var(--alerta); }
+        .col-terminado .tarea-card { border-left-color: var(--exito); opacity: 0.8; }
+        
+        .tarea-card h4 { margin: 0 0 5px 0; font-size: 16px; color: #2c3e50; }
+        .tarea-card p { margin: 0 0 10px 0; font-size: 13px; color: #7f8c8d; }
+        
+        .controles-kanban { display: flex; gap: 5px; margin-top: 15px; }
+        .btn-mover { flex: 1; padding: 8px; border: none; border-radius: 6px; font-size: 12px; font-weight: bold; background-color: #ecf0f1; color: #2c3e50; cursor: pointer; transition: 0.2s; display: flex; justify-content: center; align-items: center; }
+        .btn-mover:hover { background-color: #bdc3c7; }
+        .btn-mover.destacado { background-color: var(--primario); color: white; }
+        .btn-mover.destacado:hover { background-color: var(--primario-oscuro); }
+
+        .checklist { margin: 10px 0; display: flex; flex-direction: column; gap: 8px; background-color: #fcfcfc; padding: 10px; border-radius: 6px; border: 1px solid #eee; }
+        .subtarea { font-size: 13px; color: #34495e; display: flex; align-items: center; gap: 8px; cursor: pointer; transition: 0.2s; }
+        .subtarea.completada { text-decoration: line-through; color: #bdc3c7; }
+        .subtarea input[type="checkbox"] { width: 16px; height: 16px; margin: 0; cursor: pointer; }
+
+        .panel-fechas-clave { display: flex; gap: 10px; overflow-x: auto; padding: 10px 0; margin-bottom: 15px; }
+        .evento-card { min-width: 150px; background-color: #fff; border: 1px solid #ddd; border-radius: 8px; padding: 12px; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.02); position: relative; }
+        .evento-card h4 { margin: 0 0 5px 0; font-size: 14px; color: #333; }
+        .evento-tipo { font-size: 12px; text-transform: uppercase; font-weight: bold; color: #7f8c8d; display: block; margin-bottom: 5px; }
+        .evento-dias { font-size: 22px; font-weight: bold; margin: 5px 0 0 0; }
+        
+        .dias-lejos { color: var(--exito); }
+        .dias-medio { color: var(--alerta); }
+        .dias-cerca { color: var(--peligro); }
+        
+        .btn-borrar-evento { position: absolute; top: 5px; right: 5px; background: none; border: none; color: #ccc; cursor: pointer; font-size: 14px; }
+        .btn-borrar-evento:hover { color: var(--peligro); }
+
+        .form-fila { display: flex; gap: 10px; }
+        .form-fila > * { flex: 1; }
+        @media (max-width: 600px) { .form-fila { flex-direction: column; } }
+
+        .grafico-contenedor { position: relative; height: 300px; width: 100%; margin-bottom: 30px; }
+        .estadisticas-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        @media (max-width: 650px) { .estadisticas-grid { grid-template-columns: 1fr; } }
+        .resumen-numeros { display: flex; gap: 15px; margin-bottom: 25px; }
+        .caja-numero { flex: 1; background: #fff; border: 1px solid #ddd; border-radius: 8px; padding: 15px; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
+        .caja-numero h3 { margin: 0 0 5px 0; font-size: 28px; color: var(--primario); }
+        .caja-numero p { margin: 0; font-size: 12px; color: #7f8c8d; text-transform: uppercase; font-weight: bold; }
+    </style>
+
+    <script>window.MathJax = { tex: { inlineMath: [['$', '$'], ['\\(', '\\)']], displayMath: [['$$', '$$'], ['\\[', '\\]']] } };</script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+
+    <div class="contenedor">
+        
+        <div id="vistaLogin">
+            <h1 style="margin-bottom: 5px;">Mi Plan de Estudio</h1>
+            <p style="color: #7f8c8d; margin-bottom: 25px; font-size: 14px;">Iniciá sesión para sincronizar tus datos en la nube.</p>
+            <input type="email" id="loginEmail" placeholder="Tu correo electrónico">
+            <input type="password" id="loginPassword" placeholder="Contraseña (Mín. 6 caracteres)">
+            <button class="btn-principal" onclick="iniciarSesion()" style="margin-bottom: 10px;">Ingresar</button>
+            <button class="btn-principal" onclick="registrarUsuario()" style="background-color: var(--alerta);">Registrarse (Usuario Nuevo)</button>
+            <p id="loginError" style="color: var(--peligro); font-size: 13px; margin-top: 15px; display: none;"></p>
+        </div>
+
+        <div id="appPrincipal" class="oculto">
+            
+            <div class="app-header">
+                <h1 style="margin: 0;">Mi Plan de Estudio</h1>
+                <button class="btn-logout" onclick="cerrarSesion()">Cerrar Sesión</button>
+            </div>
+
+            <div class="navegacion">
+                <button class="tab-btn activo" id="btnTabRepaso" onclick="cambiarVista('repaso')">Repaso Diario</button>
+                <button class="tab-btn" id="btnTabCursada" onclick="cambiarVista('cursada')">Gestor de Cursada</button>
+                <button class="tab-btn" id="btnTabProgreso" onclick="cambiarVista('progreso')">Mi Progreso</button>
+                <button class="tab-btn" id="btnTabEstadisticas" onclick="cambiarVista('estadisticas')">Estadísticas</button>
+            </div>
+
+            <div id="vistaRepaso">
+                <div class="tarjeta">
+                    <h2>Agregar Tarjeta de Repaso</h2>
+                    <input type="text" id="inputMateria" placeholder="Materia (Ej. Electrotecnia)">
+                    <input type="text" id="inputTema" placeholder="Pregunta o Concepto">
+                    <textarea id="inputRespuesta" placeholder="Respuesta (Podés usar sintaxis LaTeX entre símbolos de $ para ecuaciones...)"></textarea>
+                    <button class="btn-principal" onclick="agregarTema()">Guardar Tarjeta</button>
+                </div>
+                <div class="tarjeta">
+                    <h2>Para Repasar Hoy</h2>
+                    <div id="listaRepasos"></div>
+                </div>
+            </div>
+
+            <div id="vistaCursada" class="oculto">
+                <div class="tarjeta" style="background-color: #f4f9fcf0; border: 1px solid #d4e6f1;">
+                    <h2>Fechas Clave (Exámenes y Entregas)</h2>
+                    <div class="form-fila">
+                        <input type="text" id="inputEventoMateria" placeholder="Materia (Ej. Cálculo Numérico)">
+                        <select id="inputEventoTipo">
+                            <option value="Parcial 1">Parcial 1</option>
+                            <option value="Parcial 2">Parcial 2</option>
+                            <option value="Entrega TP">Entrega TP</option>
+                            <option value="Final">Examen Final</option>
+                        </select>
+                        <input type="date" id="inputEventoFecha">
+                    </div>
+                    <button class="btn-principal" style="background-color: #3498db;" onclick="agregarEvento()">Registrar Fecha</button>
+                    <div id="listaEventos" class="panel-fechas-clave"></div>
+                </div>
+
+                <div class="tarjeta" style="border-left: 4px solid var(--alerta);">
+                    <h2>🎯 Foco de Hoy</h2>
+                    <p style="font-size: 13px; color: #666; margin-top: -10px;">Tu plan de acción extraído automáticamente de tus temas "En Progreso".</p>
+                    <div id="listaFocoDiario"></div>
+                </div>
+
+                <div class="tarjeta">
+                    <h2>Desglosar Programa</h2>
+                    <div class="form-fila">
+                        <input type="text" id="inputKanbanMateria" placeholder="Materia">
+                        <input type="text" id="inputKanbanUnidad" placeholder="Unidad">
+                    </div>
+                    <input type="text" id="inputKanbanTema" placeholder="Tema Específico">
+                    <button class="btn-principal" onclick="agregarTareaKanban()">Agregar al Tablero</button>
+                    <button class="btn-principal" style="background-color: var(--exito); margin-top: 10px;" onclick="autoPlanificar()">🪄 Autoplanificar Cronograma</button>
+                </div>
+
+                <div class="kanban-contenedor">
+                    <div class="kanban-columna col-por-hacer">
+                        <h3>🔴 Por Hacer</h3>
+                        <div id="listaPorHacer"></div>
+                    </div>
+                    <div class="kanban-columna col-en-progreso">
+                        <h3>⏳ En Progreso</h3>
+                        <div id="listaEnProgreso"></div>
+                    </div>
+                    <div class="kanban-columna col-terminado">
+                        <h3>✅ Terminado</h3>
+                        <div id="listaTerminado"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="vistaProgreso" class="tarjeta oculto">
+                <h2>Todos mis repasos programados</h2>
+                <div style="overflow-x: auto;">
+                    <table class="tabla-progreso">
+                        <thead>
+                            <tr>
+                                <th>Materia</th>
+                                <th>Tema</th>
+                                <th>Próximo Repaso</th>
+                                <th>Acción</th>
+                            </tr>
+                        </thead>
+                        <tbody id="cuerpoTablaProgreso"></tbody>
+                    </table>
+                </div>
+                <div class="panel-backup">
+                    <button class="btn-backup" onclick="exportarDatos()">📥 Backup Local (Exportar)</button>
+                    <button class="btn-backup" onclick="document.getElementById('inputImportar').click()">📤 Backup Local (Importar)</button>
+                    <input type="file" id="inputImportar" accept=".json" class="oculto" onchange="importarDatos(event)">
+                </div>
+            </div>
+
+            <div id="vistaEstadisticas" class="tarjeta oculto">
+                <h2>Rendimiento Global</h2>
+                <div class="resumen-numeros">
+                    <div class="caja-numero"><h3 id="statTotalTemas">0</h3><p>Temas en Programa</p></div>
+                    <div class="caja-numero"><h3 id="statTotalTarjetas">0</h3><p>Tarjetas de Repaso</p></div>
+                </div>
+                <div class="estadisticas-grid">
+                    <div><h3 style="text-align: center; color: var(--primario-oscuro); font-size: 16px;">Avance del Cuatrimestre</h3><div class="grafico-contenedor"><canvas id="chartKanban"></canvas></div></div>
+                    <div><h3 style="text-align: center; color: var(--primario-oscuro); font-size: 16px;">Salud de la Memoria</h3><div class="grafico-contenedor"><canvas id="chartRepasos"></canvas></div></div>
+                </div>
+            </div>
+
+            <div class="pomodoro-widget">
+                <div class="pomodoro-modos">
+                    <button class="btn-pomodoro activo" id="btnModoTrabajo" onclick="setModoPomodoro('trabajo')">Estudio (25m)</button>
+                    <button class="btn-pomodoro" id="btnModoCorto" onclick="setModoPomodoro('descansoCorto')">Pausa (5m)</button>
+                    <button class="btn-pomodoro" id="btnModoLargo" onclick="setModoPomodoro('descansoLargo')">Descanso (15m)</button>
+                </div>
+                <div class="pomodoro-display" id="pomodoroDisplay">25:00</div>
+                <div class="pomodoro-controles">
+                    <button class="btn-p-accion" id="btnAccionPomodoro" onclick="togglePomodoro()">▶ Iniciar</button>
+                    <button class="btn-p-reset" onclick="resetPomodoro()">🔄 Reset</button>
+                </div>
+            </div>
+
+        </div> </div> <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
+        import { getFirestore, doc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyCIXKUvH-gqs1-X6Ja2q-c22TJStySqiPM",
+            authDomain: "appestudio-ingenieria.firebaseapp.com",
+            projectId: "appestudio-ingenieria",
+            storageBucket: "appestudio-ingenieria.firebasestorage.app",
+            messagingSenderId: "463771071769",
+            appId: "1:463771071769:web:4637b16a0875e0ae948188"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        // --- BASES DE DATOS LOCALES ---
+        let baseDeDatos = []; let baseDeDatosCursada = []; let baseDeDatosEventos = [];
+        let unsubscribeNube = null; let graficoKanban = null; let graficoRepasos = null;
+
+        // --- SISTEMA DE AUTENTICACIÓN ---
+        window.registrarUsuario = function() {
+            const email = document.getElementById('loginEmail').value; const pass = document.getElementById('loginPassword').value;
+            const errorP = document.getElementById('loginError');
+            if(email === "" || pass.length < 6) { errorP.innerText = "Ingresá un correo válido y una contraseña de al menos 6 caracteres."; errorP.style.display = "block"; return; }
+            createUserWithEmailAndPassword(auth, email, pass)
+                .then((userCredential) => { migrarDatosLocalesALaNube(userCredential.user.uid); })
+                .catch((error) => { errorP.innerText = "Error: " + error.message; errorP.style.display = "block"; });
+        }
+
+        window.iniciarSesion = function() {
+            const email = document.getElementById('loginEmail').value; const pass = document.getElementById('loginPassword').value;
+            const errorP = document.getElementById('loginError');
+            signInWithEmailAndPassword(auth, email, pass).catch((error) => { errorP.innerText = "Error: Credenciales incorrectas."; errorP.style.display = "block"; });
+        }
+
+        window.cerrarSesion = function() {
+            signOut(auth).then(() => {
+                if(unsubscribeNube) unsubscribeNube();
+                baseDeDatos = []; baseDeDatosCursada = []; baseDeDatosEventos = [];
+            });
+        }
+
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                document.getElementById('vistaLogin').classList.add('oculto'); document.getElementById('appPrincipal').classList.remove('oculto');
+                unsubscribeNube = onSnapshot(doc(db, "usuarios", user.uid), (docSnap) => {
+                    if (docSnap.exists()) {
+                        const datosNube = docSnap.data();
+                        baseDeDatos = datosNube.repasos || []; baseDeDatosCursada = datosNube.cursada || []; baseDeDatosEventos = datosNube.eventos || [];
+                        actualizarTodasLasVistas();
+                    } else { migrarDatosLocalesALaNube(user.uid); }
+                });
+            } else {
+                document.getElementById('vistaLogin').classList.remove('oculto'); document.getElementById('appPrincipal').classList.add('oculto');
+            }
+        });
+
+        // --- NUEVO MOTOR DE GUARDADO CON ALERTA DE ERROR ---
+        function guardarDatosEnNube() {
+            if(auth.currentUser) {
+                setDoc(doc(db, "usuarios", auth.currentUser.uid), {
+                    repasos: baseDeDatos, cursada: baseDeDatosCursada, eventos: baseDeDatosEventos
+                }).catch((error) => {
+                    console.error("Error al guardar en Firebase:", error);
+                    alert("⚠️ Error al guardar en la nube. Revisá las Reglas de seguridad en Firebase Console.");
+                });
+            }
+        }
+
+        function migrarDatosLocalesALaNube(uid) {
+            let localRepasos = JSON.parse(localStorage.getItem('temasEstudio')) || []; let localCursada = JSON.parse(localStorage.getItem('planCursada')) || []; let localEventos = JSON.parse(localStorage.getItem('eventosCursada')) || [];
+            setDoc(doc(db, "usuarios", uid), { repasos: localRepasos, cursada: localCursada, eventos: localEventos }).then(() => {
+                localStorage.removeItem('temasEstudio'); localStorage.removeItem('planCursada'); localStorage.removeItem('eventosCursada');
+            });
+        }
+
+        function actualizarTodasLasVistas() {
+            renderizarRepasosHoy(); renderizarKanban(); renderizarEventos();
+            if(!document.getElementById('vistaProgreso').classList.contains('oculto')) renderizarProgreso();
+            if(!document.getElementById('vistaEstadisticas').classList.contains('oculto')) renderizarEstadisticas();
+        }
+
+        // --- POMODORO ---
+        let pomodoroTiempo = 25 * 60; let pomodoroIntervalo = null; let pomodoroCorriendo = false; let modoPomodoroActual = 'trabajo';
+        const tiemposModos = { trabajo: 25 * 60, descansoCorto: 5 * 60, descansoLargo: 15 * 60 };
+        function actualizarDisplayPomodoro() { const minutos = Math.floor(pomodoroTiempo / 60); const segundos = pomodoroTiempo % 60; document.getElementById('pomodoroDisplay').innerText = `${minutos.toString().padStart(2, '0')}:${segundos.toString().padStart(2, '0')}`; }
+        window.setModoPomodoro = function(modo) { window.pausarPomodoro(); modoPomodoroActual = modo; pomodoroTiempo = tiemposModos[modo]; actualizarDisplayPomodoro(); document.getElementById('btnModoTrabajo').classList.remove('activo'); document.getElementById('btnModoCorto').classList.remove('activo'); document.getElementById('btnModoLargo').classList.remove('activo'); if (modo === 'trabajo') document.getElementById('btnModoTrabajo').classList.add('activo'); if (modo === 'descansoCorto') document.getElementById('btnModoCorto').classList.add('activo'); if (modo === 'descansoLargo') document.getElementById('btnModoLargo').classList.add('activo'); }
+        window.togglePomodoro = function() { pomodoroCorriendo ? window.pausarPomodoro() : window.iniciarPomodoro(); }
+        window.iniciarPomodoro = function() { pomodoroCorriendo = true; document.getElementById('btnAccionPomodoro').innerText = "⏸ Pausar"; document.getElementById('btnAccionPomodoro').style.backgroundColor = "var(--alerta)"; pomodoroIntervalo = setInterval(() => { if (pomodoroTiempo > 0) { pomodoroTiempo--; actualizarDisplayPomodoro(); } else { window.pausarPomodoro(); alert("¡Tiempo finalizado! Es hora de cambiar la actividad."); } }, 1000); }
+        window.pausarPomodoro = function() { pomodoroCorriendo = false; clearInterval(pomodoroIntervalo); document.getElementById('btnAccionPomodoro').innerText = "▶ Iniciar"; document.getElementById('btnAccionPomodoro').style.backgroundColor = "var(--exito)"; }
+        window.resetPomodoro = function() { window.setModoPomodoro(modoPomodoroActual); }
+        actualizarDisplayPomodoro();
+
+        // --- UTILIDADES ---
+        function obtenerFechaHoy() { const hoy = new Date(); hoy.setMinutes(hoy.getMinutes() - hoy.getTimezoneOffset()); return hoy.toISOString().split('T')[0]; }
+        function calcularProximaFecha(diasASumar) { const fecha = new Date(); fecha.setDate(fecha.getDate() + diasASumar); fecha.setMinutes(fecha.getMinutes() - fecha.getTimezoneOffset()); return fecha.toISOString().split('T')[0]; }
+
+        window.cambiarVista = function(vistaDestino) {
+            document.getElementById('vistaRepaso').classList.add('oculto'); document.getElementById('vistaCursada').classList.add('oculto'); document.getElementById('vistaProgreso').classList.add('oculto'); document.getElementById('vistaEstadisticas').classList.add('oculto');
+            document.getElementById('btnTabRepaso').classList.remove('activo'); document.getElementById('btnTabCursada').classList.remove('activo'); document.getElementById('btnTabProgreso').classList.remove('activo'); document.getElementById('btnTabEstadisticas').classList.remove('activo');
+
+            if (vistaDestino === 'repaso') { document.getElementById('vistaRepaso').classList.remove('oculto'); document.getElementById('btnTabRepaso').classList.add('activo'); renderizarRepasosHoy(); } 
+            else if (vistaDestino === 'cursada') { document.getElementById('vistaCursada').classList.remove('oculto'); document.getElementById('btnTabCursada').classList.add('activo'); renderizarEventos(); renderizarKanban(); } 
+            else if (vistaDestino === 'progreso') { document.getElementById('vistaProgreso').classList.remove('oculto'); document.getElementById('btnTabProgreso').classList.add('activo'); renderizarProgreso(); } 
+            else if (vistaDestino === 'estadisticas') { document.getElementById('vistaEstadisticas').classList.remove('oculto'); document.getElementById('btnTabEstadisticas').classList.add('activo'); renderizarEstadisticas(); }
+        }
+
+        window.irACrearFlashcards = function(materia, tema) { window.cambiarVista('repaso'); document.getElementById('inputMateria').value = materia; document.getElementById('inputTema').value = tema; document.getElementById('inputRespuesta').focus(); }
+
+        // --- EVENTOS (CORREGIDOS PARA MOSTRAR AL INSTANTE) ---
+        window.agregarEvento = function() {
+            const materia = document.getElementById('inputEventoMateria').value.trim(); const tipo = document.getElementById('inputEventoTipo').value; const fecha = document.getElementById('inputEventoFecha').value;
+            if (materia === "" || fecha === "") { alert("Por favor, ingresá materia y fecha."); return; }
+            
+            baseDeDatosEventos.push({ id: Date.now(), materia: materia, tipo: tipo, fecha: fecha });
+            renderizarEventos(); // Solución al problema de visualización
+            guardarDatosEnNube(); 
+            
+            document.getElementById('inputEventoMateria').value = ''; document.getElementById('inputEventoFecha').value = '';
+        }
+        window.borrarEvento = function(idEvento) {
+            if (confirm("¿Borrar esta fecha clave?")) { 
+                baseDeDatosEventos = baseDeDatosEventos.filter(e => e.id !== idEvento); 
+                renderizarEventos(); // Solución al problema de visualización
+                guardarDatosEnNube(); 
+            }
+        }
+
+        function renderizarEventos() {
+            const contenedor = document.getElementById('listaEventos'); contenedor.innerHTML = '';
+            if (baseDeDatosEventos.length === 0) { contenedor.innerHTML = '<p class="mensaje-vacio" style="width: 100%;">No hay exámenes ni entregas registradas.</p>'; return; }
+            const eventosOrdenados = [...baseDeDatosEventos].sort((a, b) => new Date(a.fecha) - new Date(b.fecha));
+            const hoy = new Date(); hoy.setHours(0,0,0,0);
+            eventosOrdenados.forEach(evento => {
+                const fechaEvento = new Date(evento.fecha); fechaEvento.setMinutes(fechaEvento.getMinutes() + fechaEvento.getTimezoneOffset());
+                const diasRestantes = Math.ceil((fechaEvento.getTime() - hoy.getTime()) / (1000 * 3600 * 24));
+                let colorClase = 'dias-lejos'; let textoDias = `Faltan ${diasRestantes} días`;
+                if (diasRestantes < 0) { colorClase = ''; textoDias = 'Ya pasó'; } else if (diasRestantes === 0) { colorClase = 'dias-cerca'; textoDias = '¡Es HOY!'; } else if (diasRestantes <= 7) { colorClase = 'dias-cerca'; } else if (diasRestantes <= 15) { colorClase = 'dias-medio'; }
+                const partesFecha = evento.fecha.split('-'); const fechaLegible = `${partesFecha[2]}/${partesFecha[1]}/${partesFecha[0]}`;
+                const div = document.createElement('div'); div.className = 'evento-card';
+                div.innerHTML = `<button class="btn-borrar-evento" onclick="borrarEvento(${evento.id})">✖</button><span class="evento-tipo">${evento.tipo}</span><h4>${evento.materia}</h4><span style="font-size: 11px; color: #999;">${fechaLegible}</span><p class="evento-dias ${colorClase}">${textoDias}</p>`;
+                contenedor.appendChild(div);
+            });
+        }
+
+        // --- GESTOR DE CURSADA (CORREGIDO PARA MOSTRAR AL INSTANTE) ---
+        window.agregarTareaKanban = function() {
+            const materia = document.getElementById('inputKanbanMateria').value.trim(); const unidad = document.getElementById('inputKanbanUnidad').value.trim(); const tema = document.getElementById('inputKanbanTema').value.trim();
+            if (materia === "" || tema === "") { alert("Ingresá Materia y Tema."); return; }
+            baseDeDatosCursada.push({
+                id: Date.now(), materia: materia, unidad: unidad, tema: tema, estado: "por_hacer", fecha_objetivo: null,
+                subtareas: [ { id: 1, nombre: "Lectura de Teoría", completada: false }, { id: 2, nombre: "Resolución de TP", completada: false }, { id: 3, nombre: "Resumen / Apuntes", completada: false }, { id: 4, nombre: "Crear Flashcards", completada: false } ]
+            });
+            
+            renderizarKanban(); // Solución al problema de visualización
+            guardarDatosEnNube(); 
+            document.getElementById('inputKanbanUnidad').value = ''; document.getElementById('inputKanbanTema').value = '';
+        }
+
+        window.cambiarEstadoTarea = function(idTarea, nuevoEstado) {
+            const index = baseDeDatosCursada.findIndex(t => t.id === idTarea);
+            if (index !== -1) { 
+                baseDeDatosCursada[index].estado = nuevoEstado; 
+                renderizarKanban(); 
+                guardarDatosEnNube(); 
+            }
+        }
+
+        window.toggleSubtarea = function(idTarea, indexSubtarea) {
+            const indexTarea = baseDeDatosCursada.findIndex(t => t.id === idTarea);
+            if (indexTarea !== -1) {
+                baseDeDatosCursada[indexTarea].subtareas[indexSubtarea].completada = !baseDeDatosCursada[indexTarea].subtareas[indexSubtarea].completada;
+                renderizarKanban();
+                guardarDatosEnNube();
+            }
+        }
+
+        window.borrarTareaKanban = function(idTarea) {
+            if (confirm("¿Borrar este tema del programa?")) { 
+                baseDeDatosCursada = baseDeDatosCursada.filter(t => t.id !== idTarea); 
+                renderizarKanban();
+                guardarDatosEnNube(); 
+            }
+        }
+
+        window.autoPlanificar = function() {
+            const hoy = new Date(); hoy.setHours(0,0,0,0); let materiasModificadas = 0;
+            const materiasUnicas = [...new Set(baseDeDatosCursada.map(t => t.materia))];
+            materiasUnicas.forEach(materia => {
+                const eventosMateria = baseDeDatosEventos.filter(e => e.materia.toLowerCase().trim() === materia.toLowerCase().trim()).sort((a, b) => new Date(a.fecha) - new Date(b.fecha));
+                const proximoEvento = eventosMateria.find(e => new Date(e.fecha) >= hoy);
+                if (proximoEvento) {
+                    const fechaExamen = new Date(proximoEvento.fecha); fechaExamen.setMinutes(fechaExamen.getMinutes() + fechaExamen.getTimezoneOffset());
+                    const tareasPendientes = baseDeDatosCursada.filter(t => t.materia === materia && t.estado === 'por_hacer');
+                    if (tareasPendientes.length > 0) {
+                        materiasModificadas++;
+                        const diasTotales = Math.ceil((fechaExamen.getTime() - hoy.getTime()) / (1000 * 3600 * 24));
+                        const diasDisponibles = Math.max(1, diasTotales - 2); 
+                        const intervaloDias = Math.floor(diasDisponibles / tareasPendientes.length);
+                        tareasPendientes.forEach((tarea, index) => {
+                            const diasASumar = (index) * Math.max(1, intervaloDias);
+                            const fechaObj = new Date(hoy); fechaObj.setDate(fechaObj.getDate() + diasASumar);
+                            const indexReal = baseDeDatosCursada.findIndex(t => t.id === tarea.id);
+                            baseDeDatosCursada[indexReal].fecha_objetivo = fechaObj.toISOString().split('T')[0];
+                            const diasParaObjetivo = Math.ceil((fechaObj.getTime() - hoy.getTime()) / (1000 * 3600 * 24));
+                            if (diasParaObjetivo <= 3) { baseDeDatosCursada[indexReal].estado = 'en_progreso'; }
+                        });
+                    }
+                }
+            });
+            if (materiasModificadas > 0) { 
+                renderizarKanban();
+                guardarDatosEnNube(); 
+                alert("¡Cronograma generado! Tareas distribuidas."); 
+            } else { alert("No se encontraron coincidencias o no hay temas 'Por Hacer'."); }
+        }
+
+        function renderizarFocoDiario() {
+            const contenedor = document.getElementById('listaFocoDiario'); contenedor.innerHTML = ''; 
+            const enProgreso = baseDeDatosCursada.filter(t => t.estado === 'en_progreso');
+            if (enProgreso.length === 0) { contenedor.innerHTML = '<p class="mensaje-vacio">No tenés temas "En Progreso".</p>'; return; }
+            let hayTareasPendientes = false;
+
+            enProgreso.forEach(tarea => {
+                const subtareasPendientes = tarea.subtareas.filter(s => !s.completada);
+                const crearFlashcardsSub = tarea.subtareas.find(s => s.nombre === "Crear Flashcards");
+                const mostarBotonFlashcards = (crearFlashcardsSub && crearFlashcardsSub.completada);
+                
+                if (subtareasPendientes.length > 0 || mostarBotonFlashcards) {
+                    hayTareasPendientes = true;
+                    const div = document.createElement('div'); div.style.marginBottom = '12px'; div.style.padding = '12px'; div.style.backgroundColor = '#fdfdfd'; div.style.border = '1px solid #eee'; div.style.borderRadius = '8px';
+                    let htmlSubtareas = '';
+                    tarea.subtareas.forEach((sub, index) => {
+                        if (!sub.completada) { htmlSubtareas += `<label class="subtarea" style="margin-top: 8px;"><input type="checkbox" onchange="toggleSubtarea(${tarea.id}, ${index})"> ${sub.nombre}</label>`; }
+                    });
+                    let btnPuente = '';
+                    if (mostarBotonFlashcards) { btnPuente = `<button class="btn-principal" style="padding: 8px; font-size: 13px; margin-top: 10px; background-color: var(--alerta);" onclick="irACrearFlashcards('${tarea.materia}', '${tarea.tema}')">🪄 Generar Tarjetas en Repaso</button>`; }
+                    const textoUnidad = tarea.unidad ? `${tarea.unidad} - ` : '';
+                    div.innerHTML = `<strong style="color: var(--primario-oscuro); font-size: 15px; display: block; border-bottom: 1px solid #eee; padding-bottom: 5px; margin-bottom: 5px;">${tarea.materia}</strong><span style="font-size: 14px; font-weight: 500; color: #2c3e50;">${textoUnidad}${tarea.tema}</span>${htmlSubtareas} ${btnPuente}`;
+                    contenedor.appendChild(div);
+                }
+            });
+            if (!hayTareasPendientes) contenedor.innerHTML = '<p class="mensaje-vacio">¡Completaste todas las subtareas!</p>';
+        }
+
+        function renderizarKanban() {
+            const colPorHacer = document.getElementById('listaPorHacer'); const colEnProgreso = document.getElementById('listaEnProgreso'); const colTerminado = document.getElementById('listaTerminado');
+            colPorHacer.innerHTML = ''; colEnProgreso.innerHTML = ''; colTerminado.innerHTML = '';
+            baseDeDatosCursada.forEach(tarea => {
+                const div = document.createElement('div'); div.className = 'tarea-card'; const textoUnidad = tarea.unidad ? `${tarea.unidad} - ` : '';
+                let htmlChecklist = '';
+                if (tarea.subtareas && tarea.subtareas.length > 0) {
+                    htmlChecklist = '<div class="checklist">';
+                    tarea.subtareas.forEach((sub, index) => {
+                        const claseCompletada = sub.completada ? 'completada' : ''; const inputChecked = sub.completada ? 'checked' : '';
+                        htmlChecklist += `<label class="subtarea ${claseCompletada}"><input type="checkbox" onchange="toggleSubtarea(${tarea.id}, ${index})" ${inputChecked}> ${sub.nombre}</label>`;
+                    });
+                    htmlChecklist += '</div>';
+                }
+                let htmlFechaObj = '';
+                if (tarea.fecha_objetivo) { const partes = tarea.fecha_objetivo.split('-'); htmlFechaObj = `<div style="font-size: 11px; color: var(--alerta); margin-bottom: 8px; font-weight: bold; background: #fdf2e9; display: inline-block; padding: 2px 6px; border-radius: 4px;">📅 Objetivo: ${partes[2]}/${partes[1]}</div>`; }
+
+                let botonesDireccionales = '<div class="controles-kanban">';
+                if (tarea.estado === 'por_hacer') { botonesDireccionales += `<button class="btn-mover destacado" style="flex: 1;" onclick="cambiarEstadoTarea(${tarea.id}, 'en_progreso')">Comenzar ➡️</button>`; } 
+                else if (tarea.estado === 'en_progreso') { botonesDireccionales += `<button class="btn-mover" onclick="cambiarEstadoTarea(${tarea.id}, 'por_hacer')">⬅️ Volver</button><button class="btn-mover destacado" onclick="cambiarEstadoTarea(${tarea.id}, 'terminado')">Terminar ➡️</button>`; } 
+                else if (tarea.estado === 'terminado') { botonesDireccionales += `<button class="btn-mover" style="flex: 1;" onclick="cambiarEstadoTarea(${tarea.id}, 'en_progreso')">⬅️ Regresar a Progreso</button>`; }
+                botonesDireccionales += `</div>`;
+
+                div.innerHTML = `<button class="btn-borrar-evento" style="top: 15px; right: 15px;" onclick="borrarTareaKanban(${tarea.id})">✖</button><p style="margin-right: 20px;"><strong>${tarea.materia}</strong></p>${htmlFechaObj}<h4>${textoUnidad}${tarea.tema}</h4>${htmlChecklist} ${botonesDireccionales}`;
+                if (tarea.estado === 'por_hacer') colPorHacer.appendChild(div); else if (tarea.estado === 'en_progreso') colEnProgreso.appendChild(div); else if (tarea.estado === 'terminado') colTerminado.appendChild(div);
+            });
+            renderizarFocoDiario();
+        }
+
+        // --- REPASO ESPACIADO ---
+        window.agregarTema = function() {
+            const inputMateria = document.getElementById('inputMateria').value.trim(); const inputTema = document.getElementById('inputTema').value.trim(); const inputRespuesta = document.getElementById('inputRespuesta').value.trim();
+            if (inputMateria === "" || inputTema === "") { alert("Completá Materia y Concepto."); return; }
+            baseDeDatos.push({ id: Date.now(), materia: inputMateria, titulo: inputTema, respuesta: inputRespuesta, n: 0, ef: 2.5, intervalo: 1, fechaProximoRepaso: calcularProximaFecha(1) });
+            
+            renderizarRepasosHoy(); 
+            guardarDatosEnNube(); 
+            document.getElementById('inputMateria').value = ''; document.getElementById('inputTema').value = ''; document.getElementById('inputRespuesta').value = ''; alert("Tarjeta guardada.");
+        }
+
+        window.procesarRepaso = function(idTema, calidad) {
+            const index = baseDeDatos.findIndex(tema => tema.id === idTema); let tema = baseDeDatos[index];
+            if (calidad < 3) { tema.n = 0; tema.intervalo = 1; } 
+            else { if (tema.n === 0) tema.intervalo = 1; else if (tema.n === 1) tema.intervalo = 6; else tema.intervalo = Math.round(tema.intervalo * tema.ef); tema.n += 1; }
+            tema.ef = Math.max(1.3, tema.ef + (0.1 - (5 - calidad) * (0.08 + (5 - calidad) * 0.02)));
+            tema.fechaProximoRepaso = calcularProximaFecha(tema.intervalo); baseDeDatos[index] = tema; 
+            
+            renderizarRepasosHoy();
+            guardarDatosEnNube(); 
+        }
+
+        window.eliminarTema = function(idTema) {
+            if (confirm("¿Borrar esta tarjeta?")) { 
+                baseDeDatos = baseDeDatos.filter(tema => tema.id !== idTema); 
+                renderizarProgreso(); 
+                renderizarRepasosHoy();
+                guardarDatosEnNube(); 
+            }
+        }
+
+        // Funciones del backup manual local
+        window.exportarDatos = function() {
+            const datosCompletos = { repasos: baseDeDatos, cursada: baseDeDatosCursada, eventos: baseDeDatosEventos };
+            const url = URL.createObjectURL(new Blob([JSON.stringify(datosCompletos)], { type: 'application/json' }));
+            const link = document.createElement('a'); link.href = url; link.download = 'app_estudio_backup.json'; document.body.appendChild(link); link.click(); document.body.removeChild(link); URL.revokeObjectURL(url);
+        }
+        window.importarDatos = function(event) {
+            const archivo = event.target.files[0]; if (!archivo) return;
+            if (!confirm("⚠️ Importar un backup pisará los datos en la NUBE. ¿Continuar?")) { event.target.value = ''; return; }
+            const lector = new FileReader();
+            lector.onload = function(e) {
+                try {
+                    const datosImportados = JSON.parse(e.target.result);
+                    if (datosImportados.repasos) { baseDeDatos = datosImportados.repasos; baseDeDatosCursada = datosImportados.cursada || []; baseDeDatosEventos = datosImportados.eventos || []; } 
+                    else if (Array.isArray(datosImportados)) { baseDeDatos = datosImportados; }
+                    guardarDatosEnNube(); alert("¡Backup restaurado y subido a la nube!");
+                } catch (error) { alert("Error al leer el archivo JSON."); }
+            };
+            lector.readAsText(archivo); event.target.value = ''; 
+        }
+
+        window.mostrarRespuesta = function(idTema) {
+            document.getElementById(`btn-revelar-${idTema}`).classList.add('oculto'); document.getElementById(`respuesta-${idTema}`).classList.remove('oculto'); document.getElementById(`botones-${idTema}`).classList.remove('oculto');
+        }
+
+        function renderizarRepasosHoy() {
+            const contenedor = document.getElementById('listaRepasos'); contenedor.innerHTML = ''; 
+            const fechaHoy = obtenerFechaHoy(); const temasPendientes = baseDeDatos.filter(tema => tema.fechaProximoRepaso <= fechaHoy);
+
+            if (temasPendientes.length === 0) { contenedor.innerHTML = '<p class="mensaje-vacio">¡Todo al día! No hay tarjetas para repasar hoy.</p>'; return; }
+
+            temasPendientes.forEach(tema => {
+                const div = document.createElement('div'); div.className = 'item-repaso';
+                const textoRespuesta = tema.respuesta ? tema.respuesta : "<i>(No se agregó respuesta)</i>";
+                div.innerHTML = `
+                    <p><strong>${tema.materia}</strong></p>
+                    <h3>${tema.titulo}</h3>
+                    <button id="btn-revelar-${tema.id}" class="btn-principal btn-revelar" onclick="mostrarRespuesta(${tema.id})">Ver Respuesta</button>
+                    <div id="respuesta-${tema.id}" class="texto-respuesta oculto">${textoRespuesta}</div>
+                    <div id="botones-${tema.id}" class="botones-calificacion oculto">
+                        <button class="btn-calificar btn-dificil" onclick="procesarRepaso(${tema.id}, 3)">Difícil</button>
+                        <button class="btn-calificar btn-normal" onclick="procesarRepaso(${tema.id}, 4)">Normal</button>
+                        <button class="btn-calificar btn-facil" onclick="procesarRepaso(${tema.id}, 5)">Fácil</button>
+                    </div>
+                `;
+                contenedor.appendChild(div);
+            });
+
+            if (window.MathJax) MathJax.typesetPromise([contenedor]).catch(err => console.log('Error en MathJax: ' + err.message));
+        }
+
+        function renderizarProgreso() {
+            const cuerpoTabla = document.getElementById('cuerpoTablaProgreso'); cuerpoTabla.innerHTML = ''; 
+            if (baseDeDatos.length === 0) { cuerpoTabla.innerHTML = '<tr><td colspan="4" class="mensaje-vacio">Sin tarjetas.</td></tr>'; return; }
+            const temasOrdenados = [...baseDeDatos].sort((a, b) => new Date(a.fechaProximoRepaso) - new Date(b.fechaProximoRepaso)); const fechaHoy = obtenerFechaHoy();
+            temasOrdenados.forEach(tema => {
+                const tr = document.createElement('tr'); const partesFecha = tema.fechaProximoRepaso.split('-'); const fechaFormateada = `${partesFecha[2]}/${partesFecha[1]}/${partesFecha[0]}`;
+                let claseFecha = 'fecha-futura'; let textoFecha = fechaFormateada;
+                if (tema.fechaProximoRepaso < fechaHoy) { claseFecha = 'fecha-pasada'; textoFecha += ' (Atrasado)'; } else if (tema.fechaProximoRepaso === fechaHoy) { claseFecha = 'fecha-hoy'; textoFecha = 'Hoy'; }
+                tr.innerHTML = `<td>${tema.materia}</td><td>${tema.titulo}</td><td class="${claseFecha}">${textoFecha}</td><td><button class="btn-eliminar" onclick="eliminarTema(${tema.id})">Borrar</button></td>`;
+                cuerpoTabla.appendChild(tr);
+            });
+        }
+
+        function renderizarEstadisticas() {
+            document.getElementById('statTotalTemas').innerText = baseDeDatosCursada.length; document.getElementById('statTotalTarjetas').innerText = baseDeDatos.length;
+            const countPorHacer = baseDeDatosCursada.filter(t => t.estado === 'por_hacer').length; const countEnProgreso = baseDeDatosCursada.filter(t => t.estado === 'en_progreso').length; const countTerminado = baseDeDatosCursada.filter(t => t.estado === 'terminado').length;
+            const fechaHoy = obtenerFechaHoy(); const countAtrasados = baseDeDatos.filter(t => t.fechaProximoRepaso < fechaHoy).length; const countHoy = baseDeDatos.filter(t => t.fechaProximoRepaso === fechaHoy).length; const countFuturos = baseDeDatos.filter(t => t.fechaProximoRepaso > fechaHoy).length;
+
+            if (graficoKanban) graficoKanban.destroy(); if (graficoRepasos) graficoRepasos.destroy();
+
+            const ctxKanban = document.getElementById('chartKanban').getContext('2d');
+            graficoKanban = new Chart(ctxKanban, { type: 'doughnut', data: { labels: ['Por Hacer', 'En Progreso', 'Terminado'], datasets: [{ data: [countPorHacer, countEnProgreso, countTerminado], backgroundColor: ['#E74C3C', '#F39C12', '#2ECC71'], borderWidth: 0 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } } } });
+            const ctxRepasos = document.getElementById('chartRepasos').getContext('2d');
+            graficoRepasos = new Chart(ctxRepasos, { type: 'bar', data: { labels: ['Atrasados', 'Para Hoy', 'Futuros'], datasets: [{ label: 'Tarjetas', data: [countAtrasados, countHoy, countFuturos], backgroundColor: ['#E74C3C', '#F39C12', '#4A90E2'], borderRadius: 6 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } } } });
+        }
+
+        if ('serviceWorker' in navigator) { window.addEventListener('load', () => { navigator.serviceWorker.register('./service-worker.js').catch(err => console.log('Fallo SW:', err)); }); }
+    </script>
+</body>
+</html>
