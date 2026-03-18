@@ -1,6 +1,6 @@
 {
-  "name": "App de Repaso Espaciado",
-  "short_name": "Repaso",
+  "name": "App Estudio",
+  "short_name": "App Estudio",
   "start_url": "./index.html",
   "display": "standalone",
   "background_color": "#F4F7F6",
