@@ -48,6 +48,7 @@
             .subtarea.completada { color: #666 !important; }
             .panel-backup { border-top-color: #333 !important; }
             .btn-backup { border-color: #555 !important; color: #CCC !important; }
+            .etiqueta-pill { background-color: var(--primario-oscuro) !important; color: #FFF !important; }
         }
 
         /* --- DISEÑO VISUAL GENERAL --- */
@@ -75,14 +76,20 @@
         .btn-principal:active:not(:disabled) { opacity: 0.8; }
         .btn-revelar { background-color: var(--secundario); margin-bottom: 15px; }
 
-        .panel-backup { display: flex; gap: 10px; margin-top: 20px; padding-top: 15px; border-top: 1px solid var(--borde); }
-        .btn-backup { flex: 1; padding: 10px; border: 2px solid var(--secundario); border-radius: 8px; background: transparent; color: var(--texto); font-weight: bold; cursor: pointer; transition: 0.2s; }
+        .panel-backup { display: flex; gap: 10px; margin-top: 20px; padding-top: 15px; border-top: 1px solid var(--borde); flex-wrap: wrap; }
+        .btn-backup { flex: 1; min-width: 140px; padding: 10px; border: 2px solid var(--secundario); border-radius: 8px; background: transparent; color: var(--texto); font-weight: bold; cursor: pointer; transition: 0.2s; }
         .btn-backup:active { background-color: var(--secundario); color: white; }
+
+        /* --- NUEVO: ETIQUETAS (TAGS) --- */
+        .etiqueta-pill { display: inline-block; background-color: var(--primario); color: white; padding: 3px 10px; border-radius: 12px; font-size: 11px; font-weight: bold; margin-right: 5px; margin-top: 5px; letter-spacing: 0.5px; text-transform: uppercase; }
+        .filtro-contenedor { display: flex; align-items: center; gap: 10px; margin-bottom: 15px; background-color: var(--fondo-kanban); padding: 10px; border-radius: 8px; }
+        .filtro-contenedor label { font-size: 13px; font-weight: bold; color: var(--primario-oscuro); white-space: nowrap; }
+        .filtro-contenedor select { margin-bottom: 0; padding: 8px; font-size: 14px; }
 
         /* REPASO */
         .item-repaso { border-left: 4px solid var(--primario); background-color: #f9f9f9; padding: 15px; margin-bottom: 15px; border-radius: 0 8px 8px 0; }
         .item-repaso h3 { margin: 0 0 5px 0; font-size: 18px; display: flex; align-items: center; justify-content: space-between; }
-        .item-repaso p { margin: 0 0 10px 0; font-size: 14px; color: #666; }
+        .item-repaso p { margin: 0 0 5px 0; font-size: 14px; color: #666; }
         .texto-respuesta { margin: 0 0 15px 0; padding: 15px; background-color: #ecf0f1; border-radius: 8px; border-left: 4px solid var(--alerta); font-size: 15px; white-space: pre-wrap; color: #2c3e50; overflow-x: auto; }
         .botones-calificacion { display: flex; gap: 10px; }
         .btn-calificar { flex: 1; padding: 10px; border: none; border-radius: 6px; color: white; font-weight: bold; cursor: pointer; }
@@ -159,6 +166,17 @@
         .btn-p-accion { flex: 2; padding: 12px; border: none; border-radius: 8px; font-size: 16px; font-weight: bold; color: white; background-color: var(--exito); cursor: pointer; }
         .btn-p-reset { flex: 1; padding: 12px; border: none; border-radius: 8px; font-size: 16px; font-weight: bold; color: white; background-color: transparent; border: 2px solid #7f8c8d; cursor: pointer; }
         .btn-p-accion:active, .btn-p-reset:active { opacity: 0.8; }
+
+        /* --- IMPRESIÓN A PDF (MACHETE) --- */
+        @media print {
+            body * { display: none !important; }
+            #zonaImpresion, #zonaImpresion * { display: block !important; }
+            #zonaImpresion { position: absolute; left: 0; top: 0; width: 100%; padding: 0; margin: 0; background: white; color: black; font-family: 'Segoe UI', sans-serif; }
+            .machete-item { margin-bottom: 12px; page-break-inside: avoid; border-bottom: 1px solid #ccc; padding-bottom: 8px; }
+            .machete-pregunta { font-weight: bold; font-size: 16px; margin: 0 0 5px 0; color: #2c3e50; }
+            .machete-respuesta { font-size: 14px; margin: 0; }
+            .machete-img { max-width: 300px; max-height: 200px; display: block; margin-top: 5px; border-radius: 4px; }
+        }
     </style>
 
     <script>window.MathJax = { tex: { inlineMath: [['$', '$'], ['\\(', '\\)']], displayMath: [['$$', '$$'], ['\\[', '\\]']] } };</script>
@@ -182,7 +200,7 @@
         <div id="appPrincipal" class="oculto">
             
             <div class="app-header">
-    		<h1 style="margin: 0;">Mi Plan de Estudio</h1>
+                <h1 style="margin: 0;">Mi Plan de Estudio</h1>
             </div>
 
             <div id="vistaRepaso">
@@ -192,13 +210,17 @@
                     <input type="text" id="inputTema" placeholder="Pregunta o Concepto">
                     <textarea id="inputRespuesta" placeholder="Respuesta (Podés usar LaTeX entre símbolos de $ para ecuaciones...)"></textarea>
                     
-                    <label style="font-size: 13px; color: #7f8c8d; font-weight: bold; margin-bottom: 5px; display: block;">Adjuntar imagen o gráfico (Opcional):</label>
+                    <input type="text" id="inputEtiquetas" placeholder="Etiquetas separadas por coma (Ej: Fórmulas, Final, Unidad 1)">
+                    
+                    <label style="font-size: 13px; color: #7f8c8d; font-weight: bold; margin-bottom: 5px; margin-top: 5px; display: block;">Adjuntar imagen o gráfico (Opcional):</label>
                     <input type="file" id="inputImagen" accept="image/*" style="margin-bottom: 15px;">
                     
                     <button class="btn-principal" id="btnGuardarTarjeta" onclick="agregarTema()">Guardar Tarjeta</button>
                 </div>
+                
                 <div class="tarjeta">
                     <h2>Para Repasar Hoy</h2>
+                    <div id="contenedorFiltro"></div>
                     <div id="listaRepasos"></div>
                 </div>
             </div>
@@ -209,22 +231,22 @@
                     <div class="form-fila">
                         <input type="text" id="inputEventoMateria" placeholder="Materia (Ej. Cálculo Numérico)">
                         <select id="inputEventoTipo">
-    				<option value="Parcial 1">Parcial 1</option>
-    				<option value="Parcial 2">Parcial 2</option>
-    				<option value="Parcial 3">Parcial 3</option>
-    				<option value="Entrega TP 1">Entrega TP N°1</option>
-    				<option value="Entrega TP 2">Entrega TP N°2</option>
-    				<option value="Entrega TP 3">Entrega TP N°3</option>
-    				<option value="Entrega TP 4">Entrega TP N°4</option>
-    				<option value="Entrega TP 5">Entrega TP N°5</option>
-    				<option value="Entrega TP 6">Entrega TP N°6</option>
-    				<option value="Entrega TP 7">Entrega TP N°7</option>
-    				<option value="Entrega TP 8">Entrega TP N°8</option>
-    				<option value="Entrega TP 9">Entrega TP N°9</option>
-    				<option value="Entrega TP 10">Entrega TP N°10</option>
-    				<option value="Entrega TFI">Entrega TFI (Integrador)</option>
-    				<option value="Final">Examen Final</option>
-			</select>
+                            <option value="Parcial 1">Parcial 1</option>
+                            <option value="Parcial 2">Parcial 2</option>
+                            <option value="Parcial 3">Parcial 3</option>
+                            <option value="Entrega TP 1">Entrega TP N°1</option>
+                            <option value="Entrega TP 2">Entrega TP N°2</option>
+                            <option value="Entrega TP 3">Entrega TP N°3</option>
+                            <option value="Entrega TP 4">Entrega TP N°4</option>
+                            <option value="Entrega TP 5">Entrega TP N°5</option>
+                            <option value="Entrega TP 6">Entrega TP N°6</option>
+                            <option value="Entrega TP 7">Entrega TP N°7</option>
+                            <option value="Entrega TP 8">Entrega TP N°8</option>
+                            <option value="Entrega TP 9">Entrega TP N°9</option>
+                            <option value="Entrega TP 10">Entrega TP N°10</option>
+                            <option value="Entrega TFI">Entrega TFI (Integrador)</option>
+                            <option value="Final">Examen Final</option>
+                        </select>
                         <input type="date" id="inputEventoFecha">
                     </div>
                     <button class="btn-principal" style="background-color: #3498db;" onclick="agregarEvento()">Registrar Fecha</button>
@@ -282,6 +304,7 @@
                 <div class="panel-backup">
                     <button class="btn-backup" onclick="exportarDatos()">📥 Backup Local (Exportar)</button>
                     <button class="btn-backup" onclick="document.getElementById('inputImportar').click()">📤 Backup Local (Importar)</button>
+                    <button class="btn-backup" style="border-color: var(--primario); color: var(--primario);" onclick="imprimirMachete()">🖨️ Generar Machete PDF</button>
                     <input type="file" id="inputImportar" accept=".json" class="oculto" onchange="importarDatos(event)">
                 </div>
             </div>
@@ -295,6 +318,14 @@
                 <div class="estadisticas-grid">
                     <div><h3 style="text-align: center; color: var(--primario-oscuro); font-size: 16px;">Avance del Cuatrimestre</h3><div class="grafico-contenedor"><canvas id="chartKanban"></canvas></div></div>
                     <div><h3 style="text-align: center; color: var(--primario-oscuro); font-size: 16px;">Salud de la Memoria</h3><div class="grafico-contenedor"><canvas id="chartRepasos"></canvas></div></div>
+                </div>
+                
+                <div style="margin-top: 30px;">
+                    <h3 style="text-align: center; color: var(--primario-oscuro); font-size: 16px;">Proyección: Curva del Olvido (7 Días)</h3>
+                    <p style="text-align: center; font-size: 12px; color: #7f8c8d; margin-top: -10px;">Si no repasás, así caerá tu memoria base a tu rendimiento actual.</p>
+                    <div class="grafico-contenedor" style="height: 220px;">
+                        <canvas id="chartOlvido"></canvas>
+                    </div>
                 </div>
             </div>
 
@@ -312,30 +343,34 @@
             </div>
 
             <div class="navegacion">
-    		<button class="tab-btn activo" id="btnTabRepaso" onclick="cambiarVista('repaso')">
-        		<i>🧠</i><span>Repaso</span>
-   		 </button>
-    		<button class="tab-btn" id="btnTabCursada" onclick="cambiarVista('cursada')">
-       			 <i>📅</i><span>Cursada</span>
-    		</button>
-   		 <button class="tab-btn" id="btnTabProgreso" onclick="cambiarVista('progreso')">
-        		<i>📚</i><span>Progreso</span>
-    		</button>
-    		<button class="tab-btn" id="btnTabEstadisticas" onclick="cambiarVista('estadisticas')">
-        		<i>📊</i><span>Métricas</span>
-    		</button>
-    		<button class="tab-btn" onclick="cerrarSesion()" style="color: var(--peligro);">
-       			 <i>🚪</i><span>Salir</span>
-    		</button>
-	</div>
+                <button class="tab-btn activo" id="btnTabRepaso" onclick="cambiarVista('repaso')">
+                    <i>🧠</i><span>Repaso</span>
+                </button>
+                <button class="tab-btn" id="btnTabCursada" onclick="cambiarVista('cursada')">
+                    <i>📅</i><span>Cursada</span>
+                </button>
+                <button class="tab-btn" id="btnTabProgreso" onclick="cambiarVista('progreso')">
+                    <i>📚</i><span>Progreso</span>
+                </button>
+                <button class="tab-btn" id="btnTabEstadisticas" onclick="cambiarVista('estadisticas')">
+                    <i>📊</i><span>Métricas</span>
+                </button>
+                <button class="tab-btn" onclick="cerrarSesion()" style="color: var(--peligro);">
+                    <i>🚪</i><span>Salir</span>
+                </button>
+            </div>
 
-        </div> </div> <script type="module">
+        </div> 
+        
+        <div id="zonaImpresion"></div>
+        
+    </div> 
+    
+    <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
         import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
         import { getFirestore, doc, setDoc, onSnapshot, enableIndexedDbPersistence } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
         
-        // --- CHAU FIREBASE STORAGE. USAMOS COMPRESIÓN BASE64 ---
-
         const firebaseConfig = {
             apiKey: "AIzaSyCIXKUvH-gqs1-X6Ja2q-c22TJStySqiPM",
             authDomain: "appestudio-ingenieria.firebaseapp.com",
@@ -349,23 +384,18 @@
         const auth = getAuth(app);
         const db = getFirestore(app);
 
-        // Habilitamos Persistencia Offline
-        enableIndexedDbPersistence(db).catch((err) => {
-            console.log("No se pudo habilitar offline:", err.code);
-        });
+        enableIndexedDbPersistence(db).catch((err) => { console.log("No se pudo habilitar offline:", err.code); });
 
-        // --- BASES DE DATOS ---
         let baseDeDatos = []; let baseDeDatosCursada = []; let baseDeDatosEventos = [];
-        let unsubscribeNube = null; let graficoKanban = null; let graficoRepasos = null;
+        let unsubscribeNube = null; let graficoKanban = null; let graficoRepasos = null; let graficoOlvido = null;
+        
+        window.filtroEtiquetaActual = ""; 
 
-        // --- SISTEMA DE AUTENTICACIÓN ---
         window.registrarUsuario = function() {
             const email = document.getElementById('loginEmail').value; const pass = document.getElementById('loginPassword').value;
             const errorP = document.getElementById('loginError');
             if(email === "" || pass.length < 6) { errorP.innerText = "Ingresá un correo válido y una contraseña de al menos 6 caracteres."; errorP.style.display = "block"; return; }
-            createUserWithEmailAndPassword(auth, email, pass)
-                .then((userCredential) => { migrarDatosLocalesALaNube(userCredential.user.uid); })
-                .catch((error) => { errorP.innerText = "Error: " + error.message; errorP.style.display = "block"; });
+            createUserWithEmailAndPassword(auth, email, pass).then((userCredential) => { migrarDatosLocalesALaNube(userCredential.user.uid); }).catch((error) => { errorP.innerText = "Error: " + error.message; errorP.style.display = "block"; });
         }
 
         window.iniciarSesion = function() {
@@ -375,10 +405,13 @@
         }
 
         window.cerrarSesion = function() {
-            signOut(auth).then(() => {
-                if(unsubscribeNube) unsubscribeNube();
-                baseDeDatos = []; baseDeDatosCursada = []; baseDeDatosEventos = [];
-            });
+            const confirmar = confirm("⚠️ ¿Estás seguro de que querés cerrar sesión?");
+            if (confirmar) {
+                signOut(auth).then(() => {
+                    if(unsubscribeNube) unsubscribeNube();
+                    baseDeDatos = []; baseDeDatosCursada = []; baseDeDatosEventos = []; window.filtroEtiquetaActual = "";
+                }).catch((error) => { console.error("Error al cerrar sesión:", error); });
+            }
         }
 
         onAuthStateChanged(auth, (user) => {
@@ -405,9 +438,7 @@
 
         function migrarDatosLocalesALaNube(uid) {
             let localRepasos = JSON.parse(localStorage.getItem('temasEstudio')) || []; let localCursada = JSON.parse(localStorage.getItem('planCursada')) || []; let localEventos = JSON.parse(localStorage.getItem('eventosCursada')) || [];
-            setDoc(doc(db, "usuarios", uid), { repasos: localRepasos, cursada: localCursada, eventos: localEventos }).then(() => {
-                localStorage.removeItem('temasEstudio'); localStorage.removeItem('planCursada'); localStorage.removeItem('eventosCursada');
-            });
+            setDoc(doc(db, "usuarios", uid), { repasos: localRepasos, cursada: localCursada, eventos: localEventos }).then(() => { localStorage.removeItem('temasEstudio'); localStorage.removeItem('planCursada'); localStorage.removeItem('eventosCursada'); });
         }
 
         function actualizarTodasLasVistas() {
@@ -416,18 +447,46 @@
             if(!document.getElementById('vistaEstadisticas').classList.contains('oculto')) renderizarEstadisticas();
         }
 
-        // --- POMODORO ---
         let pomodoroTiempo = 25 * 60; let pomodoroIntervalo = null; let pomodoroCorriendo = false; let modoPomodoroActual = 'trabajo';
         const tiemposModos = { trabajo: 25 * 60, descansoCorto: 5 * 60, descansoLargo: 15 * 60 };
         function actualizarDisplayPomodoro() { const minutos = Math.floor(pomodoroTiempo / 60); const segundos = pomodoroTiempo % 60; document.getElementById('pomodoroDisplay').innerText = `${minutos.toString().padStart(2, '0')}:${segundos.toString().padStart(2, '0')}`; }
         window.setModoPomodoro = function(modo) { window.pausarPomodoro(); modoPomodoroActual = modo; pomodoroTiempo = tiemposModos[modo]; actualizarDisplayPomodoro(); document.getElementById('btnModoTrabajo').classList.remove('activo'); document.getElementById('btnModoCorto').classList.remove('activo'); document.getElementById('btnModoLargo').classList.remove('activo'); if (modo === 'trabajo') document.getElementById('btnModoTrabajo').classList.add('activo'); if (modo === 'descansoCorto') document.getElementById('btnModoCorto').classList.add('activo'); if (modo === 'descansoLargo') document.getElementById('btnModoLargo').classList.add('activo'); }
         window.togglePomodoro = function() { pomodoroCorriendo ? window.pausarPomodoro() : window.iniciarPomodoro(); }
-        window.iniciarPomodoro = function() { pomodoroCorriendo = true; document.getElementById('btnAccionPomodoro').innerText = "⏸ Pausar"; document.getElementById('btnAccionPomodoro').style.backgroundColor = "var(--alerta)"; pomodoroIntervalo = setInterval(() => { if (pomodoroTiempo > 0) { pomodoroTiempo--; actualizarDisplayPomodoro(); } else { window.pausarPomodoro(); alert("¡Tiempo finalizado! Es hora de cambiar la actividad."); } }, 1000); }
+        window.iniciarPomodoro = function() { 
+            pomodoroCorriendo = true; 
+            document.getElementById('btnAccionPomodoro').innerText = "⏸ Pausar"; 
+            document.getElementById('btnAccionPomodoro').style.backgroundColor = "var(--alerta)"; 
+            
+            const retosPausa = [
+                "¡Mové el cuerpo! Tirate al piso y hacé 15 flexiones de brazos para que circule la sangre.",
+                "Pausa de hidratación: Levantate y tomate un buen vaso de agua fresca para mantener el cuerpo al 100%.",
+                "Momento de relajar: Buscá a tu perrita o a tu conejo y dales unos mimos para desconectar la mente un par de minutos.",
+                "Estirá las muñecas, los antebrazos y el cuello. Clave después de estar horas escribiendo código o resolviendo guías.",
+                "¡Activá! Levantate y practicá un par de poses frente al espejo para corregir asimetrías. ¡Mantené la contracción!",
+                "Hacé unos estiramientos de isquiotibiales y gemelos. ¡Tus piernas te lo van a agradecer en el próximo partido de pádel o fútbol!",
+                "Descanso visual: Alejá la vista de la pantalla, mirá por la ventana a un punto lejano y respirá profundo 2 minutos."
+            ];
+
+            pomodoroIntervalo = setInterval(() => { 
+                if (pomodoroTiempo > 0) { 
+                    pomodoroTiempo--; 
+                    actualizarDisplayPomodoro(); 
+                } else { 
+                    window.pausarPomodoro(); 
+                    
+                    if (modoPomodoroActual === 'trabajo') {
+                        const retoAleatorio = retosPausa[Math.floor(Math.random() * retosPausa.length)];
+                        alert("¡Bloque de estudio completado! 🧠\n\nTu reto para esta pausa:\n" + retoAleatorio);
+                    } else {
+                        alert("¡Se terminó el recreo! ⏰\n\nEs hora de volver a enfocarse. Elegí tu próxima tarea en el Kanban y dale a Iniciar.");
+                    }
+                } 
+            }, 1000); 
+        }
         window.pausarPomodoro = function() { pomodoroCorriendo = false; clearInterval(pomodoroIntervalo); document.getElementById('btnAccionPomodoro').innerText = "▶ Iniciar"; document.getElementById('btnAccionPomodoro').style.backgroundColor = "var(--exito)"; }
         window.resetPomodoro = function() { window.setModoPomodoro(modoPomodoroActual); }
         actualizarDisplayPomodoro();
 
-        // --- UTILIDADES ---
         function obtenerFechaHoy() { const hoy = new Date(); hoy.setMinutes(hoy.getMinutes() - hoy.getTimezoneOffset()); return hoy.toISOString().split('T')[0]; }
         function calcularProximaFecha(diasASumar) { const fecha = new Date(); fecha.setDate(fecha.getDate() + diasASumar); fecha.setMinutes(fecha.getMinutes() - fecha.getTimezoneOffset()); return fecha.toISOString().split('T')[0]; }
 
@@ -445,7 +504,6 @@
 
         window.irACrearFlashcards = function(materia, tema) { window.cambiarVista('repaso'); document.getElementById('inputMateria').value = materia; document.getElementById('inputTema').value = tema; document.getElementById('inputRespuesta').focus(); }
 
-        // --- MOTOR DE VOZ ---
         window.reproducirAudio = function(texto) {
             if ('speechSynthesis' in window) {
                 window.speechSynthesis.cancel();
@@ -457,24 +515,17 @@
             } else { alert("Tu navegador no soporta el motor de voz."); }
         }
 
-        // --- COMPRESIÓN DE IMÁGENES BASE64 ---
-        // Esta función agarra la foto pesada, la dibuja en chiquito en un lienzo invisible y la convierte en texto gratuito
         window.comprimirImagen = function(archivo, maxWidth, maxHeight, quality) {
             return new Promise((resolve, reject) => {
-                const reader = new FileReader();
-                reader.readAsDataURL(archivo);
+                const reader = new FileReader(); reader.readAsDataURL(archivo);
                 reader.onload = (event) => {
-                    const img = new Image();
-                    img.src = event.target.result;
+                    const img = new Image(); img.src = event.target.result;
                     img.onload = () => {
-                        const canvas = document.createElement('canvas');
-                        let width = img.width; let height = img.height;
+                        const canvas = document.createElement('canvas'); let width = img.width; let height = img.height;
                         if (width > height) { if (width > maxWidth) { height = Math.round((height *= maxWidth / width)); width = maxWidth; } } 
                         else { if (height > maxHeight) { width = Math.round((width *= maxHeight / height)); height = maxHeight; } }
-                        canvas.width = width; canvas.height = height;
-                        const ctx = canvas.getContext('2d');
-                        ctx.drawImage(img, 0, 0, width, height);
-                        resolve(canvas.toDataURL('image/jpeg', quality)); // Devuelve el texto Base64
+                        canvas.width = width; canvas.height = height; const ctx = canvas.getContext('2d'); ctx.drawImage(img, 0, 0, width, height);
+                        resolve(canvas.toDataURL('image/jpeg', quality)); 
                     };
                     img.onerror = (error) => reject(error);
                 };
@@ -482,46 +533,49 @@
             });
         }
 
-        // --- REPASO ESPACIADO CON IMÁGENES COMPRIMIDAS ---
         window.agregarTema = async function() {
             const inputMateria = document.getElementById('inputMateria').value.trim(); 
             const inputTema = document.getElementById('inputTema').value.trim(); 
             const inputRespuesta = document.getElementById('inputRespuesta').value.trim();
+            const inputEtiquetasBruto = document.getElementById('inputEtiquetas').value.trim();
             const btnGuardar = document.getElementById('btnGuardarTarjeta');
             const archivoImagen = document.getElementById('inputImagen').files[0];
 
             if (inputMateria === "" || inputTema === "") { alert("Completá Materia y Concepto."); return; }
 
+            let arrayEtiquetas = [];
+            if (inputEtiquetasBruto !== "") {
+                arrayEtiquetas = inputEtiquetasBruto.split(',').map(tag => {
+                    return tag.trim().replace(/^#/, ''); 
+                }).filter(tag => tag !== ''); 
+            }
+
             btnGuardar.innerText = "⏳ Procesando...";
             btnGuardar.disabled = true;
 
             let imagenBase64 = null;
-
             if (archivoImagen) {
                 try {
                     btnGuardar.innerText = "⏳ Comprimiendo imagen...";
-                    // Achicamos la imagen a máx 800px y bajamos calidad al 70% para no saturar Firestore
                     imagenBase64 = await window.comprimirImagen(archivoImagen, 800, 800, 0.7);
                 } catch (error) {
-                    alert("Error al procesar la imagen. Se guardará la tarjeta sin foto.");
-                    console.error(error);
+                    alert("Error al procesar la imagen. Se guardará la tarjeta sin foto."); console.error(error);
                 }
             }
 
             baseDeDatos.push({ 
                 id: Date.now(), materia: inputMateria, titulo: inputTema, respuesta: inputRespuesta, 
-                imagenUrl: imagenBase64, // Ahora es el texto super comprimido, no una URL paga
+                imagenUrl: imagenBase64, etiquetas: arrayEtiquetas, 
                 n: 0, ef: 2.5, intervalo: 1, fechaProximoRepaso: calcularProximaFecha(1) 
             });
             
-            renderizarRepasosHoy(); 
-            guardarDatosEnNube(); 
+            renderizarRepasosHoy(); guardarDatosEnNube(); 
             
             document.getElementById('inputMateria').value = ''; document.getElementById('inputTema').value = ''; 
             document.getElementById('inputRespuesta').value = ''; document.getElementById('inputImagen').value = '';
-            btnGuardar.innerText = "Guardar Tarjeta";
-            btnGuardar.disabled = false;
+            document.getElementById('inputEtiquetas').value = ''; 
             
+            btnGuardar.innerText = "Guardar Tarjeta"; btnGuardar.disabled = false;
             alert("¡Tarjeta guardada!");
         }
 
@@ -537,11 +591,58 @@
         window.eliminarTema = function(idTema) { if (confirm("¿Borrar esta tarjeta?")) { baseDeDatos = baseDeDatos.filter(tema => tema.id !== idTema); renderizarProgreso(); renderizarRepasosHoy(); guardarDatosEnNube(); } }
         window.mostrarRespuesta = function(idTema) { document.getElementById(`btn-revelar-${idTema}`).classList.add('oculto'); document.getElementById(`respuesta-${idTema}`).classList.remove('oculto'); document.getElementById(`botones-${idTema}`).classList.remove('oculto'); }
 
-        function renderizarRepasosHoy() {
-            const contenedor = document.getElementById('listaRepasos'); contenedor.innerHTML = ''; 
-            const fechaHoy = obtenerFechaHoy(); const temasPendientes = baseDeDatos.filter(tema => tema.fechaProximoRepaso <= fechaHoy);
+        window.aplicarFiltroEtiquetas = function() {
+            window.filtroEtiquetaActual = document.getElementById('selectFiltroEtiquetas').value;
+            renderizarRepasosHoy();
+        }
 
-            if (temasPendientes.length === 0) { contenedor.innerHTML = '<p class="mensaje-vacio">¡Todo al día! No hay tarjetas para repasar hoy.</p>'; return; }
+        function renderizarRepasosHoy() {
+            const contenedor = document.getElementById('listaRepasos'); 
+            const contenedorFiltro = document.getElementById('contenedorFiltro');
+            contenedor.innerHTML = ''; contenedorFiltro.innerHTML = '';
+            
+            const fechaHoy = obtenerFechaHoy(); 
+            let temasPendientes = baseDeDatos.filter(tema => tema.fechaProximoRepaso <= fechaHoy);
+
+            if (temasPendientes.length === 0) { 
+                contenedor.innerHTML = '<p class="mensaje-vacio">¡Todo al día! No hay tarjetas para repasar hoy.</p>'; 
+                return; 
+            }
+
+            let conjuntoEtiquetas = new Set();
+            temasPendientes.forEach(tema => {
+                if (tema.etiquetas && Array.isArray(tema.etiquetas)) {
+                    tema.etiquetas.forEach(etiqueta => conjuntoEtiquetas.add(etiqueta));
+                }
+            });
+
+            if (conjuntoEtiquetas.size > 0) {
+                let opcionesHTML = `<option value="">Todas las tarjetas</option>`;
+                conjuntoEtiquetas.forEach(etiqueta => {
+                    const seleccionada = (window.filtroEtiquetaActual === etiqueta) ? "selected" : "";
+                    opcionesHTML += `<option value="${etiqueta}" ${seleccionada}>#${etiqueta}</option>`;
+                });
+
+                contenedorFiltro.innerHTML = `
+                    <div class="filtro-contenedor">
+                        <label>Filtrar por etiqueta:</label>
+                        <select id="selectFiltroEtiquetas" onchange="aplicarFiltroEtiquetas()">
+                            ${opcionesHTML}
+                        </select>
+                    </div>
+                `;
+            }
+
+            if (window.filtroEtiquetaActual !== "") {
+                temasPendientes = temasPendientes.filter(tema => 
+                    tema.etiquetas && tema.etiquetas.includes(window.filtroEtiquetaActual)
+                );
+                
+                if(temasPendientes.length === 0){
+                     contenedor.innerHTML = '<p class="mensaje-vacio">Terminaste todas las tarjetas de esta categoría por hoy.</p>'; 
+                     return;
+                }
+            }
 
             temasPendientes.forEach(tema => {
                 const div = document.createElement('div'); div.className = 'item-repaso';
@@ -553,8 +654,16 @@
                 let textoAudio = tema.titulo.replace(/'/g, "");
                 let btnVoz = `<button class="btn-voz" title="Escuchar" onclick="reproducirAudio('${textoAudio}')">🔊</button>`;
 
+                let htmlPills = '';
+                if (tema.etiquetas && tema.etiquetas.length > 0) {
+                    htmlPills = `<div style="margin-bottom: 8px;">` + 
+                        tema.etiquetas.map(e => `<span class="etiqueta-pill">#${e}</span>`).join('') + 
+                    `</div>`;
+                }
+
                 div.innerHTML = `
-                    <p><strong>${tema.materia}</strong></p>
+                    <p style="margin-bottom: 5px;"><strong>${tema.materia}</strong></p>
+                    ${htmlPills}
                     <h3><span>${tema.titulo}</span> ${btnVoz}</h3>
                     <button id="btn-revelar-${tema.id}" class="btn-principal btn-revelar" onclick="mostrarRespuesta(${tema.id})">Ver Respuesta</button>
                     <div id="respuesta-${tema.id}" class="texto-respuesta oculto">
@@ -573,7 +682,6 @@
             if (window.MathJax) MathJax.typesetPromise([contenedor]).catch(err => console.log('Error en MathJax: ' + err.message));
         }
 
-        // --- EVENTOS Y KANBAN ---
         window.agregarEvento = function() {
             const materia = document.getElementById('inputEventoMateria').value.trim(); const tipo = document.getElementById('inputEventoTipo').value; const fecha = document.getElementById('inputEventoFecha').value;
             if (materia === "" || fecha === "") { alert("Por favor, ingresá materia y fecha."); return; }
@@ -629,22 +737,63 @@
         }
 
         function renderizarFocoDiario() {
-            const contenedor = document.getElementById('listaFocoDiario'); contenedor.innerHTML = ''; 
+            const contenedor = document.getElementById('listaFocoDiario'); 
+            contenedor.innerHTML = ''; 
             const enProgreso = baseDeDatosCursada.filter(t => t.estado === 'en_progreso');
-            if (enProgreso.length === 0) { contenedor.innerHTML = '<p class="mensaje-vacio">No tenés temas "En Progreso".</p>'; return; }
+            
+            if (enProgreso.length === 0) { 
+                contenedor.innerHTML = '<p class="mensaje-vacio">No tenés temas "En Progreso". Arrastrá tarjetas en tu Kanban para armar tu foco de hoy.</p>'; 
+                return; 
+            }
+            
             let hayTareasPendientes = false;
+
             enProgreso.forEach(tarea => {
-                const subtareasPendientes = tarea.subtareas.filter(s => !s.completada); const crearFlashcardsSub = tarea.subtareas.find(s => s.nombre === "Crear Flashcards"); const mostarBotonFlashcards = (crearFlashcardsSub && crearFlashcardsSub.completada);
+                const subtareasPendientes = tarea.subtareas.filter(s => !s.completada); 
+                const crearFlashcardsSub = tarea.subtareas.find(s => s.nombre === "Crear Flashcards"); 
+                const mostarBotonFlashcards = (crearFlashcardsSub && crearFlashcardsSub.completada);
+                
                 if (subtareasPendientes.length > 0 || mostarBotonFlashcards) {
-                    hayTareasPendientes = true; const div = document.createElement('div'); div.style.marginBottom = '12px'; div.style.padding = '12px'; div.className = 'tarea-card';
-                    let htmlSubtareas = ''; tarea.subtareas.forEach((sub, index) => { if (!sub.completada) { htmlSubtareas += `<label class="subtarea" style="margin-top: 8px;"><input type="checkbox" onchange="toggleSubtarea(${tarea.id}, ${index})"> ${sub.nombre}</label>`; } });
-                    let btnPuente = ''; if (mostarBotonFlashcards) { btnPuente = `<button class="btn-principal" style="padding: 8px; font-size: 13px; margin-top: 10px; background-color: var(--alerta);" onclick="irACrearFlashcards('${tarea.materia}', '${tarea.tema}')">🪄 Generar Tarjetas en Repaso</button>`; }
+                    hayTareasPendientes = true; 
+                    const div = document.createElement('div'); 
+                    div.style.marginBottom = '12px'; div.style.padding = '12px'; 
+                    div.className = 'tarea-card';
+                    
+                    let htmlSubtareas = ''; 
+                    tarea.subtareas.forEach((sub, index) => { 
+                        if (!sub.completada) { 
+                            htmlSubtareas += `<label class="subtarea" style="margin-top: 8px;"><input type="checkbox" onchange="toggleSubtarea(${tarea.id}, ${index})"> ${sub.nombre}</label>`; 
+                        } 
+                    });
+                    
+                    let btnPuente = ''; 
+                    if (mostarBotonFlashcards) { 
+                        btnPuente = `<button class="btn-principal" style="padding: 8px; font-size: 13px; margin-top: 10px; background-color: var(--alerta);" onclick="irACrearFlashcards('${tarea.materia}', '${tarea.tema}')">🪄 Generar Tarjetas</button>`; 
+                    }
+
+                    let btnTerminar = '';
+                    if (subtareasPendientes.length === 0) {
+                        btnTerminar = `<button class="btn-principal" style="padding: 8px; font-size: 13px; margin-top: 10px; background-color: var(--exito);" onclick="cambiarEstadoTarea(${tarea.id}, 'terminado')">✅ Terminar Tema</button>`;
+                    }
+                    
                     const textoUnidad = tarea.unidad ? `${tarea.unidad} - ` : '';
-                    div.innerHTML = `<strong style="color: var(--primario-oscuro); font-size: 15px; display: block; border-bottom: 1px solid var(--borde); padding-bottom: 5px; margin-bottom: 5px;">${tarea.materia}</strong><span style="font-size: 14px; font-weight: 500;">${textoUnidad}${tarea.tema}</span>${htmlSubtareas} ${btnPuente}`;
+                    
+                    div.innerHTML = `
+                        <strong style="color: var(--primario-oscuro); font-size: 15px; display: block; border-bottom: 1px solid var(--borde); padding-bottom: 5px; margin-bottom: 5px;">${tarea.materia}</strong>
+                        <span style="font-size: 14px; font-weight: 500;">${textoUnidad}${tarea.tema}</span>
+                        ${htmlSubtareas} 
+                        <div style="display: flex; gap: 8px;">
+                            ${btnPuente} 
+                            ${btnTerminar}
+                        </div>
+                    `;
                     contenedor.appendChild(div);
                 }
             });
-            if (!hayTareasPendientes) contenedor.innerHTML = '<p class="mensaje-vacio">¡Completaste todas las subtareas!</p>';
+            
+            if (!hayTareasPendientes) {
+                contenedor.innerHTML = '<p class="mensaje-vacio">¡Completaste todas las subtareas de tus temas en progreso! Tu foco de hoy está limpio.</p>';
+            }
         }
 
         function renderizarKanban() {
@@ -665,7 +814,6 @@
             renderizarFocoDiario();
         }
 
-        // --- BACKUP Y PROGRESO ---
         function renderizarProgreso() {
             const cuerpoTabla = document.getElementById('cuerpoTablaProgreso'); cuerpoTabla.innerHTML = ''; 
             if (baseDeDatos.length === 0) { cuerpoTabla.innerHTML = '<tr><td colspan="4" class="mensaje-vacio">Sin tarjetas.</td></tr>'; return; }
@@ -679,11 +827,51 @@
             });
         }
 
+        // --- NUEVO: GENERADOR DE MACHETE PDF ---
+        window.imprimirMachete = function() {
+            if (baseDeDatos.length === 0) { alert("No hay tarjetas para imprimir."); return; }
+            
+            let tarjetasAImprimir = baseDeDatos;
+            // Filtra si tenés seleccionada una etiqueta
+            if (window.filtroEtiquetaActual && window.filtroEtiquetaActual !== "") {
+                tarjetasAImprimir = baseDeDatos.filter(t => t.etiquetas && t.etiquetas.includes(window.filtroEtiquetaActual));
+            }
+            if (tarjetasAImprimir.length === 0) { alert("No hay tarjetas con esa etiqueta para imprimir."); return; }
+            
+            let html = `<h2 style="text-align:center; border-bottom: 2px solid black; padding-bottom: 10px;">Hoja de Repaso ${window.filtroEtiquetaActual ? '- Etiqueta: #' + window.filtroEtiquetaActual : ''}</h2>`;
+            
+            tarjetasAImprimir.forEach(t => {
+                let imgHtml = t.imagenUrl ? `<img src="${t.imagenUrl}" class="machete-img">` : '';
+                let respuestaLimpia = t.respuesta ? t.respuesta : '';
+                html += `
+                <div class="machete-item">
+                    <p class="machete-pregunta">[${t.materia}] ${t.titulo}</p>
+                    <p class="machete-respuesta">${respuestaLimpia}</p>
+                    ${imgHtml}
+                </div>`;
+            });
+            
+            const zona = document.getElementById('zonaImpresion');
+            zona.innerHTML = html;
+            
+            // Renderizamos ecuaciones con MathJax antes de mandar al PDF
+            if (window.MathJax) {
+                MathJax.typesetPromise([zona]).then(() => {
+                    window.print();
+                    zona.innerHTML = ''; 
+                }).catch(err => console.log(err));
+            } else {
+                window.print();
+                zona.innerHTML = '';
+            }
+        }
+
         window.exportarDatos = function() {
             const datosCompletos = { repasos: baseDeDatos, cursada: baseDeDatosCursada, eventos: baseDeDatosEventos };
             const url = URL.createObjectURL(new Blob([JSON.stringify(datosCompletos)], { type: 'application/json' })); const link = document.createElement('a');
             link.href = url; link.download = 'app_estudio_backup.json'; document.body.appendChild(link); link.click(); document.body.removeChild(link); URL.revokeObjectURL(url);
         }
+        
         window.importarDatos = function(event) {
             const archivo = event.target.files[0]; if (!archivo) return;
             if (!confirm("⚠️ Importar un backup pisará los datos en la NUBE. ¿Continuar?")) { event.target.value = ''; return; }
@@ -698,7 +886,6 @@
             lector.readAsText(archivo); event.target.value = ''; 
         }
 
-        // --- ESTADÍSTICAS ---
         function renderizarEstadisticas() {
             document.getElementById('statTotalTemas').innerText = baseDeDatosCursada.length; document.getElementById('statTotalTarjetas').innerText = baseDeDatos.length;
             const countPorHacer = baseDeDatosCursada.filter(t => t.estado === 'por_hacer').length; const countEnProgreso = baseDeDatosCursada.filter(t => t.estado === 'en_progreso').length; const countTerminado = baseDeDatosCursada.filter(t => t.estado === 'terminado').length;
@@ -711,6 +898,45 @@
             
             const ctxRepasos = document.getElementById('chartRepasos').getContext('2d');
             graficoRepasos = new Chart(ctxRepasos, { type: 'bar', data: { labels: ['Atrasados', 'Para Hoy', 'Futuros'], datasets: [{ label: 'Tarjetas', data: [countAtrasados, countHoy, countFuturos], backgroundColor: ['#E74C3C', '#F39C12', '#4A90E2'], borderRadius: 6 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, ticks: { stepSize: 1, color: 'var(--texto)' } }, x: { ticks: { color: 'var(--texto)' } } } } });
+
+            // --- NUEVO: GRÁFICO CURVA DEL OLVIDO ---
+            if (graficoOlvido) graficoOlvido.destroy();
+            
+            let dias = ['Hoy', 'Día 1', 'Día 2', 'Día 3', 'Día 4', 'Día 5', 'Día 6', 'Día 7'];
+            let retencion = [100]; 
+            
+            // Calculamos tu Factor de Facilidad Promedio para la matemática de Ebbinghaus
+            let efPromedio = baseDeDatos.length > 0 ? baseDeDatos.reduce((acc, curr) => acc + curr.ef, 0) / baseDeDatos.length : 2.5;
+            
+            for (let i = 1; i <= 7; i++) {
+                let r = 100 * Math.exp(-i / (efPromedio * 1.5));
+                retencion.push(Math.round(r));
+            }
+
+            const ctxOlvido = document.getElementById('chartOlvido').getContext('2d');
+            graficoOlvido = new Chart(ctxOlvido, { 
+                type: 'line', 
+                data: { 
+                    labels: dias, 
+                    datasets: [{ 
+                        label: '% Retención de Memoria', 
+                        data: retencion, 
+                        borderColor: '#9b59b6', 
+                        backgroundColor: 'rgba(155, 89, 182, 0.2)', 
+                        fill: true,
+                        tension: 0.4
+                    }] 
+                }, 
+                options: { 
+                    responsive: true, 
+                    maintainAspectRatio: false, 
+                    plugins: { legend: { display: false } },
+                    scales: { 
+                        y: { min: 0, max: 100, ticks: { callback: function(value){return value + '%'}, color: 'var(--texto)' } },
+                        x: { ticks: { color: 'var(--texto)' } }
+                    } 
+                } 
+            });
         }
 
         if ('serviceWorker' in navigator) { window.addEventListener('load', () => { navigator.serviceWorker.register('./service-worker.js').catch(err => console.log('Fallo SW:', err)); }); }
