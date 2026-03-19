@@ -3,175 +3,211 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>App Estudio</title>
+    <title>App Estudio Pro</title>
     
     <link rel="manifest" href="./manifest.json">
     <meta name="theme-color" content="#4A90E2">
 
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
     <style>
-        /* --- 1. VARIABLES GLOBALES (MODO CLARO POR DEFECTO) --- */
+        /* --- VARIABLES MODO CLARO --- */
         :root {
             --primario: #4A90E2; 
             --primario-oscuro: #357ABD;
-            --fondo: #F4F7F6; 
-            --texto: #333333; 
+            --fondo: #F8FAFC; 
+            --texto: #2C3E50; 
+            --texto-suave: #7F8C8D;
             --tarjeta: #FFFFFF;
             --exito: #2ECC71; 
             --alerta: #F39C12; 
             --peligro: #E74C3C;
             --gris: #BDC3C7; 
             --secundario: #95a5a6;
-            --fondo-kanban: #eef2f5;
-            --pomodoro-bg: #2c3e50;
-            --borde: #ddd;
+            --fondo-kanban: #EDF2F7;
+            --pomodoro-bg: #FFFFFF;
+            --borde: #E2E8F0;
+            --sombra-tarjeta: 0 10px 30px rgba(0,0,0,0.04);
+            --nav-bg: rgba(255, 255, 255, 0.85);
         }
 
-        /* --- 2. VARIABLES GLOBALES (MODO OSCURO NATIVO) --- */
+        /* --- VARIABLES MODO OSCURO --- */
         @media (prefers-color-scheme: dark) {
             :root {
-                --fondo: #121212; --texto: #E0E0E0; --tarjeta: #1E1E1E;
-                --fondo-kanban: #181818; --pomodoro-bg: #1A1A1A;
-                --borde: #333333; --secundario: #555555;
+                --fondo: #0F172A; 
+                --texto: #F1F5F9; 
+                --texto-suave: #94A3B8;
+                --tarjeta: #1E293B;
+                --fondo-kanban: #0F172A; 
+                --pomodoro-bg: #1E293B;
+                --borde: #334155; 
+                --secundario: #64748B;
+                --sombra-tarjeta: 0 10px 30px rgba(0,0,0,0.3);
+                --nav-bg: rgba(30, 41, 59, 0.85);
             }
-            input[type="text"], input[type="email"], input[type="password"], input[type="date"], input[type="file"], textarea, select {
-                background-color: #2C2C2C !important; color: #E0E0E0 !important; border-color: #444 !important;
+            input[type="text"], input[type="email"], input[type="password"], input[type="date"], input[type="time"], input[type="file"], textarea, select {
+                background-color: #0F172A !important; color: #F1F5F9 !important; border-color: #334155 !important;
             }
-            .tarea-card, .evento-card, .caja-numero, .checklist, .item-repaso, .texto-respuesta { background-color: #252525 !important; border-color: #333 !important; color: #E0E0E0 !important; }
+            .tarea-card, .evento-card, .caja-numero, .checklist, .item-repaso, .texto-respuesta { background-color: #1E293B !important; border-color: #334155 !important; color: #F1F5F9 !important; }
             .tarea-card h4, .evento-card h4, .item-repaso h3 { color: #FFFFFF !important; }
-            .tarea-card p, .evento-tipo, .caja-numero p, .item-repaso p { color: #AAAAAA !important; }
-            .btn-mover { background-color: #333 !important; color: #DDD !important; }
-            .btn-mover:hover { background-color: #444 !important; }
+            .btn-mover { background-color: #334155 !important; color: #E2E8F0 !important; }
+            .btn-mover:hover { background-color: #475569 !important; }
             .btn-mover.destacado { background-color: var(--primario) !important; color: white !important; }
-            .kanban-columna h3 { color: var(--primario) !important; border-bottom-color: #333 !important; }
-            .tarea-selector { background-color: #2C2C2C !important; color: #FFF !important; border-color: #444 !important; }
-            .subtarea { color: #CCC !important; }
-            .subtarea.completada { color: #666 !important; }
-            .panel-backup { border-top-color: #333 !important; }
-            .btn-backup { border-color: #555 !important; color: #CCC !important; }
+            .kanban-columna h3 { color: var(--primario) !important; border-bottom-color: #334155 !important; }
+            .subtarea { color: #CBD5E1 !important; }
+            .subtarea.completada { color: #64748B !important; }
             .etiqueta-pill { background-color: var(--primario-oscuro) !important; color: #FFF !important; }
+            .horario-header, .horario-time-col { background: #0F172A !important; }
         }
 
-        /* --- DISEÑO VISUAL GENERAL --- */
-        body { font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background-color: var(--fondo); color: var(--texto); margin: 0; padding: 20px; padding-bottom: 90px; display: flex; justify-content: center; transition: background-color 0.3s, color 0.3s; }
+        /* --- DISEÑO GENERAL --- */
+        body { font-family: 'Inter', system-ui, -apple-system, sans-serif; background-color: var(--fondo); color: var(--texto); margin: 0; padding: 20px; padding-bottom: 100px; display: flex; justify-content: center; transition: 0.3s; }
         .contenedor { max-width: 800px; width: 100%; }
-        h1 { text-align: center; color: var(--primario); margin-bottom: 20px; position: relative;}
+        h1 { text-align: center; color: var(--primario); margin-bottom: 25px; font-weight: 800; letter-spacing: -0.5px;}
         
-        #vistaLogin { background: var(--tarjeta); padding: 30px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); max-width: 400px; margin: 50px auto; text-align: center; }
-        .app-header { position: relative; display: flex; justify-content: center; align-items: center; margin-bottom: 20px; }
+        #vistaLogin { background: var(--tarjeta); padding: 40px 30px; border-radius: 20px; box-shadow: var(--sombra-tarjeta); max-width: 400px; margin: 10vh auto; text-align: center; border: 1px solid var(--borde); }
         
-        .navegacion { position: fixed; bottom: 0; left: 0; width: 100%; background-color: var(--tarjeta); box-shadow: 0 -2px 10px rgba(0,0,0,0.1); display: flex; justify-content: space-around; padding: 8px 0 15px 0; z-index: 1000; border-radius: 16px 16px 0 0; }
-        .tab-btn { flex: 1; display: flex; flex-direction: column; align-items: center; background: none; border: none; font-size: 11px; font-weight: 600; color: #95a5a6; cursor: pointer; transition: 0.2s; }
-        .tab-btn i { font-size: 22px; margin-bottom: 4px; font-style: normal; transition: 0.2s; filter: grayscale(100%); opacity: 0.6; }
-        .tab-btn.activo { color: var(--primario); }
-        .tab-btn.activo i { filter: grayscale(0%); opacity: 1; transform: scale(1.1); }
+        /* BARRA NAVEGACIÓN */
+        .navegacion { position: fixed; bottom: 0; left: 0; width: 100%; background-color: var(--nav-bg); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border-top: 1px solid var(--borde); display: flex; justify-content: space-around; padding: 12px 0 20px 0; z-index: 1000; border-radius: 20px 20px 0 0; }
+        .tab-btn { flex: 1; display: flex; flex-direction: column; align-items: center; background: none; border: none; font-size: 11px; font-weight: 600; color: var(--texto-suave); cursor: pointer; transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+        .tab-btn i { font-size: 24px; margin-bottom: 4px; font-style: normal; transition: 0.3s; filter: grayscale(100%); opacity: 0.6; }
+        .tab-btn.activo { color: var(--primario); transform: translateY(-2px); }
+        .tab-btn.activo i { filter: grayscale(0%); opacity: 1; transform: scale(1.15); }
 
-        .tarjeta { background-color: var(--tarjeta); border-radius: 12px; padding: 20px; margin-bottom: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
-        h2 { color: var(--primario-oscuro); margin-top: 0; font-size: 20px; }
+        .tarjeta { background-color: var(--tarjeta); border-radius: 20px; padding: 25px; margin-bottom: 24px; box-shadow: var(--sombra-tarjeta); border: 1px solid var(--borde); transition: 0.3s; }
+        h2 { color: var(--primario-oscuro); margin-top: 0; font-size: 18px; font-weight: 700; letter-spacing: -0.3px; margin-bottom: 15px; }
 
-        input[type="text"], input[type="email"], input[type="password"], input[type="date"], input[type="file"], textarea, select { width: 100%; padding: 12px; margin-bottom: 10px; border: 1px solid var(--borde); border-radius: 8px; box-sizing: border-box; font-size: 16px; font-family: inherit; background-color: #fff; }
-        textarea { resize: vertical; min-height: 80px; }
+        input[type="text"], input[type="email"], input[type="password"], input[type="date"], input[type="time"], input[type="file"], textarea, select { width: 100%; padding: 14px 16px; margin-bottom: 12px; border: 1px solid var(--borde); border-radius: 12px; box-sizing: border-box; font-size: 15px; font-family: inherit; background-color: var(--fondo); color: var(--texto); transition: 0.2s; outline: none; }
+        input:focus, textarea:focus, select:focus { border-color: var(--primario); box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.15); }
+        textarea { resize: vertical; min-height: 90px; }
 
-        .btn-principal { width: 100%; padding: 14px; border: none; border-radius: 8px; font-size: 16px; font-weight: bold; color: white; background-color: var(--primario); cursor: pointer; transition: opacity 0.2s; }
-        .btn-principal:disabled { background-color: var(--gris); cursor: not-allowed; }
-        .btn-principal:active:not(:disabled) { opacity: 0.8; }
-        .btn-revelar { background-color: var(--secundario); margin-bottom: 15px; }
+        .btn-principal { width: 100%; padding: 15px; border: none; border-radius: 12px; font-size: 15px; font-weight: 700; color: white; background-color: var(--primario); cursor: pointer; transition: 0.2s; box-shadow: 0 4px 12px rgba(74, 144, 226, 0.2); }
+        .btn-principal:hover { transform: translateY(-1px); box-shadow: 0 6px 16px rgba(74, 144, 226, 0.3); }
+        .btn-principal:active { transform: translateY(1px); box-shadow: none; }
+        .btn-revelar { background-color: var(--secundario); box-shadow: none; margin-bottom: 15px; }
 
-        .panel-backup { display: flex; gap: 10px; margin-top: 20px; padding-top: 15px; border-top: 1px solid var(--borde); flex-wrap: wrap; }
-        .btn-backup { flex: 1; min-width: 140px; padding: 10px; border: 2px solid var(--secundario); border-radius: 8px; background: transparent; color: var(--texto); font-weight: bold; cursor: pointer; transition: 0.2s; }
-        .btn-backup:active { background-color: var(--secundario); color: white; }
+        .file-upload-wrapper { position: relative; overflow: hidden; display: inline-block; width: 100%; margin-bottom: 15px; }
+        .file-upload-wrapper input[type="file"] { position: absolute; left: 0; top: 0; opacity: 0; cursor: pointer; height: 100%; width: 100%; }
+        .btn-file { background-color: var(--fondo); border: 1px dashed var(--borde); color: var(--texto-suave); padding: 14px; border-radius: 12px; text-align: center; font-weight: 600; display: block; transition: 0.2s; font-size: 14px; }
+        .btn-file.cargado { background-color: rgba(46, 204, 113, 0.1); border-color: var(--exito); color: var(--exito); }
 
-        /* --- NUEVO: ETIQUETAS (TAGS) --- */
-        .etiqueta-pill { display: inline-block; background-color: var(--primario); color: white; padding: 3px 10px; border-radius: 12px; font-size: 11px; font-weight: bold; margin-right: 5px; margin-top: 5px; letter-spacing: 0.5px; text-transform: uppercase; }
-        .filtro-contenedor { display: flex; align-items: center; gap: 10px; margin-bottom: 15px; background-color: var(--fondo-kanban); padding: 10px; border-radius: 8px; }
-        .filtro-contenedor label { font-size: 13px; font-weight: bold; color: var(--primario-oscuro); white-space: nowrap; }
-        .filtro-contenedor select { margin-bottom: 0; padding: 8px; font-size: 14px; }
+        /* BACKUP */
+        .panel-backup { display: flex; gap: 10px; margin-top: 25px; padding-top: 20px; border-top: 1px solid var(--borde); flex-wrap: wrap; }
+        .btn-backup { flex: 1; min-width: 140px; padding: 12px; border: 1.5px solid var(--borde); border-radius: 12px; background: transparent; color: var(--texto-suave); font-weight: 600; cursor: pointer; transition: 0.2s; font-size: 13px; }
+        .btn-backup:hover { background-color: var(--fondo); color: var(--texto); border-color: var(--secundario); }
+
+        .etiqueta-pill { display: inline-block; background-color: var(--primario); color: white; padding: 4px 12px; border-radius: 20px; font-size: 10px; font-weight: 700; margin-right: 6px; margin-top: 6px; letter-spacing: 0.5px; text-transform: uppercase; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        .filtro-contenedor { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; background-color: var(--fondo); padding: 12px 16px; border-radius: 12px; border: 1px solid var(--borde); }
+        .filtro-contenedor label { font-size: 13px; font-weight: 600; color: var(--texto-suave); white-space: nowrap; margin: 0; }
+        .filtro-contenedor select { margin-bottom: 0; padding: 8px 12px; font-size: 14px; border-radius: 8px; }
 
         /* REPASO */
-        .item-repaso { border-left: 4px solid var(--primario); background-color: #f9f9f9; padding: 15px; margin-bottom: 15px; border-radius: 0 8px 8px 0; }
-        .item-repaso h3 { margin: 0 0 5px 0; font-size: 18px; display: flex; align-items: center; justify-content: space-between; }
-        .item-repaso p { margin: 0 0 5px 0; font-size: 14px; color: #666; }
-        .texto-respuesta { margin: 0 0 15px 0; padding: 15px; background-color: #ecf0f1; border-radius: 8px; border-left: 4px solid var(--alerta); font-size: 15px; white-space: pre-wrap; color: #2c3e50; overflow-x: auto; }
+        .item-repaso { border-left: 4px solid var(--primario); background-color: var(--tarjeta); padding: 20px; margin-bottom: 16px; border-radius: 12px; border: 1px solid var(--borde); box-shadow: 0 2px 8px rgba(0,0,0,0.02); }
+        .item-repaso h3 { margin: 0 0 8px 0; font-size: 17px; font-weight: 700; display: flex; align-items: center; justify-content: space-between; color: var(--texto); }
+        .item-repaso p { margin: 0 0 8px 0; font-size: 13px; color: var(--texto-suave); font-weight: 500; }
+        .texto-respuesta { margin: 0 0 16px 0; padding: 16px; background-color: var(--fondo); border-radius: 12px; border-left: 4px solid var(--alerta); font-size: 15px; white-space: pre-wrap; color: var(--texto); overflow-x: auto; line-height: 1.5; }
         .botones-calificacion { display: flex; gap: 10px; }
-        .btn-calificar { flex: 1; padding: 10px; border: none; border-radius: 6px; color: white; font-weight: bold; cursor: pointer; }
+        .btn-calificar { flex: 1; padding: 12px; border: none; border-radius: 10px; color: white; font-weight: 700; cursor: pointer; transition: 0.2s; font-size: 14px; }
         .btn-facil { background-color: var(--exito); }
         .btn-normal { background-color: var(--alerta); }
         .btn-dificil { background-color: var(--peligro); }
-        .btn-eliminar { background-color: var(--peligro); color: white; border: none; padding: 6px 10px; border-radius: 4px; cursor: pointer; font-size: 12px; font-weight: bold; }
-        .btn-voz { background: none; border: none; font-size: 20px; cursor: pointer; padding: 5px; border-radius: 50%; transition: 0.2s; }
-        .btn-voz:active { background-color: rgba(0,0,0,0.1); }
+        .btn-calificar:active { transform: scale(0.95); }
+        .btn-eliminar { background-color: rgba(231, 76, 60, 0.1); color: var(--peligro); border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: 700; transition: 0.2s; }
+        .btn-voz { background: var(--fondo); border: 1px solid var(--borde); font-size: 16px; cursor: pointer; padding: 8px; border-radius: 50%; transition: 0.2s; display: flex; align-items: center; justify-content: center; width: 36px; height: 36px; }
 
-        .mensaje-vacio { text-align: center; color: #7f8c8d; font-style: italic; }
+        .mensaje-vacio { text-align: center; color: var(--texto-suave); font-style: italic; font-size: 14px; padding: 20px; background: var(--fondo); border-radius: 12px; border: 1px dashed var(--borde); }
+        
         .tabla-progreso { width: 100%; border-collapse: collapse; font-size: 14px; }
-        .tabla-progreso th, .tabla-progreso td { text-align: left; padding: 10px 5px; border-bottom: 1px solid var(--borde); }
-        .tabla-progreso th { color: var(--primario); font-weight: bold; }
-        .fecha-futura { color: #2980b9; font-weight: bold; }
-        .fecha-hoy { color: var(--alerta); font-weight: bold; }
-        .fecha-pasada { color: var(--peligro); font-weight: bold; }
+        .tabla-progreso th, .tabla-progreso td { text-align: left; padding: 12px 8px; border-bottom: 1px solid var(--borde); }
+        .tabla-progreso th { color: var(--texto-suave); font-weight: 700; text-transform: uppercase; font-size: 11px; letter-spacing: 0.5px; }
+        .fecha-futura { color: var(--primario); font-weight: 600; }
+        .fecha-hoy { color: var(--alerta); font-weight: 700; }
+        .fecha-pasada { color: var(--peligro); font-weight: 700; }
+        
         .oculto { display: none !important; }
 
         /* KANBAN */
-        .kanban-contenedor { display: flex; gap: 15px; overflow-x: auto; padding-bottom: 10px; min-height: 400px; }
-        .kanban-columna { flex: 1; min-width: 260px; background-color: var(--fondo-kanban); border-radius: 10px; padding: 15px; display: flex; flex-direction: column; }
-        .kanban-columna h3 { text-align: center; color: var(--primario-oscuro); margin-top: 0; margin-bottom: 15px; font-size: 16px; text-transform: uppercase; letter-spacing: 1px; border-bottom: 2px solid var(--borde); padding-bottom: 10px; }
-        .tarea-card { background-color: white; border-radius: 8px; padding: 15px; margin-bottom: 12px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); border-left: 4px solid var(--gris); }
-        .col-por-hacer .tarea-card { border-left-color: var(--peligro); }
-        .col-en-progreso .tarea-card { border-left-color: var(--alerta); }
-        .col-terminado .tarea-card { border-left-color: var(--exito); opacity: 0.8; }
-        .tarea-card h4 { margin: 0 0 5px 0; font-size: 16px; color: #2c3e50; }
-        .tarea-card p { margin: 0 0 10px 0; font-size: 13px; color: #7f8c8d; }
+        .kanban-contenedor { display: flex; gap: 16px; overflow-x: auto; padding-bottom: 10px; min-height: 400px; scrollbar-width: none; }
+        .kanban-columna { flex: 1; min-width: 280px; background-color: transparent; display: flex; flex-direction: column; }
+        .kanban-columna h3 { text-align: center; color: var(--texto-suave); margin-top: 0; margin-bottom: 16px; font-size: 13px; text-transform: uppercase; letter-spacing: 1px; font-weight: 700; background: var(--tarjeta); border: 1px solid var(--borde); padding: 12px; border-radius: 12px; }
         
-        .controles-kanban { display: flex; gap: 5px; margin-top: 15px; }
-        .btn-mover { flex: 1; padding: 8px; border: none; border-radius: 6px; font-size: 12px; font-weight: bold; background-color: #ecf0f1; color: #2c3e50; cursor: pointer; transition: 0.2s; display: flex; justify-content: center; align-items: center; }
-        .btn-mover:hover { background-color: #bdc3c7; }
-        .btn-mover.destacado { background-color: var(--primario); color: white; }
-        .btn-mover.destacado:hover { background-color: var(--primario-oscuro); }
+        .tarea-card { position: relative; background-color: var(--tarjeta); border-radius: 16px; padding: 20px; margin-bottom: 16px; box-shadow: 0 4px 10px rgba(0,0,0,0.03); border: 1px solid var(--borde); border-top: 4px solid var(--gris); transition: 0.2s; }
+        .col-por-hacer .tarea-card { border-top-color: var(--peligro); }
+        .col-en-progreso .tarea-card { border-top-color: var(--alerta); }
+        .col-terminado .tarea-card { border-top-color: var(--exito); opacity: 0.7; }
+        .tarea-card h4 { margin: 0 0 6px 0; font-size: 16px; color: var(--texto); font-weight: 700; line-height: 1.3; }
+        .tarea-card p { margin: 0 0 12px 0; font-size: 13px; color: var(--texto-suave); font-weight: 500; }
+        
+        .controles-kanban { display: flex; gap: 8px; margin-top: 16px; }
+        .btn-mover { flex: 1; padding: 10px; border: 1px solid var(--borde); border-radius: 10px; font-size: 12px; font-weight: 700; background-color: var(--fondo); color: var(--texto-suave); cursor: pointer; transition: 0.2s; display: flex; justify-content: center; align-items: center; }
+        .btn-mover.destacado { background-color: var(--primario); color: white; border-color: var(--primario); }
 
-        .checklist { margin: 10px 0; display: flex; flex-direction: column; gap: 8px; background-color: #fcfcfc; padding: 10px; border-radius: 6px; border: 1px solid var(--borde); }
-        .subtarea { font-size: 13px; color: #34495e; display: flex; align-items: center; gap: 8px; cursor: pointer; transition: 0.2s; }
-        .subtarea.completada { text-decoration: line-through; color: #bdc3c7; }
-        .subtarea input[type="checkbox"] { width: 16px; height: 16px; margin: 0; cursor: pointer; }
+        .checklist { margin: 12px 0; display: flex; flex-direction: column; gap: 10px; background-color: var(--fondo); padding: 14px; border-radius: 12px; border: 1px solid var(--borde); }
+        .subtarea { font-size: 13px; font-weight: 500; color: var(--texto); display: flex; align-items: center; gap: 10px; cursor: pointer; }
+        .subtarea.completada { text-decoration: line-through; color: var(--texto-suave); opacity: 0.6; }
+        .subtarea input[type="checkbox"] { width: 18px; height: 18px; margin: 0; cursor: pointer; accent-color: var(--primario); }
 
         /* EVENTOS */
-        .panel-fechas-clave { display: flex; gap: 10px; overflow-x: auto; padding: 10px 0; margin-bottom: 15px; }
-        .evento-card { min-width: 150px; background-color: #fff; border: 1px solid var(--borde); border-radius: 8px; padding: 12px; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.02); position: relative; }
-        .evento-card h4 { margin: 0 0 5px 0; font-size: 14px; color: #333; }
-        .evento-tipo { font-size: 12px; text-transform: uppercase; font-weight: bold; color: #7f8c8d; display: block; margin-bottom: 5px; }
-        .evento-dias { font-size: 22px; font-weight: bold; margin: 5px 0 0 0; }
-        .dias-lejos { color: var(--exito); }
-        .dias-medio { color: var(--alerta); }
-        .dias-cerca { color: var(--peligro); }
-        .btn-borrar-evento { position: absolute; top: 5px; right: 5px; background: none; border: none; color: #ccc; cursor: pointer; font-size: 14px; }
-        .btn-borrar-evento:hover { color: var(--peligro); }
+        .panel-fechas-clave { display: flex; gap: 12px; overflow-x: auto; padding: 5px 0 15px 0; scrollbar-width: none; }
+        .evento-card { min-width: 160px; background-color: var(--fondo); border: 1px solid var(--borde); border-radius: 16px; padding: 16px; text-align: center; position: relative; }
+        .evento-card h4 { margin: 0 0 6px 0; font-size: 14px; color: var(--texto); font-weight: 700; }
+        .evento-tipo { font-size: 10px; text-transform: uppercase; font-weight: 800; color: var(--primario); display: block; margin-bottom: 6px; }
+        .evento-dias { font-size: 24px; font-weight: 800; margin: 8px 0 0 0; letter-spacing: -0.5px; }
+        .dias-lejos { color: var(--exito); } .dias-medio { color: var(--alerta); } .dias-cerca { color: var(--peligro); }
+        .btn-borrar-evento { position: absolute; top: 8px; right: 8px; background: none; border: none; color: var(--gris); cursor: pointer; font-size: 16px; width: 24px; height: 24px; border-radius: 50%; }
 
-        .form-fila { display: flex; gap: 10px; }
+        .form-fila { display: flex; gap: 12px; }
         .form-fila > * { flex: 1; }
-        @media (max-width: 600px) { .form-fila { flex-direction: column; } }
+        @media (max-width: 600px) { .form-fila { flex-direction: column; gap: 0; } }
 
         /* ESTADÍSTICAS */
-        .grafico-contenedor { position: relative; height: 300px; width: 100%; margin-bottom: 30px; }
-        .estadisticas-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        .grafico-contenedor { position: relative; height: 300px; width: 100%; margin-bottom: 20px; }
+        .estadisticas-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px; }
         @media (max-width: 650px) { .estadisticas-grid { grid-template-columns: 1fr; } }
         .resumen-numeros { display: flex; gap: 15px; margin-bottom: 25px; }
-        .caja-numero { flex: 1; background: #fff; border: 1px solid var(--borde); border-radius: 8px; padding: 15px; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
-        .caja-numero h3 { margin: 0 0 5px 0; font-size: 28px; color: var(--primario); }
-        .caja-numero p { margin: 0; font-size: 12px; color: #7f8c8d; text-transform: uppercase; font-weight: bold; }
+        .caja-numero { flex: 1; background: var(--fondo); border: 1px solid var(--borde); border-radius: 16px; padding: 20px; text-align: center; }
+        .caja-numero h3 { margin: 0 0 5px 0; font-size: 32px; font-weight: 800; color: var(--primario); letter-spacing: -1px; }
+        .caja-numero p { margin: 0; font-size: 11px; color: var(--texto-suave); text-transform: uppercase; font-weight: 700; letter-spacing: 0.5px; }
 
-        /* POMODORO */
-        .pomodoro-widget { background-color: var(--pomodoro-bg); color: white; padding: 15px 20px; text-align: center; margin-top: 20px; margin-bottom: 20px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
-        .pomodoro-display { font-size: 54px; font-weight: bold; font-family: 'Courier New', Courier, monospace; margin: 5px 0 15px 0; letter-spacing: 3px; }
-        .pomodoro-modos { display: flex; gap: 5px; margin-bottom: 15px; background: rgba(0,0,0,0.2); border-radius: 8px; padding: 5px; }
-        .btn-pomodoro { flex: 1; padding: 8px 2px; background: none; border: none; color: white; font-size: 13px; font-weight: bold; cursor: pointer; border-radius: 5px; transition: 0.2s; }
-        .btn-pomodoro.activo { background-color: var(--primario); }
-        .pomodoro-controles { display: flex; gap: 10px; }
-        .btn-p-accion { flex: 2; padding: 12px; border: none; border-radius: 8px; font-size: 16px; font-weight: bold; color: white; background-color: var(--exito); cursor: pointer; }
-        .btn-p-reset { flex: 1; padding: 12px; border: none; border-radius: 8px; font-size: 16px; font-weight: bold; color: white; background-color: transparent; border: 2px solid #7f8c8d; cursor: pointer; }
-        .btn-p-accion:active, .btn-p-reset:active { opacity: 0.8; }
+        /* POMODORO PROFESIONAL (SVG) */
+        .pomodoro-widget { background-color: var(--tarjeta); border: 1px solid var(--borde); padding: 30px 20px; text-align: center; margin-bottom: 24px; border-radius: 24px; box-shadow: var(--sombra-tarjeta); }
+        .pomodoro-modos { display: flex; gap: 8px; margin-bottom: 25px; background: var(--fondo); border-radius: 12px; padding: 6px; border: 1px solid var(--borde); }
+        .btn-pomodoro { flex: 1; padding: 10px 4px; background: transparent; border: none; color: var(--texto-suave); font-size: 13px; font-weight: 700; cursor: pointer; border-radius: 8px; transition: 0.2s; }
+        .btn-pomodoro.activo { background-color: var(--tarjeta); color: var(--primario); box-shadow: 0 2px 6px rgba(0,0,0,0.05); border: 1px solid var(--borde); }
+        
+        .pomodoro-circulo { position: relative; width: 220px; height: 220px; margin: 0 auto 25px auto; display: flex; justify-content: center; align-items: center; }
+        .progress-ring__circle-bg { stroke: var(--fondo); }
+        .progress-ring__circle { stroke: var(--primario); transition: stroke-dashoffset 1s linear; transform: rotate(-90deg); transform-origin: 50% 50%; stroke-linecap: round; }
+        .pomodoro-display { position: absolute; font-size: 46px; font-weight: 800; font-family: 'Inter', monospace; letter-spacing: -1.5px; margin: 0; color: var(--texto); }
 
-        /* --- IMPRESIÓN A PDF (MACHETE) --- */
+        .pomodoro-controles { display: flex; gap: 12px; justify-content: center; max-width: 300px; margin: 0 auto; }
+        .btn-p-accion { flex: 2; padding: 14px; border: none; border-radius: 12px; font-size: 15px; font-weight: 800; color: white; background-color: var(--exito); cursor: pointer; box-shadow: 0 4px 12px rgba(46, 204, 113, 0.2); transition: 0.2s;}
+        .btn-p-reset { flex: 1; padding: 14px; border: none; border-radius: 12px; font-size: 15px; font-weight: 700; color: var(--texto-suave); background-color: var(--fondo); border: 1px solid var(--borde); cursor: pointer; transition: 0.2s;}
+        .btn-p-accion:active { transform: scale(0.96); box-shadow: none; }
+
+        /* --- NUEVO TIMETABLE VISUAL (HORARIOS) --- */
+        .horario-wrapper { width: 100%; overflow-x: auto; background: var(--tarjeta); border-radius: 16px; border: 1px solid var(--borde); scrollbar-width: thin; }
+        .horario-grid { min-width: 600px; display: flex; flex-direction: column; }
+        .horario-header { display: grid; grid-template-columns: 55px repeat(5, 1fr); background: var(--fondo); border-bottom: 1px solid var(--borde); position: sticky; top: 0; z-index: 10; }
+        .horario-header div { padding: 12px 5px; text-align: center; font-size: 11px; font-weight: 800; color: var(--texto-suave); border-right: 1px solid var(--borde); text-transform: uppercase; letter-spacing: 0.5px; }
+        .horario-body { display: grid; grid-template-columns: 55px repeat(5, 1fr); position: relative; background: var(--tarjeta); }
+        .horario-time-col { border-right: 1px solid var(--borde); display: flex; flex-direction: column; background: var(--fondo); }
+        .horario-time-slot { height: 60px; border-bottom: 1px solid var(--borde); display: flex; justify-content: center; align-items: flex-start; padding-top: 5px; font-size: 11px; font-weight: 600; color: var(--texto-suave); box-sizing: border-box; }
+        .horario-day-col { position: relative; border-right: 1px solid var(--borde); background-image: linear-gradient(var(--borde) 1px, transparent 1px); background-size: 100% 60px; }
+        
+        .class-block { position: absolute; left: 4px; right: 4px; border-radius: 8px; padding: 8px; color: white; overflow: hidden; box-shadow: 0 2px 5px rgba(0,0,0,0.15); display: flex; flex-direction: column; justify-content: center; transition: 0.2s; }
+        .class-block:hover { transform: scale(1.02); z-index: 5; box-shadow: 0 4px 10px rgba(0,0,0,0.25); }
+        .class-block strong { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; font-size: 11px; font-weight: 700; line-height: 1.2; margin-bottom: 2px; text-shadow: 0 1px 2px rgba(0,0,0,0.2); }
+        .class-block span { font-size: 9px; font-weight: 600; opacity: 0.9; }
+        .class-block-delete { position: absolute; top: 4px; right: 4px; background: rgba(0,0,0,0.2); border: none; color: white; width: 18px; height: 18px; border-radius: 50%; font-size: 9px; cursor: pointer; display: flex; justify-content: center; align-items: center; transition: 0.2s; }
+        .class-block-delete:hover { background: var(--peligro); }
+
         @media print {
             body * { display: none !important; }
             #zonaImpresion, #zonaImpresion * { display: block !important; }
-            #zonaImpresion { position: absolute; left: 0; top: 0; width: 100%; padding: 0; margin: 0; background: white; color: black; font-family: 'Segoe UI', sans-serif; }
+            #zonaImpresion { position: absolute; left: 0; top: 0; width: 100%; padding: 0; margin: 0; background: white; color: black; font-family: 'Inter', sans-serif; }
             .machete-item { margin-bottom: 12px; page-break-inside: avoid; border-bottom: 1px solid #ccc; padding-bottom: 8px; }
             .machete-pregunta { font-weight: bold; font-size: 16px; margin: 0 0 5px 0; color: #2c3e50; }
             .machete-respuesta { font-size: 14px; margin: 0; }
@@ -189,12 +225,12 @@
         
         <div id="vistaLogin">
             <h1 style="margin-bottom: 5px;">Mi Plan de Estudio</h1>
-            <p style="color: #7f8c8d; margin-bottom: 25px; font-size: 14px;">Iniciá sesión para sincronizar tus datos en la nube.</p>
+            <p style="color: var(--texto-suave); margin-bottom: 25px; font-size: 14px; font-weight: 500;">Iniciá sesión para sincronizar tus datos en la nube.</p>
             <input type="email" id="loginEmail" placeholder="Tu correo electrónico">
             <input type="password" id="loginPassword" placeholder="Contraseña (Mín. 6 caracteres)">
-            <button class="btn-principal" onclick="iniciarSesion()" style="margin-bottom: 10px;">Ingresar</button>
-            <button class="btn-principal" onclick="registrarUsuario()" style="background-color: var(--alerta);">Registrarse (Usuario Nuevo)</button>
-            <p id="loginError" style="color: var(--peligro); font-size: 13px; margin-top: 15px; display: none;"></p>
+            <button class="btn-principal" onclick="iniciarSesion()" style="margin-bottom: 12px;">Ingresar</button>
+            <button class="btn-principal" onclick="registrarUsuario()" style="background-color: var(--fondo); color: var(--texto); border: 1px solid var(--borde); box-shadow: none;">Registrarse (Usuario Nuevo)</button>
+            <p id="loginError" style="color: var(--peligro); font-size: 13px; margin-top: 15px; display: none; font-weight: 600;"></p>
         </div>
 
         <div id="appPrincipal" class="oculto">
@@ -203,37 +239,20 @@
                 <h1 style="margin: 0;">Mi Plan de Estudio</h1>
             </div>
 
-            <div id="vistaRepaso">
-                <div class="tarjeta">
-                    <h2>Agregar Tarjeta de Repaso</h2>
-                    <input type="text" id="inputMateria" placeholder="Materia (Ej. Electrotecnia)">
-                    <input type="text" id="inputTema" placeholder="Pregunta o Concepto">
-                    <textarea id="inputRespuesta" placeholder="Respuesta (Podés usar LaTeX entre símbolos de $ para ecuaciones...)"></textarea>
-                    
-                    <input type="text" id="inputEtiquetas" placeholder="Etiquetas separadas por coma (Ej: Fórmulas, Final, Unidad 1)">
-                    
-                    <label style="font-size: 13px; color: #7f8c8d; font-weight: bold; margin-bottom: 5px; margin-top: 5px; display: block;">Adjuntar imagen o gráfico (Opcional):</label>
-                    <input type="file" id="inputImagen" accept="image/*" style="margin-bottom: 15px;">
-                    
-                    <button class="btn-principal" id="btnGuardarTarjeta" onclick="agregarTema()">Guardar Tarjeta</button>
-                </div>
+            <div id="vistaCursada">
                 
-                <div class="tarjeta">
-                    <h2>Para Repasar Hoy</h2>
-                    <div id="contenedorFiltro"></div>
-                    <div id="listaRepasos"></div>
-                </div>
-            </div>
-
-            <div id="vistaCursada" class="oculto">
-                <div class="tarjeta" style="background-color: transparent; border: 1px solid var(--borde);">
-                    <h2>Fechas Clave (Exámenes y Entregas)</h2>
-                    <div class="form-fila">
+                <div class="tarjeta" style="background-color: var(--fondo); border: 1px dashed var(--borde); box-shadow: none; padding-bottom: 10px;">
+                    <h2>📅 Fechas Clave (Exámenes y Entregas)</h2>
+                    <div id="listaEventos" class="panel-fechas-clave"></div>
+                    <div class="form-fila" style="margin-top: 10px;">
                         <input type="text" id="inputEventoMateria" placeholder="Materia (Ej. Cálculo Numérico)">
                         <select id="inputEventoTipo">
                             <option value="Parcial 1">Parcial 1</option>
                             <option value="Parcial 2">Parcial 2</option>
                             <option value="Parcial 3">Parcial 3</option>
+                            <option value="Laboratorio 1">Laboratorio 1</option>
+                            <option value="Laboratorio 2">Laboratorio 2</option>
+                            <option value="Laboratorio 3">Laboratorio 3</option>
                             <option value="Entrega TP 1">Entrega TP N°1</option>
                             <option value="Entrega TP 2">Entrega TP N°2</option>
                             <option value="Entrega TP 3">Entrega TP N°3</option>
@@ -244,30 +263,21 @@
                             <option value="Entrega TP 8">Entrega TP N°8</option>
                             <option value="Entrega TP 9">Entrega TP N°9</option>
                             <option value="Entrega TP 10">Entrega TP N°10</option>
+                            <option value="Entrega TI 1">Trabajo de Inv. 1 (TI1)</option>
+                            <option value="Entrega TI 2">Trabajo de Inv. 2 (TI2)</option>
+                            <option value="Entrega TI 3">Trabajo de Inv. 3 (TI3)</option>
                             <option value="Entrega TFI">Entrega TFI (Integrador)</option>
                             <option value="Final">Examen Final</option>
                         </select>
                         <input type="date" id="inputEventoFecha">
                     </div>
-                    <button class="btn-principal" style="background-color: #3498db;" onclick="agregarEvento()">Registrar Fecha</button>
-                    <div id="listaEventos" class="panel-fechas-clave"></div>
+                    <button class="btn-principal" style="background-color: var(--primario-oscuro);" onclick="agregarEvento()">Registrar Fecha</button>
                 </div>
 
-                <div class="tarjeta" style="border-left: 4px solid var(--alerta);">
+                <div class="tarjeta" style="border-top: 5px solid var(--alerta);">
                     <h2>🎯 Foco de Hoy</h2>
-                    <p style="font-size: 13px; color: #666; margin-top: -10px;">Tu plan de acción extraído automáticamente de tus temas "En Progreso".</p>
+                    <p style="font-size: 13px; color: var(--texto-suave); margin-top: -10px; font-weight: 500;">Tu plan de acción con desbloqueo secuencial de tareas.</p>
                     <div id="listaFocoDiario"></div>
-                </div>
-
-                <div class="tarjeta">
-                    <h2>Desglosar Programa</h2>
-                    <div class="form-fila">
-                        <input type="text" id="inputKanbanMateria" placeholder="Materia">
-                        <input type="text" id="inputKanbanUnidad" placeholder="Unidad">
-                    </div>
-                    <input type="text" id="inputKanbanTema" placeholder="Tema Específico">
-                    <button class="btn-principal" onclick="agregarTareaKanban()">Agregar al Tablero</button>
-                    <button class="btn-principal" style="background-color: var(--exito); margin-top: 10px;" onclick="autoPlanificar()">🪄 Autoplanificar Cronograma</button>
                 </div>
 
                 <div class="kanban-contenedor">
@@ -284,78 +294,197 @@
                         <div id="listaTerminado"></div>
                     </div>
                 </div>
+
+                <div class="tarjeta" style="margin-top: 20px;">
+                    <h2>⚙️ Desglosar Programa</h2>
+                    <div class="form-fila">
+                        <input type="text" id="inputKanbanMateria" placeholder="Materia">
+                        <input type="text" id="inputKanbanUnidad" placeholder="Unidad">
+                    </div>
+                    
+                    <div class="form-fila">
+                        <input type="text" id="inputKanbanTema" placeholder="Tema Específico">
+                        <select id="inputKanbanEsfuerzo">
+                            <option value="1">🟢 Nivel 1 (Fácil / Corto)</option>
+                            <option value="2" selected>🟡 Nivel 2 (Medio)</option>
+                            <option value="3">🔴 Nivel 3 (Difícil / Largo)</option>
+                        </select>
+                    </div>
+
+                    <div class="form-fila" style="margin-bottom: 10px; margin-top: 5px;">
+                        <div style="flex: 1;">
+                            <label style="font-size: 11px; color: var(--texto-suave); font-weight: 700; text-transform: uppercase;">Hito a Corto Plazo (Ej: TP):</label>
+                            <select id="selectCortoPlazo" style="margin-bottom: 0; margin-top: 5px;">
+                                <option value="">-- Ninguno --</option>
+                            </select>
+                        </div>
+                        <div style="flex: 1;">
+                            <label style="font-size: 11px; color: var(--texto-suave); font-weight: 700; text-transform: uppercase;">Hito a Largo Plazo (Ej: Parcial):</label>
+                            <select id="selectLargoPlazo" style="margin-bottom: 0; margin-top: 5px;">
+                                <option value="">-- Ninguno --</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <button class="btn-principal" onclick="agregarTareaKanban()" style="margin-top: 10px;">Agregar al Tablero</button>
+                    <button class="btn-principal" style="background-color: var(--exito); margin-top: 12px; color: #fff;" onclick="autoPlanificar()">🪄 Autoplanificar Cronograma</button>
+                </div>
+
             </div>
 
-            <div id="vistaProgreso" class="tarjeta oculto">
-                <h2>Todos mis repasos programados</h2>
-                <div style="overflow-x: auto;">
-                    <table class="tabla-progreso">
-                        <thead>
-                            <tr>
-                                <th>Materia</th>
-                                <th>Tema</th>
-                                <th>Próximo Repaso</th>
-                                <th>Acción</th>
-                            </tr>
-                        </thead>
-                        <tbody id="cuerpoTablaProgreso"></tbody>
-                    </table>
-                </div>
-                <div class="panel-backup">
-                    <button class="btn-backup" onclick="exportarDatos()">📥 Backup Local (Exportar)</button>
-                    <button class="btn-backup" onclick="document.getElementById('inputImportar').click()">📤 Backup Local (Importar)</button>
-                    <button class="btn-backup" style="border-color: var(--primario); color: var(--primario);" onclick="imprimirMachete()">🖨️ Generar Machete PDF</button>
-                    <input type="file" id="inputImportar" accept=".json" class="oculto" onchange="importarDatos(event)">
-                </div>
-            </div>
-
-            <div id="vistaEstadisticas" class="tarjeta oculto">
-                <h2>Rendimiento Global</h2>
-                <div class="resumen-numeros">
-                    <div class="caja-numero"><h3 id="statTotalTemas">0</h3><p>Temas en Programa</p></div>
-                    <div class="caja-numero"><h3 id="statTotalTarjetas">0</h3><p>Tarjetas de Repaso</p></div>
-                </div>
-                <div class="estadisticas-grid">
-                    <div><h3 style="text-align: center; color: var(--primario-oscuro); font-size: 16px;">Avance del Cuatrimestre</h3><div class="grafico-contenedor"><canvas id="chartKanban"></canvas></div></div>
-                    <div><h3 style="text-align: center; color: var(--primario-oscuro); font-size: 16px;">Salud de la Memoria</h3><div class="grafico-contenedor"><canvas id="chartRepasos"></canvas></div></div>
-                </div>
+            <div id="vistaRepaso" class="oculto">
                 
-                <div style="margin-top: 30px;">
-                    <h3 style="text-align: center; color: var(--primario-oscuro); font-size: 16px;">Proyección: Curva del Olvido (7 Días)</h3>
-                    <p style="text-align: center; font-size: 12px; color: #7f8c8d; margin-top: -10px;">Si no repasás, así caerá tu memoria base a tu rendimiento actual.</p>
-                    <div class="grafico-contenedor" style="height: 220px;">
-                        <canvas id="chartOlvido"></canvas>
+                <div class="pomodoro-widget">
+                    <div class="pomodoro-modos">
+                        <button class="btn-pomodoro activo" id="btnModoTrabajo" onclick="setModoPomodoro('trabajo')">Estudio 25m</button>
+                        <button class="btn-pomodoro" id="btnModoCorto" onclick="setModoPomodoro('descansoCorto')">Pausa 5m</button>
+                        <button class="btn-pomodoro" id="btnModoLargo" onclick="setModoPomodoro('descansoLargo')">Descanso 15m</button>
+                    </div>
+                    
+                    <div class="pomodoro-circulo">
+                        <svg class="progress-ring" width="220" height="220">
+                            <circle class="progress-ring__circle-bg" stroke-width="8" fill="transparent" r="100" cx="110" cy="110"/>
+                            <circle class="progress-ring__circle" id="pomodoroProgress" stroke-width="8" fill="transparent" r="100" cx="110" cy="110"/>
+                        </svg>
+                        <div class="pomodoro-display" id="pomodoroDisplay">25:00</div>
+                    </div>
+
+                    <div class="pomodoro-controles">
+                        <button class="btn-p-accion" id="btnAccionPomodoro" onclick="togglePomodoro()">▶ Iniciar</button>
+                        <button class="btn-p-reset" onclick="resetPomodoro()">🔄</button>
+                    </div>
+                </div>
+
+                <div class="tarjeta">
+                    <h2>Para Repasar Hoy</h2>
+                    <div id="contenedorFiltro"></div>
+                    <div id="listaRepasos"></div>
+                </div>
+
+                <div class="tarjeta" style="margin-top: 20px;">
+                    <h2>➕ Agregar Tarjeta de Repaso</h2>
+                    <div class="form-fila">
+                        <input type="text" id="inputMateria" placeholder="Materia (Ej. Electrotecnia)">
+                        <select id="inputExamenAsociado">
+                            <option value="">-- Examen Asociado (Opcional) --</option>
+                        </select>
+                    </div>
+                    <input type="text" id="inputTema" placeholder="Pregunta o Concepto">
+                    <textarea id="inputRespuesta" placeholder="Respuesta (Podés usar LaTeX entre símbolos de $ para ecuaciones...)"></textarea>
+                    <input type="text" id="inputEtiquetas" placeholder="Etiquetas separadas por coma (Ej: Fórmulas, Final, Unidad 1)">
+                    
+                    <div class="file-upload-wrapper">
+                        <span class="btn-file" id="btnFileLabel">📁 Adjuntar Imagen o Gráfico (Opcional)</span>
+                        <input type="file" id="inputImagen" accept="image/*" onchange="actualizarLabelArchivo()">
+                    </div>
+                    
+                    <button class="btn-principal" id="btnGuardarTarjeta" onclick="agregarTema()">Guardar Tarjeta</button>
+                </div>
+            </div>
+
+            <div id="vistaEstadisticas" class="oculto">
+                <div class="tarjeta">
+                    <h2>Rendimiento Global</h2>
+                    <div class="resumen-numeros">
+                        <div class="caja-numero"><h3 id="statTotalTemas">0</h3><p>Temas en Programa</p></div>
+                        <div class="caja-numero"><h3 id="statTotalTarjetas">0</h3><p>Tarjetas de Repaso</p></div>
+                    </div>
+                    <div class="estadisticas-grid">
+                        <div style="background: var(--fondo); padding: 15px; border-radius: 16px; border: 1px solid var(--borde);">
+                            <h3 style="text-align: center; color: var(--primario-oscuro); font-size: 14px; font-weight: 700; margin-top: 0;">Avance del Cuatrimestre</h3>
+                            <div class="grafico-contenedor" style="height: 200px;"><canvas id="chartKanban"></canvas></div>
+                        </div>
+                        <div style="background: var(--fondo); padding: 15px; border-radius: 16px; border: 1px solid var(--borde);">
+                            <h3 style="text-align: center; color: var(--primario-oscuro); font-size: 14px; font-weight: 700; margin-top: 0;">Salud de la Memoria</h3>
+                            <div class="grafico-contenedor" style="height: 200px;"><canvas id="chartRepasos"></canvas></div>
+                        </div>
+                    </div>
+                    
+                    <div style="margin-top: 25px; background: var(--fondo); padding: 20px; border-radius: 16px; border: 1px solid var(--borde);">
+                        <h3 style="text-align: center; color: var(--primario-oscuro); font-size: 15px; margin-top: 0; margin-bottom: 5px;">Proyección: Curva del Olvido (7 Días)</h3>
+                        <p style="text-align: center; font-size: 12px; color: var(--texto-suave); margin-top: 0; margin-bottom: 15px;">Si no repasás, así caerá tu memoria base.</p>
+                        <div class="grafico-contenedor" style="height: 180px; margin-bottom: 0;">
+                            <canvas id="chartOlvido"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tarjeta" style="margin-top: 20px;">
+                    <h2>📚 Todos mis repasos programados</h2>
+                    <div style="overflow-x: auto; background: var(--fondo); border-radius: 12px; border: 1px solid var(--borde);">
+                        <table class="tabla-progreso">
+                            <thead>
+                                <tr>
+                                    <th>Materia</th>
+                                    <th>Tema</th>
+                                    <th>Próximo Repaso</th>
+                                    <th>Acción</th>
+                                </tr>
+                            </thead>
+                            <tbody id="cuerpoTablaProgreso"></tbody>
+                        </table>
+                    </div>
+                    
+                    <div class="panel-backup">
+                        <button class="btn-backup" onclick="exportarDatos()">📥 Backup Local (Exportar)</button>
+                        <button class="btn-backup" onclick="document.getElementById('inputImportar').click()">📤 Backup Local (Importar)</button>
+                        <button class="btn-backup" style="border-color: var(--primario); color: var(--primario);" onclick="imprimirMachete()">🖨️ Generar Machete PDF</button>
+                        <input type="file" id="inputImportar" accept=".json" class="oculto" onchange="importarDatos(event)">
                     </div>
                 </div>
             </div>
 
-            <div class="pomodoro-widget">
-                <div class="pomodoro-modos">
-                    <button class="btn-pomodoro activo" id="btnModoTrabajo" onclick="setModoPomodoro('trabajo')">Estudio (25m)</button>
-                    <button class="btn-pomodoro" id="btnModoCorto" onclick="setModoPomodoro('descansoCorto')">Pausa (5m)</button>
-                    <button class="btn-pomodoro" id="btnModoLargo" onclick="setModoPomodoro('descansoLargo')">Descanso (15m)</button>
+            <div id="vistaHorarios" class="oculto">
+                <div class="tarjeta">
+                    <h2>⏰ Agregar Clase al Cronograma</h2>
+                    <div class="form-fila">
+                        <select id="horarioDia">
+                            <option value="1">Lunes</option>
+                            <option value="2">Martes</option>
+                            <option value="3">Miércoles</option>
+                            <option value="4">Jueves</option>
+                            <option value="5">Viernes</option>
+                        </select>
+                        <input type="time" id="horarioInicio" min="08:00" max="22:00" required>
+                        <input type="time" id="horarioFin" min="08:00" max="22:00" required>
+                    </div>
+                    <input type="text" id="horarioMateria" placeholder="Materia y Aula (Ej: Electrotecnia - Aula 139)">
+                    <button class="btn-principal" onclick="agregarHorario()" style="background-color: var(--primario-oscuro);">➕ Agregar Clase</button>
                 </div>
-                <div class="pomodoro-display" id="pomodoroDisplay">25:00</div>
-                <div class="pomodoro-controles">
-                    <button class="btn-p-accion" id="btnAccionPomodoro" onclick="togglePomodoro()">▶ Iniciar</button>
-                    <button class="btn-p-reset" onclick="resetPomodoro()">🔄 Reset</button>
+
+                <div class="horario-wrapper tarjeta" style="padding: 0; overflow: hidden; box-shadow: none;">
+                    <div class="horario-grid">
+                        <div class="horario-header">
+                            <div>Hora</div><div>Lunes</div><div>Martes</div><div>Miércoles</div><div>Jueves</div><div>Viernes</div>
+                        </div>
+                        <div class="horario-body">
+                            <div class="horario-time-col" id="col-horas"></div>
+                            <div class="horario-day-col" id="col-dia-1"></div>
+                            <div class="horario-day-col" id="col-dia-2"></div>
+                            <div class="horario-day-col" id="col-dia-3"></div>
+                            <div class="horario-day-col" id="col-dia-4"></div>
+                            <div class="horario-day-col" id="col-dia-5"></div>
+                        </div>
+                    </div>
                 </div>
+                
+                <button class="btn-principal btn-peligro" style="margin-top: 20px; background: transparent; border: 1px solid var(--peligro); color: var(--peligro); box-shadow: none;" onclick="limpiarHorarios()">🗑️ Borrar Cuatrimestre Completo</button>
             </div>
 
             <div class="navegacion">
-                <button class="tab-btn activo" id="btnTabRepaso" onclick="cambiarVista('repaso')">
-                    <i>🧠</i><span>Repaso</span>
-                </button>
-                <button class="tab-btn" id="btnTabCursada" onclick="cambiarVista('cursada')">
+                <button class="tab-btn activo" id="btnTabCursada" onclick="cambiarVista('cursada')">
                     <i>📅</i><span>Cursada</span>
                 </button>
-                <button class="tab-btn" id="btnTabProgreso" onclick="cambiarVista('progreso')">
-                    <i>📚</i><span>Progreso</span>
+                <button class="tab-btn" id="btnTabRepaso" onclick="cambiarVista('repaso')">
+                    <i>🧠</i><span>Repaso</span>
                 </button>
                 <button class="tab-btn" id="btnTabEstadisticas" onclick="cambiarVista('estadisticas')">
                     <i>📊</i><span>Métricas</span>
                 </button>
-                <button class="tab-btn" onclick="cerrarSesion()" style="color: var(--peligro);">
+                <button class="tab-btn" id="btnTabHorarios" onclick="cambiarVista('horarios')">
+                    <i>⏰</i><span>Horarios</span>
+                </button>
+                <button class="tab-btn" onclick="cerrarSesion()">
                     <i>🚪</i><span>Salir</span>
                 </button>
             </div>
@@ -386,7 +515,7 @@
 
         enableIndexedDbPersistence(db).catch((err) => { console.log("No se pudo habilitar offline:", err.code); });
 
-        let baseDeDatos = []; let baseDeDatosCursada = []; let baseDeDatosEventos = [];
+        let baseDeDatos = []; let baseDeDatosCursada = []; let baseDeDatosEventos = []; let baseDeDatosHorarios = [];
         let unsubscribeNube = null; let graficoKanban = null; let graficoRepasos = null; let graficoOlvido = null;
         
         window.filtroEtiquetaActual = ""; 
@@ -405,11 +534,11 @@
         }
 
         window.cerrarSesion = function() {
-            const confirmar = confirm("⚠️ ¿Estás seguro de que querés cerrar sesión?");
-            if (confirmar) {
+            if (confirm("⚠️ ¿Estás seguro de que querés cerrar sesión?")) {
                 signOut(auth).then(() => {
                     if(unsubscribeNube) unsubscribeNube();
-                    baseDeDatos = []; baseDeDatosCursada = []; baseDeDatosEventos = []; window.filtroEtiquetaActual = "";
+                    baseDeDatos = []; baseDeDatosCursada = []; baseDeDatosEventos = []; baseDeDatosHorarios = [];
+                    window.filtroEtiquetaActual = "";
                 }).catch((error) => { console.error("Error al cerrar sesión:", error); });
             }
         }
@@ -417,10 +546,11 @@
         onAuthStateChanged(auth, (user) => {
             if (user) {
                 document.getElementById('vistaLogin').classList.add('oculto'); document.getElementById('appPrincipal').classList.remove('oculto');
+                cambiarVista('cursada');
                 unsubscribeNube = onSnapshot(doc(db, "usuarios", user.uid), (docSnap) => {
                     if (docSnap.exists()) {
                         const datosNube = docSnap.data();
-                        baseDeDatos = datosNube.repasos || []; baseDeDatosCursada = datosNube.cursada || []; baseDeDatosEventos = datosNube.eventos || [];
+                        baseDeDatos = datosNube.repasos || []; baseDeDatosCursada = datosNube.cursada || []; baseDeDatosEventos = datosNube.eventos || []; baseDeDatosHorarios = datosNube.horarios || [];
                         actualizarTodasLasVistas();
                     } else { migrarDatosLocalesALaNube(user.uid); }
                 });
@@ -431,88 +561,136 @@
 
         function guardarDatosEnNube() {
             if(auth.currentUser) {
-                setDoc(doc(db, "usuarios", auth.currentUser.uid), { repasos: baseDeDatos, cursada: baseDeDatosCursada, eventos: baseDeDatosEventos })
+                setDoc(doc(db, "usuarios", auth.currentUser.uid), { repasos: baseDeDatos, cursada: baseDeDatosCursada, eventos: baseDeDatosEventos, horarios: baseDeDatosHorarios })
                 .catch((error) => { console.error(error); alert("⚠️ Error al guardar en la nube."); });
             }
         }
 
         function migrarDatosLocalesALaNube(uid) {
             let localRepasos = JSON.parse(localStorage.getItem('temasEstudio')) || []; let localCursada = JSON.parse(localStorage.getItem('planCursada')) || []; let localEventos = JSON.parse(localStorage.getItem('eventosCursada')) || [];
-            setDoc(doc(db, "usuarios", uid), { repasos: localRepasos, cursada: localCursada, eventos: localEventos }).then(() => { localStorage.removeItem('temasEstudio'); localStorage.removeItem('planCursada'); localStorage.removeItem('eventosCursada'); });
+            setDoc(doc(db, "usuarios", uid), { repasos: localRepasos, cursada: localCursada, eventos: localEventos, horarios: [] }).then(() => { localStorage.removeItem('temasEstudio'); localStorage.removeItem('planCursada'); localStorage.removeItem('eventosCursada'); });
         }
 
         function actualizarTodasLasVistas() {
             renderizarRepasosHoy(); renderizarKanban(); renderizarEventos();
-            if(!document.getElementById('vistaProgreso').classList.contains('oculto')) renderizarProgreso();
-            if(!document.getElementById('vistaEstadisticas').classList.contains('oculto')) renderizarEstadisticas();
+            if(!document.getElementById('vistaEstadisticas').classList.contains('oculto')) { renderizarEstadisticas(); renderizarProgreso(); }
+            if(!document.getElementById('vistaHorarios').classList.contains('oculto')) { renderizarHorarios(); }
         }
 
-        let pomodoroTiempo = 25 * 60; let pomodoroIntervalo = null; let pomodoroCorriendo = false; let modoPomodoroActual = 'trabajo';
+        /* --- LÓGICA POMODORO Y CÍRCULO SVG --- */
+        let pomodoroTiempo = 25 * 60; let tiempoModoActualTotal = 25 * 60;
+        let pomodoroIntervalo = null; let pomodoroCorriendo = false; let modoPomodoroActual = 'trabajo';
         const tiemposModos = { trabajo: 25 * 60, descansoCorto: 5 * 60, descansoLargo: 15 * 60 };
-        function actualizarDisplayPomodoro() { const minutos = Math.floor(pomodoroTiempo / 60); const segundos = pomodoroTiempo % 60; document.getElementById('pomodoroDisplay').innerText = `${minutos.toString().padStart(2, '0')}:${segundos.toString().padStart(2, '0')}`; }
-        window.setModoPomodoro = function(modo) { window.pausarPomodoro(); modoPomodoroActual = modo; pomodoroTiempo = tiemposModos[modo]; actualizarDisplayPomodoro(); document.getElementById('btnModoTrabajo').classList.remove('activo'); document.getElementById('btnModoCorto').classList.remove('activo'); document.getElementById('btnModoLargo').classList.remove('activo'); if (modo === 'trabajo') document.getElementById('btnModoTrabajo').classList.add('activo'); if (modo === 'descansoCorto') document.getElementById('btnModoCorto').classList.add('activo'); if (modo === 'descansoLargo') document.getElementById('btnModoLargo').classList.add('activo'); }
+        
+        const circuloSVG = document.getElementById('pomodoroProgress');
+        const radio = circuloSVG.r.baseVal.value;
+        const circunferencia = radio * 2 * Math.PI;
+        circuloSVG.style.strokeDasharray = `${circunferencia} ${circunferencia}`;
+        circuloSVG.style.strokeDashoffset = 0;
+
+        function actualizarDisplayPomodoro() { 
+            const minutos = Math.floor(pomodoroTiempo / 60); const segundos = pomodoroTiempo % 60; 
+            document.getElementById('pomodoroDisplay').innerText = `${minutos.toString().padStart(2, '0')}:${segundos.toString().padStart(2, '0')}`; 
+            
+            let porcentaje = pomodoroTiempo / tiempoModoActualTotal;
+            const offset = circunferencia - (porcentaje * circunferencia);
+            circuloSVG.style.strokeDashoffset = offset;
+        }
+
+        window.setModoPomodoro = function(modo) { 
+            window.pausarPomodoro(); 
+            modoPomodoroActual = modo; 
+            pomodoroTiempo = tiemposModos[modo]; 
+            tiempoModoActualTotal = tiemposModos[modo];
+            actualizarDisplayPomodoro(); 
+            
+            document.getElementById('btnModoTrabajo').classList.remove('activo'); document.getElementById('btnModoCorto').classList.remove('activo'); document.getElementById('btnModoLargo').classList.remove('activo'); 
+            if (modo === 'trabajo') { document.getElementById('btnModoTrabajo').classList.add('activo'); circuloSVG.style.stroke = "var(--primario)"; }
+            if (modo === 'descansoCorto') { document.getElementById('btnModoCorto').classList.add('activo'); circuloSVG.style.stroke = "var(--exito)";}
+            if (modo === 'descansoLargo') { document.getElementById('btnModoLargo').classList.add('activo'); circuloSVG.style.stroke = "var(--secundario)";}
+        }
+        
         window.togglePomodoro = function() { pomodoroCorriendo ? window.pausarPomodoro() : window.iniciarPomodoro(); }
+        
         window.iniciarPomodoro = function() { 
+            if(pomodoroTiempo <= 0) return;
             pomodoroCorriendo = true; 
             document.getElementById('btnAccionPomodoro').innerText = "⏸ Pausar"; 
             document.getElementById('btnAccionPomodoro').style.backgroundColor = "var(--alerta)"; 
+            document.getElementById('btnAccionPomodoro').style.boxShadow = "0 4px 12px rgba(243, 156, 18, 0.2)";
             
-            const retosPausa = [
-                "¡Mové el cuerpo! Tirate al piso y hacé 15 flexiones de brazos para que circule la sangre.",
-                "Pausa de hidratación: Levantate y tomate un buen vaso de agua fresca para mantener el cuerpo al 100%.",
-                "Momento de relajar: Buscá a tu perrita o a tu conejo y dales unos mimos para desconectar la mente un par de minutos.",
-                "Estirá las muñecas, los antebrazos y el cuello. Clave después de estar horas escribiendo código o resolviendo guías.",
-                "¡Activá! Levantate y practicá un par de poses frente al espejo para corregir asimetrías. ¡Mantené la contracción!",
-                "Hacé unos estiramientos de isquiotibiales y gemelos. ¡Tus piernas te lo van a agradecer en el próximo partido de pádel o fútbol!",
-                "Descanso visual: Alejá la vista de la pantalla, mirá por la ventana a un punto lejano y respirá profundo 2 minutos."
-            ];
-
+            const retosPausa = [ "¡Mové el cuerpo! Hacé 15 flexiones.", "Tomate un vaso de agua fresca.", "Descanso visual: Mirá a lo lejos 2 min.", "Estirá cuello y muñecas." ];
+            
             pomodoroIntervalo = setInterval(() => { 
                 if (pomodoroTiempo > 0) { 
                     pomodoroTiempo--; 
                     actualizarDisplayPomodoro(); 
                 } else { 
                     window.pausarPomodoro(); 
-                    
-                    if (modoPomodoroActual === 'trabajo') {
-                        const retoAleatorio = retosPausa[Math.floor(Math.random() * retosPausa.length)];
-                        alert("¡Bloque de estudio completado! 🧠\n\nTu reto para esta pausa:\n" + retoAleatorio);
-                    } else {
-                        alert("¡Se terminó el recreo! ⏰\n\nEs hora de volver a enfocarse. Elegí tu próxima tarea en el Kanban y dale a Iniciar.");
-                    }
+                    if (modoPomodoroActual === 'trabajo') { 
+                        if(navigator.vibrate) navigator.vibrate([500, 200, 500]);
+                        alert("¡Bloque de estudio completado! 🧠\n\nReto:\n" + retosPausa[Math.floor(Math.random() * retosPausa.length)]); 
+                    } else { 
+                        if(navigator.vibrate) navigator.vibrate([500, 200, 500]);
+                        alert("¡Se terminó el recreo! ⏰\n\nA volver al foco."); 
+                    } 
                 } 
             }, 1000); 
         }
-        window.pausarPomodoro = function() { pomodoroCorriendo = false; clearInterval(pomodoroIntervalo); document.getElementById('btnAccionPomodoro').innerText = "▶ Iniciar"; document.getElementById('btnAccionPomodoro').style.backgroundColor = "var(--exito)"; }
+        
+        window.pausarPomodoro = function() { 
+            pomodoroCorriendo = false; clearInterval(pomodoroIntervalo); 
+            document.getElementById('btnAccionPomodoro').innerText = "▶ Iniciar"; 
+            document.getElementById('btnAccionPomodoro').style.backgroundColor = "var(--exito)"; 
+            document.getElementById('btnAccionPomodoro').style.boxShadow = "0 4px 12px rgba(46, 204, 113, 0.2)";
+        }
+        
         window.resetPomodoro = function() { window.setModoPomodoro(modoPomodoroActual); }
-        actualizarDisplayPomodoro();
+        setTimeout(actualizarDisplayPomodoro, 100); // Init SVG
 
         function obtenerFechaHoy() { const hoy = new Date(); hoy.setMinutes(hoy.getMinutes() - hoy.getTimezoneOffset()); return hoy.toISOString().split('T')[0]; }
         function calcularProximaFecha(diasASumar) { const fecha = new Date(); fecha.setDate(fecha.getDate() + diasASumar); fecha.setMinutes(fecha.getMinutes() - fecha.getTimezoneOffset()); return fecha.toISOString().split('T')[0]; }
 
         window.cambiarVista = function(vistaDestino) {
-            document.getElementById('vistaRepaso').classList.add('oculto'); document.getElementById('vistaCursada').classList.add('oculto'); document.getElementById('vistaProgreso').classList.add('oculto'); document.getElementById('vistaEstadisticas').classList.add('oculto');
-            document.getElementById('btnTabRepaso').classList.remove('activo'); document.getElementById('btnTabCursada').classList.remove('activo'); document.getElementById('btnTabProgreso').classList.remove('activo'); document.getElementById('btnTabEstadisticas').classList.remove('activo');
+            document.getElementById('vistaRepaso').classList.add('oculto'); document.getElementById('vistaCursada').classList.add('oculto'); document.getElementById('vistaEstadisticas').classList.add('oculto'); document.getElementById('vistaHorarios').classList.add('oculto');
+            document.getElementById('btnTabRepaso').classList.remove('activo'); document.getElementById('btnTabCursada').classList.remove('activo'); document.getElementById('btnTabEstadisticas').classList.remove('activo'); document.getElementById('btnTabHorarios').classList.remove('activo');
 
             if (vistaDestino === 'repaso') { document.getElementById('vistaRepaso').classList.remove('oculto'); document.getElementById('btnTabRepaso').classList.add('activo'); renderizarRepasosHoy(); } 
             else if (vistaDestino === 'cursada') { document.getElementById('vistaCursada').classList.remove('oculto'); document.getElementById('btnTabCursada').classList.add('activo'); renderizarEventos(); renderizarKanban(); } 
-            else if (vistaDestino === 'progreso') { document.getElementById('vistaProgreso').classList.remove('oculto'); document.getElementById('btnTabProgreso').classList.add('activo'); renderizarProgreso(); } 
-            else if (vistaDestino === 'estadisticas') { document.getElementById('vistaEstadisticas').classList.remove('oculto'); document.getElementById('btnTabEstadisticas').classList.add('activo'); renderizarEstadisticas(); }
+            else if (vistaDestino === 'estadisticas') { document.getElementById('vistaEstadisticas').classList.remove('oculto'); document.getElementById('btnTabEstadisticas').classList.add('activo'); renderizarEstadisticas(); renderizarProgreso(); }
+            else if (vistaDestino === 'horarios') { document.getElementById('vistaHorarios').classList.remove('oculto'); document.getElementById('btnTabHorarios').classList.add('activo'); renderizarHorarios(); }
             
             window.scrollTo({top: 0, behavior: 'smooth'});
         }
 
-        window.irACrearFlashcards = function(materia, tema) { window.cambiarVista('repaso'); document.getElementById('inputMateria').value = materia; document.getElementById('inputTema').value = tema; document.getElementById('inputRespuesta').focus(); }
+        window.irACrearFlashcards = function(materia, tema, eventoLargoId) { 
+            window.cambiarVista('repaso'); 
+            document.getElementById('inputMateria').value = materia; 
+            document.getElementById('inputTema').value = tema; 
+            if(eventoLargoId && eventoLargoId !== "undefined") { document.getElementById('inputExamenAsociado').value = eventoLargoId; }
+            document.getElementById('inputRespuesta').focus(); 
+        }
 
         window.reproducirAudio = function(texto) {
             if ('speechSynthesis' in window) {
                 window.speechSynthesis.cancel();
                 let textoLimpio = texto.replace(/\$/g, '');
                 const utterance = new SpeechSynthesisUtterance(textoLimpio);
-                utterance.lang = 'es-AR';
-                utterance.rate = 0.95;
+                utterance.lang = 'es-AR'; utterance.rate = 0.95;
                 window.speechSynthesis.speak(utterance);
             } else { alert("Tu navegador no soporta el motor de voz."); }
+        }
+
+        window.actualizarLabelArchivo = function() {
+            const input = document.getElementById('inputImagen');
+            const label = document.getElementById('btnFileLabel');
+            if(input.files && input.files.length > 0) {
+                label.innerText = "✔️ " + input.files[0].name;
+                label.classList.add('cargado');
+            } else {
+                label.innerText = "📁 Adjuntar Imagen o Gráfico (Opcional)";
+                label.classList.remove('cargado');
+            }
         }
 
         window.comprimirImagen = function(archivo, maxWidth, maxHeight, quality) {
@@ -534,152 +712,96 @@
         }
 
         window.agregarTema = async function() {
-            const inputMateria = document.getElementById('inputMateria').value.trim(); 
-            const inputTema = document.getElementById('inputTema').value.trim(); 
-            const inputRespuesta = document.getElementById('inputRespuesta').value.trim();
-            const inputEtiquetasBruto = document.getElementById('inputEtiquetas').value.trim();
-            const btnGuardar = document.getElementById('btnGuardarTarjeta');
-            const archivoImagen = document.getElementById('inputImagen').files[0];
-
+            const inputMateria = document.getElementById('inputMateria').value.trim(); const inputTema = document.getElementById('inputTema').value.trim(); const inputRespuesta = document.getElementById('inputRespuesta').value.trim(); const inputEtiquetasBruto = document.getElementById('inputEtiquetas').value.trim(); const inputEventoAsociado = document.getElementById('inputExamenAsociado').value; const btnGuardar = document.getElementById('btnGuardarTarjeta'); const archivoImagen = document.getElementById('inputImagen').files[0];
             if (inputMateria === "" || inputTema === "") { alert("Completá Materia y Concepto."); return; }
 
             let arrayEtiquetas = [];
-            if (inputEtiquetasBruto !== "") {
-                arrayEtiquetas = inputEtiquetasBruto.split(',').map(tag => {
-                    return tag.trim().replace(/^#/, ''); 
-                }).filter(tag => tag !== ''); 
-            }
+            if (inputEtiquetasBruto !== "") { arrayEtiquetas = inputEtiquetasBruto.split(',').map(tag => tag.trim().replace(/^#/, '')).filter(tag => tag !== ''); }
 
-            btnGuardar.innerText = "⏳ Procesando...";
-            btnGuardar.disabled = true;
+            btnGuardar.innerText = "⏳ Procesando..."; btnGuardar.disabled = true;
 
             let imagenBase64 = null;
             if (archivoImagen) {
-                try {
-                    btnGuardar.innerText = "⏳ Comprimiendo imagen...";
-                    imagenBase64 = await window.comprimirImagen(archivoImagen, 800, 800, 0.7);
-                } catch (error) {
-                    alert("Error al procesar la imagen. Se guardará la tarjeta sin foto."); console.error(error);
-                }
+                try { btnGuardar.innerText = "⏳ Comprimiendo..."; imagenBase64 = await window.comprimirImagen(archivoImagen, 800, 800, 0.7); } catch (error) { alert("Error al procesar la imagen. Se guardará sin foto."); }
             }
 
-            baseDeDatos.push({ 
-                id: Date.now(), materia: inputMateria, titulo: inputTema, respuesta: inputRespuesta, 
-                imagenUrl: imagenBase64, etiquetas: arrayEtiquetas, 
-                n: 0, ef: 2.5, intervalo: 1, fechaProximoRepaso: calcularProximaFecha(1) 
-            });
-            
+            baseDeDatos.push({ id: Date.now(), materia: inputMateria, titulo: inputTema, respuesta: inputRespuesta, imagenUrl: imagenBase64, etiquetas: arrayEtiquetas, eventoLargoId: inputEventoAsociado, n: 0, ef: 2.5, intervalo: 1, fechaProximoRepaso: calcularProximaFecha(1) });
             renderizarRepasosHoy(); guardarDatosEnNube(); 
             
-            document.getElementById('inputMateria').value = ''; document.getElementById('inputTema').value = ''; 
-            document.getElementById('inputRespuesta').value = ''; document.getElementById('inputImagen').value = '';
-            document.getElementById('inputEtiquetas').value = ''; 
-            
-            btnGuardar.innerText = "Guardar Tarjeta"; btnGuardar.disabled = false;
-            alert("¡Tarjeta guardada!");
+            document.getElementById('inputMateria').value = ''; document.getElementById('inputTema').value = ''; document.getElementById('inputRespuesta').value = ''; document.getElementById('inputImagen').value = ''; document.getElementById('inputEtiquetas').value = ''; document.getElementById('inputExamenAsociado').value = ''; window.actualizarLabelArchivo();
+            btnGuardar.innerText = "Guardar Tarjeta"; btnGuardar.disabled = false; alert("¡Tarjeta guardada!");
         }
 
         window.procesarRepaso = function(idTema, calidad) {
             const index = baseDeDatos.findIndex(tema => tema.id === idTema); let tema = baseDeDatos[index];
-            if (calidad < 3) { tema.n = 0; tema.intervalo = 1; } 
-            else { if (tema.n === 0) tema.intervalo = 1; else if (tema.n === 1) tema.intervalo = 6; else tema.intervalo = Math.round(tema.intervalo * tema.ef); tema.n += 1; }
+            if (calidad < 3) { tema.n = 0; tema.intervalo = 1; } else { if (tema.n === 0) tema.intervalo = 1; else if (tema.n === 1) tema.intervalo = 6; else tema.intervalo = Math.round(tema.intervalo * tema.ef); tema.n += 1; }
             tema.ef = Math.max(1.3, tema.ef + (0.1 - (5 - calidad) * (0.08 + (5 - calidad) * 0.02)));
-            tema.fechaProximoRepaso = calcularProximaFecha(tema.intervalo); baseDeDatos[index] = tema; 
-            renderizarRepasosHoy(); guardarDatosEnNube(); 
+            
+            if (tema.eventoLargoId) {
+                const eventoAsociado = baseDeDatosEventos.find(e => e.id.toString() === tema.eventoLargoId);
+                if (eventoAsociado) {
+                    const hoy = new Date(); hoy.setHours(0,0,0,0);
+                    const fechaExamen = new Date(eventoAsociado.fecha); fechaExamen.setMinutes(fechaExamen.getMinutes() + fechaExamen.getTimezoneOffset());
+                    const diasRestantes = Math.ceil((fechaExamen.getTime() - hoy.getTime()) / (1000 * 3600 * 24));
+                    if (diasRestantes > 0) { if (diasRestantes <= 3) { tema.intervalo = 1; } else if (tema.intervalo >= diasRestantes) { tema.intervalo = Math.max(1, Math.floor(diasRestantes / 2)); } }
+                }
+            }
+            tema.fechaProximoRepaso = calcularProximaFecha(tema.intervalo); baseDeDatos[index] = tema; renderizarRepasosHoy(); guardarDatosEnNube(); 
         }
 
-        window.eliminarTema = function(idTema) { if (confirm("¿Borrar esta tarjeta?")) { baseDeDatos = baseDeDatos.filter(tema => tema.id !== idTema); renderizarProgreso(); renderizarRepasosHoy(); guardarDatosEnNube(); } }
+        window.eliminarTema = function(idTema) { if (confirm("¿Borrar esta tarjeta?")) { baseDeDatos = baseDeDatos.filter(tema => tema.id !== idTema); if(!document.getElementById('vistaEstadisticas').classList.contains('oculto')) renderizarProgreso(); renderizarRepasosHoy(); guardarDatosEnNube(); } }
         window.mostrarRespuesta = function(idTema) { document.getElementById(`btn-revelar-${idTema}`).classList.add('oculto'); document.getElementById(`respuesta-${idTema}`).classList.remove('oculto'); document.getElementById(`botones-${idTema}`).classList.remove('oculto'); }
-
-        window.aplicarFiltroEtiquetas = function() {
-            window.filtroEtiquetaActual = document.getElementById('selectFiltroEtiquetas').value;
-            renderizarRepasosHoy();
-        }
+        window.aplicarFiltroEtiquetas = function() { window.filtroEtiquetaActual = document.getElementById('selectFiltroEtiquetas').value; renderizarRepasosHoy(); }
 
         function renderizarRepasosHoy() {
-            const contenedor = document.getElementById('listaRepasos'); 
-            const contenedorFiltro = document.getElementById('contenedorFiltro');
-            contenedor.innerHTML = ''; contenedorFiltro.innerHTML = '';
-            
-            const fechaHoy = obtenerFechaHoy(); 
-            let temasPendientes = baseDeDatos.filter(tema => tema.fechaProximoRepaso <= fechaHoy);
+            const contenedor = document.getElementById('listaRepasos'); const contenedorFiltro = document.getElementById('contenedorFiltro'); contenedor.innerHTML = ''; contenedorFiltro.innerHTML = '';
+            const fechaHoy = obtenerFechaHoy(); let temasPendientes = baseDeDatos.filter(tema => tema.fechaProximoRepaso <= fechaHoy);
 
-            if (temasPendientes.length === 0) { 
-                contenedor.innerHTML = '<p class="mensaje-vacio">¡Todo al día! No hay tarjetas para repasar hoy.</p>'; 
-                return; 
-            }
+            if (temasPendientes.length === 0) { contenedor.innerHTML = '<p class="mensaje-vacio">¡Todo al día! No hay tarjetas para repasar hoy.</p>'; return; }
 
             let conjuntoEtiquetas = new Set();
-            temasPendientes.forEach(tema => {
-                if (tema.etiquetas && Array.isArray(tema.etiquetas)) {
-                    tema.etiquetas.forEach(etiqueta => conjuntoEtiquetas.add(etiqueta));
-                }
-            });
+            temasPendientes.forEach(tema => { if (tema.etiquetas && Array.isArray(tema.etiquetas)) { tema.etiquetas.forEach(etiqueta => conjuntoEtiquetas.add(etiqueta)); } });
 
             if (conjuntoEtiquetas.size > 0) {
                 let opcionesHTML = `<option value="">Todas las tarjetas</option>`;
-                conjuntoEtiquetas.forEach(etiqueta => {
-                    const seleccionada = (window.filtroEtiquetaActual === etiqueta) ? "selected" : "";
-                    opcionesHTML += `<option value="${etiqueta}" ${seleccionada}>#${etiqueta}</option>`;
-                });
-
-                contenedorFiltro.innerHTML = `
-                    <div class="filtro-contenedor">
-                        <label>Filtrar por etiqueta:</label>
-                        <select id="selectFiltroEtiquetas" onchange="aplicarFiltroEtiquetas()">
-                            ${opcionesHTML}
-                        </select>
-                    </div>
-                `;
+                conjuntoEtiquetas.forEach(etiqueta => { const seleccionada = (window.filtroEtiquetaActual === etiqueta) ? "selected" : ""; opcionesHTML += `<option value="${etiqueta}" ${seleccionada}>#${etiqueta}</option>`; });
+                contenedorFiltro.innerHTML = `<div class="filtro-contenedor"><label>Filtrar por etiqueta:</label><select id="selectFiltroEtiquetas" onchange="aplicarFiltroEtiquetas()">${opcionesHTML}</select></div>`;
             }
 
             if (window.filtroEtiquetaActual !== "") {
-                temasPendientes = temasPendientes.filter(tema => 
-                    tema.etiquetas && tema.etiquetas.includes(window.filtroEtiquetaActual)
-                );
-                
-                if(temasPendientes.length === 0){
-                     contenedor.innerHTML = '<p class="mensaje-vacio">Terminaste todas las tarjetas de esta categoría por hoy.</p>'; 
-                     return;
-                }
+                temasPendientes = temasPendientes.filter(tema => tema.etiquetas && tema.etiquetas.includes(window.filtroEtiquetaActual));
+                if(temasPendientes.length === 0){ contenedor.innerHTML = '<p class="mensaje-vacio">Terminaste todas las tarjetas de esta categoría por hoy.</p>'; return; }
             }
 
             temasPendientes.forEach(tema => {
                 const div = document.createElement('div'); div.className = 'item-repaso';
                 let textoRespuesta = tema.respuesta ? tema.respuesta : "";
-                
                 let htmlImagen = tema.imagenUrl ? `<img src="${tema.imagenUrl}" style="max-width: 100%; border-radius: 8px; margin-bottom: 10px; display: block;">` : '';
                 if (!textoRespuesta && !htmlImagen) textoRespuesta = "<i>(No se agregó respuesta ni imagen)</i>";
-
-                let textoAudio = tema.titulo.replace(/'/g, "");
-                let btnVoz = `<button class="btn-voz" title="Escuchar" onclick="reproducirAudio('${textoAudio}')">🔊</button>`;
-
-                let htmlPills = '';
-                if (tema.etiquetas && tema.etiquetas.length > 0) {
-                    htmlPills = `<div style="margin-bottom: 8px;">` + 
-                        tema.etiquetas.map(e => `<span class="etiqueta-pill">#${e}</span>`).join('') + 
-                    `</div>`;
-                }
+                let textoAudio = tema.titulo.replace(/'/g, ""); let btnVoz = `<button class="btn-voz" title="Escuchar" onclick="reproducirAudio('${textoAudio}')">🔊</button>`;
+                let htmlPills = ''; if (tema.etiquetas && tema.etiquetas.length > 0) { htmlPills = `<div style="margin-bottom: 8px;">` + tema.etiquetas.map(e => `<span class="etiqueta-pill">#${e}</span>`).join('') + `</div>`; }
 
                 div.innerHTML = `
-                    <p style="margin-bottom: 5px;"><strong>${tema.materia}</strong></p>
-                    ${htmlPills}
+                    <p style="margin-bottom: 5px;"><strong>${tema.materia}</strong></p>${htmlPills}
                     <h3><span>${tema.titulo}</span> ${btnVoz}</h3>
                     <button id="btn-revelar-${tema.id}" class="btn-principal btn-revelar" onclick="mostrarRespuesta(${tema.id})">Ver Respuesta</button>
-                    <div id="respuesta-${tema.id}" class="texto-respuesta oculto">
-                        ${htmlImagen}
-                        ${textoRespuesta}
-                    </div>
+                    <div id="respuesta-${tema.id}" class="texto-respuesta oculto">${htmlImagen}${textoRespuesta}</div>
                     <div id="botones-${tema.id}" class="botones-calificacion oculto">
                         <button class="btn-calificar btn-dificil" onclick="procesarRepaso(${tema.id}, 3)">Difícil</button>
                         <button class="btn-calificar btn-normal" onclick="procesarRepaso(${tema.id}, 4)">Normal</button>
                         <button class="btn-calificar btn-facil" onclick="procesarRepaso(${tema.id}, 5)">Fácil</button>
-                    </div>
-                `;
+                    </div>`;
                 contenedor.appendChild(div);
             });
-
             if (window.MathJax) MathJax.typesetPromise([contenedor]).catch(err => console.log('Error en MathJax: ' + err.message));
+        }
+
+        function actualizarSelectoresEventos() {
+            const selectCorto = document.getElementById('selectCortoPlazo'); const selectLargo = document.getElementById('selectLargoPlazo'); const selectExamen = document.getElementById('inputExamenAsociado');
+            let opciones = '<option value="">-- Ninguno --</option>'; const eventosOrdenados = [...baseDeDatosEventos].sort((a, b) => new Date(a.fecha) - new Date(b.fecha));
+            eventosOrdenados.forEach(e => { const f = e.fecha.split('-'); const fechaFormat = `${f[2]}/${f[1]}/${f[0]}`; opciones += `<option value="${e.id}">${e.materia} - ${e.tipo} (${fechaFormat})</option>`; });
+            const valCorto = selectCorto.value; const valLargo = selectLargo.value; const valExamen = selectExamen.value;
+            if(selectCorto) { selectCorto.innerHTML = opciones; selectCorto.value = valCorto; } if(selectLargo) { selectLargo.innerHTML = opciones; selectLargo.value = valLargo; } if(selectExamen) { selectExamen.innerHTML = opciones; selectExamen.value = valExamen; }
         }
 
         window.agregarEvento = function() {
@@ -688,12 +810,13 @@
             baseDeDatosEventos.push({ id: Date.now(), materia: materia, tipo: tipo, fecha: fecha });
             renderizarEventos(); guardarDatosEnNube(); document.getElementById('inputEventoMateria').value = ''; document.getElementById('inputEventoFecha').value = '';
         }
-        window.borrarEvento = function(idEvento) { if (confirm("¿Borrar esta fecha clave?")) { baseDeDatosEventos = baseDeDatosEventos.filter(e => e.id !== idEvento); renderizarEventos(); guardarDatosEnNube(); } }
+        
+        window.borrarEvento = function(idEvento) { if (confirm("¿Borrar esta fecha clave? Los temas asociados perderán esta referencia.")) { baseDeDatosEventos = baseDeDatosEventos.filter(e => e.id !== idEvento); renderizarEventos(); guardarDatosEnNube(); } }
+        
         function renderizarEventos() {
-            const contenedor = document.getElementById('listaEventos'); contenedor.innerHTML = '';
+            const contenedor = document.getElementById('listaEventos'); contenedor.innerHTML = ''; actualizarSelectoresEventos(); 
             if (baseDeDatosEventos.length === 0) { contenedor.innerHTML = '<p class="mensaje-vacio" style="width: 100%;">No hay exámenes ni entregas registradas.</p>'; return; }
-            const eventosOrdenados = [...baseDeDatosEventos].sort((a, b) => new Date(a.fecha) - new Date(b.fecha));
-            const hoy = new Date(); hoy.setHours(0,0,0,0);
+            const eventosOrdenados = [...baseDeDatosEventos].sort((a, b) => new Date(a.fecha) - new Date(b.fecha)); const hoy = new Date(); hoy.setHours(0,0,0,0);
             eventosOrdenados.forEach(evento => {
                 const fechaEvento = new Date(evento.fecha); fechaEvento.setMinutes(fechaEvento.getMinutes() + fechaEvento.getTimezoneOffset());
                 const diasRestantes = Math.ceil((fechaEvento.getTime() - hoy.getTime()) / (1000 * 3600 * 24));
@@ -701,99 +824,71 @@
                 if (diasRestantes < 0) { colorClase = ''; textoDias = 'Ya pasó'; } else if (diasRestantes === 0) { colorClase = 'dias-cerca'; textoDias = '¡Es HOY!'; } else if (diasRestantes <= 7) { colorClase = 'dias-cerca'; } else if (diasRestantes <= 15) { colorClase = 'dias-medio'; }
                 const partesFecha = evento.fecha.split('-'); const fechaLegible = `${partesFecha[2]}/${partesFecha[1]}/${partesFecha[0]}`;
                 const div = document.createElement('div'); div.className = 'evento-card';
-                div.innerHTML = `<button class="btn-borrar-evento" onclick="borrarEvento(${evento.id})">✖</button><span class="evento-tipo">${evento.tipo}</span><h4>${evento.materia}</h4><span style="font-size: 11px; color: #999;">${fechaLegible}</span><p class="evento-dias ${colorClase}">${textoDias}</p>`;
+                div.innerHTML = `<button class="btn-borrar-evento" onclick="borrarEvento(${evento.id})">✖</button><span class="evento-tipo">${evento.tipo}</span><h4>${evento.materia}</h4><span style="font-size: 11px; color: var(--texto-suave); font-weight:600;">${fechaLegible}</span><p class="evento-dias ${colorClase}">${textoDias}</p>`;
                 contenedor.appendChild(div);
             });
         }
 
         window.agregarTareaKanban = function() {
-            const materia = document.getElementById('inputKanbanMateria').value.trim(); const unidad = document.getElementById('inputKanbanUnidad').value.trim(); const tema = document.getElementById('inputKanbanTema').value.trim();
+            const materia = document.getElementById('inputKanbanMateria').value.trim(); const unidad = document.getElementById('inputKanbanUnidad').value.trim(); const tema = document.getElementById('inputKanbanTema').value.trim(); const esfuerzo = parseInt(document.getElementById('inputKanbanEsfuerzo').value) || 1; const eventoCorto = document.getElementById('selectCortoPlazo').value; const eventoLargo = document.getElementById('selectLargoPlazo').value;
             if (materia === "" || tema === "") { alert("Ingresá Materia y Tema."); return; }
-            baseDeDatosCursada.push({ id: Date.now(), materia: materia, unidad: unidad, tema: tema, estado: "por_hacer", fecha_objetivo: null, subtareas: [ { id: 1, nombre: "Lectura de Teoría", completada: false }, { id: 2, nombre: "Resolución de TP", completada: false }, { id: 3, nombre: "Resumen / Apuntes", completada: false }, { id: 4, nombre: "Crear Flashcards", completada: false } ] });
+            baseDeDatosCursada.push({ id: Date.now(), materia: materia, unidad: unidad, tema: tema, estado: "por_hacer", fecha_objetivo: null, esfuerzo: esfuerzo, eventoCortoId: eventoCorto, eventoLargoId: eventoLargo, subtareas: [ { id: 1, nombre: "Lectura de Teoría", completada: false }, { id: 2, nombre: "Resolución de TP", completada: false }, { id: 3, nombre: "Resumen / Apuntes", completada: false }, { id: 4, nombre: "Crear Flashcards", completada: false } ] });
             renderizarKanban(); guardarDatosEnNube(); document.getElementById('inputKanbanUnidad').value = ''; document.getElementById('inputKanbanTema').value = '';
         }
+        
         window.cambiarEstadoTarea = function(idTarea, nuevoEstado) { const index = baseDeDatosCursada.findIndex(t => t.id === idTarea); if (index !== -1) { baseDeDatosCursada[index].estado = nuevoEstado; renderizarKanban(); guardarDatosEnNube(); } }
         window.toggleSubtarea = function(idTarea, indexSubtarea) { const indexTarea = baseDeDatosCursada.findIndex(t => t.id === idTarea); if (indexTarea !== -1) { baseDeDatosCursada[indexTarea].subtareas[indexSubtarea].completada = !baseDeDatosCursada[indexTarea].subtareas[indexSubtarea].completada; renderizarKanban(); guardarDatosEnNube(); } }
         window.borrarTareaKanban = function(idTarea) { if (confirm("¿Borrar este tema del programa?")) { baseDeDatosCursada = baseDeDatosCursada.filter(t => t.id !== idTarea); renderizarKanban(); guardarDatosEnNube(); } }
+        
         window.autoPlanificar = function() {
-            const hoy = new Date(); hoy.setHours(0,0,0,0); let materiasModificadas = 0; const materiasUnicas = [...new Set(baseDeDatosCursada.map(t => t.materia))];
-            materiasUnicas.forEach(materia => {
-                const eventosMateria = baseDeDatosEventos.filter(e => e.materia.toLowerCase().trim() === materia.toLowerCase().trim()).sort((a, b) => new Date(a.fecha) - new Date(b.fecha));
-                const proximoEvento = eventosMateria.find(e => new Date(e.fecha) >= hoy);
-                if (proximoEvento) {
-                    const fechaExamen = new Date(proximoEvento.fecha); fechaExamen.setMinutes(fechaExamen.getMinutes() + fechaExamen.getTimezoneOffset());
-                    const tareasPendientes = baseDeDatosCursada.filter(t => t.materia === materia && t.estado === 'por_hacer');
-                    if (tareasPendientes.length > 0) {
-                        materiasModificadas++; const diasTotales = Math.ceil((fechaExamen.getTime() - hoy.getTime()) / (1000 * 3600 * 24)); const diasDisponibles = Math.max(1, diasTotales - 2); const intervaloDias = Math.floor(diasDisponibles / tareasPendientes.length);
-                        tareasPendientes.forEach((tarea, index) => {
-                            const diasASumar = (index) * Math.max(1, intervaloDias); const fechaObj = new Date(hoy); fechaObj.setDate(fechaObj.getDate() + diasASumar);
-                            const indexReal = baseDeDatosCursada.findIndex(t => t.id === tarea.id); baseDeDatosCursada[indexReal].fecha_objetivo = fechaObj.toISOString().split('T')[0];
-                            const diasParaObjetivo = Math.ceil((fechaObj.getTime() - hoy.getTime()) / (1000 * 3600 * 24)); if (diasParaObjetivo <= 3) { baseDeDatosCursada[indexReal].estado = 'en_progreso'; }
-                        });
-                    }
-                }
-            });
-            if (materiasModificadas > 0) { renderizarKanban(); guardarDatosEnNube(); alert("¡Cronograma generado! Tareas distribuidas."); } else { alert("No se encontraron coincidencias o no hay temas 'Por Hacer'."); }
+            const hoy = new Date(); hoy.setHours(0,0,0,0); let tareasModificadas = 0; const tareasPendientes = baseDeDatosCursada.filter(t => t.estado === 'por_hacer');
+            if(tareasPendientes.length === 0) { alert("No hay temas 'Por Hacer' para planificar."); return; }
+            let grupos = {};
+            tareasPendientes.forEach(t => { const eventoId = t.eventoCortoId || t.eventoLargoId; if (eventoId) { if (!grupos[eventoId]) grupos[eventoId] = []; grupos[eventoId].push(t); } });
+
+            for (const eventoId in grupos) {
+                const evento = baseDeDatosEventos.find(e => e.id.toString() === eventoId.toString()); if (!evento) continue; 
+                const fechaExamen = new Date(evento.fecha); fechaExamen.setMinutes(fechaExamen.getMinutes() + fechaExamen.getTimezoneOffset());
+                const tareasGrupo = grupos[eventoId]; const puntosTotales = tareasGrupo.reduce((suma, t) => suma + (t.esfuerzo || 1), 0);
+                const diasTotales = Math.ceil((fechaExamen.getTime() - hoy.getTime()) / (1000 * 3600 * 24)); const diasDisponibles = Math.max(1, diasTotales - 2); 
+                const diasPorPunto = diasDisponibles / puntosTotales; let diasAcumulados = 0;
+
+                tareasGrupo.forEach((tarea, index) => {
+                    const esfuerzoTarea = tarea.esfuerzo || 1; diasAcumulados += (esfuerzoTarea * diasPorPunto);
+                    const fechaObj = new Date(hoy); fechaObj.setDate(fechaObj.getDate() + Math.round(diasAcumulados));
+                    const indexReal = baseDeDatosCursada.findIndex(t => t.id === tarea.id); baseDeDatosCursada[indexReal].fecha_objetivo = fechaObj.toISOString().split('T')[0];
+                    const diasParaObjetivo = Math.ceil((fechaObj.getTime() - hoy.getTime()) / (1000 * 3600 * 24)); if (diasParaObjetivo <= 3) { baseDeDatosCursada[indexReal].estado = 'en_progreso'; }
+                    tareasModificadas++;
+                });
+            }
+            if (tareasModificadas > 0) { renderizarKanban(); guardarDatosEnNube(); alert(`¡Cronograma generado! Se planificaron ${tareasModificadas} temas.`); } else { alert("Faltan hitos asignados."); }
         }
 
         function renderizarFocoDiario() {
-            const contenedor = document.getElementById('listaFocoDiario'); 
-            contenedor.innerHTML = ''; 
-            const enProgreso = baseDeDatosCursada.filter(t => t.estado === 'en_progreso');
-            
-            if (enProgreso.length === 0) { 
-                contenedor.innerHTML = '<p class="mensaje-vacio">No tenés temas "En Progreso". Arrastrá tarjetas en tu Kanban para armar tu foco de hoy.</p>'; 
-                return; 
-            }
-            
+            const contenedor = document.getElementById('listaFocoDiario'); contenedor.innerHTML = ''; const enProgreso = baseDeDatosCursada.filter(t => t.estado === 'en_progreso');
+            if (enProgreso.length === 0) { contenedor.innerHTML = '<p class="mensaje-vacio">No tenés temas "En Progreso". Arrastrá tarjetas en tu Kanban.</p>'; return; }
             let hayTareasPendientes = false;
 
             enProgreso.forEach(tarea => {
-                const subtareasPendientes = tarea.subtareas.filter(s => !s.completada); 
-                const crearFlashcardsSub = tarea.subtareas.find(s => s.nombre === "Crear Flashcards"); 
-                const mostarBotonFlashcards = (crearFlashcardsSub && crearFlashcardsSub.completada);
-                
+                const subtareasPendientes = tarea.subtareas.filter(s => !s.completada); const crearFlashcardsSub = tarea.subtareas.find(s => s.nombre === "Crear Flashcards"); const mostarBotonFlashcards = (crearFlashcardsSub && crearFlashcardsSub.completada);
                 if (subtareasPendientes.length > 0 || mostarBotonFlashcards) {
-                    hayTareasPendientes = true; 
-                    const div = document.createElement('div'); 
-                    div.style.marginBottom = '12px'; div.style.padding = '12px'; 
-                    div.className = 'tarea-card';
-                    
-                    let htmlSubtareas = ''; 
+                    hayTareasPendientes = true; const div = document.createElement('div'); div.className = 'tarea-card';
+                    let htmlSubtareas = ''; let bloqueoActivo = false;
                     tarea.subtareas.forEach((sub, index) => { 
                         if (!sub.completada) { 
-                            htmlSubtareas += `<label class="subtarea" style="margin-top: 8px;"><input type="checkbox" onchange="toggleSubtarea(${tarea.id}, ${index})"> ${sub.nombre}</label>`; 
+                            let disabledAttr = bloqueoActivo ? 'disabled' : ''; let opacityStyle = bloqueoActivo ? 'opacity: 0.4; cursor: not-allowed;' : '';
+                            htmlSubtareas += `<label class="subtarea" style="margin-top: 8px; ${opacityStyle}"><input type="checkbox" onchange="toggleSubtarea(${tarea.id}, ${index})" ${disabledAttr}> ${sub.nombre}</label>`; 
+                            bloqueoActivo = true; 
                         } 
                     });
-                    
-                    let btnPuente = ''; 
-                    if (mostarBotonFlashcards) { 
-                        btnPuente = `<button class="btn-principal" style="padding: 8px; font-size: 13px; margin-top: 10px; background-color: var(--alerta);" onclick="irACrearFlashcards('${tarea.materia}', '${tarea.tema}')">🪄 Generar Tarjetas</button>`; 
-                    }
-
-                    let btnTerminar = '';
-                    if (subtareasPendientes.length === 0) {
-                        btnTerminar = `<button class="btn-principal" style="padding: 8px; font-size: 13px; margin-top: 10px; background-color: var(--exito);" onclick="cambiarEstadoTarea(${tarea.id}, 'terminado')">✅ Terminar Tema</button>`;
-                    }
-                    
+                    let btnPuente = ''; if (mostarBotonFlashcards) { btnPuente = `<button class="btn-principal" style="padding: 10px; font-size: 13px; margin-top: 15px; background-color: var(--alerta);" onclick="irACrearFlashcards('${tarea.materia}', '${tarea.tema}', '${tarea.eventoLargoId || ''}')">🪄 Generar Tarjetas</button>`; }
+                    let btnTerminar = ''; if (subtareasPendientes.length === 0) { btnTerminar = `<button class="btn-principal" style="padding: 10px; font-size: 13px; margin-top: 15px; background-color: var(--exito);" onclick="cambiarEstadoTarea(${tarea.id}, 'terminado')">✅ Terminar Tema</button>`; }
                     const textoUnidad = tarea.unidad ? `${tarea.unidad} - ` : '';
-                    
-                    div.innerHTML = `
-                        <strong style="color: var(--primario-oscuro); font-size: 15px; display: block; border-bottom: 1px solid var(--borde); padding-bottom: 5px; margin-bottom: 5px;">${tarea.materia}</strong>
-                        <span style="font-size: 14px; font-weight: 500;">${textoUnidad}${tarea.tema}</span>
-                        ${htmlSubtareas} 
-                        <div style="display: flex; gap: 8px;">
-                            ${btnPuente} 
-                            ${btnTerminar}
-                        </div>
-                    `;
+                    div.innerHTML = `<button class="btn-borrar-evento" style="top: 10px; right: 10px;" onclick="borrarTareaKanban(${tarea.id})">✖</button><strong style="color: var(--primario-oscuro); font-size: 14px; display: block; border-bottom: 1px solid var(--borde); padding-bottom: 8px; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px;">${tarea.materia}</strong><span style="font-size: 16px; font-weight: 700; color: var(--texto);">${textoUnidad}${tarea.tema}</span>${htmlSubtareas} <div style="display: flex; gap: 10px;">${btnPuente} ${btnTerminar}</div>`;
                     contenedor.appendChild(div);
                 }
             });
-            
-            if (!hayTareasPendientes) {
-                contenedor.innerHTML = '<p class="mensaje-vacio">¡Completaste todas las subtareas de tus temas en progreso! Tu foco de hoy está limpio.</p>';
-            }
+            if (!hayTareasPendientes) { contenedor.innerHTML = '<p class="mensaje-vacio">¡Completaste todas las subtareas de tus temas en progreso! Tu foco de hoy está limpio.</p>'; }
         }
 
         function renderizarKanban() {
@@ -801,17 +896,98 @@
             colPorHacer.innerHTML = ''; colEnProgreso.innerHTML = ''; colTerminado.innerHTML = '';
             baseDeDatosCursada.forEach(tarea => {
                 const div = document.createElement('div'); div.className = 'tarea-card'; const textoUnidad = tarea.unidad ? `${tarea.unidad} - ` : '';
-                let htmlChecklist = ''; if (tarea.subtareas && tarea.subtareas.length > 0) { htmlChecklist = '<div class="checklist">'; tarea.subtareas.forEach((sub, index) => { const claseCompletada = sub.completada ? 'completada' : ''; const inputChecked = sub.completada ? 'checked' : ''; htmlChecklist += `<label class="subtarea ${claseCompletada}"><input type="checkbox" onchange="toggleSubtarea(${tarea.id}, ${index})" ${inputChecked}> ${sub.nombre}</label>`; }); htmlChecklist += '</div>'; }
-                let htmlFechaObj = ''; if (tarea.fecha_objetivo) { const partes = tarea.fecha_objetivo.split('-'); htmlFechaObj = `<div style="font-size: 11px; color: var(--alerta); margin-bottom: 8px; font-weight: bold; background: #fdf2e9; display: inline-block; padding: 2px 6px; border-radius: 4px;">📅 Objetivo: ${partes[2]}/${partes[1]}</div>`; }
+                let htmlChecklist = ''; if (tarea.subtareas && tarea.subtareas.length > 0) { htmlChecklist = '<div class="checklist">'; let bloqueoActivo = false; tarea.subtareas.forEach((sub, index) => { const claseCompletada = sub.completada ? 'completada' : ''; const inputChecked = sub.completada ? 'checked' : ''; let disabledAttr = (!sub.completada && bloqueoActivo) ? 'disabled' : ''; let opacityStyle = (!sub.completada && bloqueoActivo) ? 'opacity: 0.4; cursor: not-allowed;' : ''; htmlChecklist += `<label class="subtarea ${claseCompletada}" style="${opacityStyle}"><input type="checkbox" onchange="toggleSubtarea(${tarea.id}, ${index})" ${inputChecked} ${disabledAttr}> ${sub.nombre}</label>`; if (!sub.completada) { bloqueoActivo = true; } }); htmlChecklist += '</div>'; }
+                let htmlFechaObj = ''; if (tarea.fecha_objetivo) { const partes = tarea.fecha_objetivo.split('-'); htmlFechaObj = `<div style="font-size: 11px; color: var(--alerta); margin-bottom: 12px; font-weight: 800; background: rgba(243, 156, 18, 0.1); display: inline-block; padding: 4px 8px; border-radius: 6px;">📅 Objetivo: ${partes[2]}/${partes[1]}</div>`; }
+                let htmlEsfuerzo = ''; const pEsfuerzo = tarea.esfuerzo || 1; if (pEsfuerzo === 1) htmlEsfuerzo = '🟢 Fácil'; else if (pEsfuerzo === 2) htmlEsfuerzo = '🟡 Medio'; else if (pEsfuerzo === 3) htmlEsfuerzo = '🔴 Difícil';
+                let htmlHitos = `<span class="etiqueta-pill" style="background:var(--secundario); font-size:9px;">⚡ ${htmlEsfuerzo}</span>`;
+                if(tarea.eventoCortoId) { const ev = baseDeDatosEventos.find(e => e.id.toString() === tarea.eventoCortoId); if(ev) htmlHitos += `<span class="etiqueta-pill" style="background:var(--exito); font-size:9px;">📌 TP: ${ev.fecha.split('-')[2]}/${ev.fecha.split('-')[1]}</span>`; }
+                if(tarea.eventoLargoId) { const ev = baseDeDatosEventos.find(e => e.id.toString() === tarea.eventoLargoId); if(ev) htmlHitos += `<span class="etiqueta-pill" style="background:var(--peligro); font-size:9px;">🔥 EX: ${ev.fecha.split('-')[2]}/${ev.fecha.split('-')[1]}</span>`; }
                 let botonesDireccionales = '<div class="controles-kanban">';
                 if (tarea.estado === 'por_hacer') { botonesDireccionales += `<button class="btn-mover destacado" style="flex: 1;" onclick="cambiarEstadoTarea(${tarea.id}, 'en_progreso')">Comenzar ➡️</button>`; } 
                 else if (tarea.estado === 'en_progreso') { botonesDireccionales += `<button class="btn-mover" onclick="cambiarEstadoTarea(${tarea.id}, 'por_hacer')">⬅️ Volver</button><button class="btn-mover destacado" onclick="cambiarEstadoTarea(${tarea.id}, 'terminado')">Terminar ➡️</button>`; } 
                 else if (tarea.estado === 'terminado') { botonesDireccionales += `<button class="btn-mover" style="flex: 1;" onclick="cambiarEstadoTarea(${tarea.id}, 'en_progreso')">⬅️ Regresar a Progreso</button>`; }
                 botonesDireccionales += `</div>`;
-                div.innerHTML = `<button class="btn-borrar-evento" style="top: 15px; right: 15px;" onclick="borrarTareaKanban(${tarea.id})">✖</button><p style="margin-right: 20px;"><strong>${tarea.materia}</strong></p>${htmlFechaObj}<h4>${textoUnidad}${tarea.tema}</h4>${htmlChecklist} ${botonesDireccionales}`;
+                div.innerHTML = `<button class="btn-borrar-evento" style="top: 15px; right: 15px;" onclick="borrarTareaKanban(${tarea.id})">✖</button><p style="margin-bottom: 6px; font-size: 12px; font-weight: 700; text-transform: uppercase; color: var(--primario); margin-right: 20px;">${tarea.materia}</p>${htmlFechaObj}<h4>${textoUnidad}${tarea.tema}</h4><div style="margin-bottom: 5px;">${htmlHitos}</div>${htmlChecklist} ${botonesDireccionales}`;
                 if (tarea.estado === 'por_hacer') colPorHacer.appendChild(div); else if (tarea.estado === 'en_progreso') colEnProgreso.appendChild(div); else if (tarea.estado === 'terminado') colTerminado.appendChild(div);
             });
             renderizarFocoDiario();
+        }
+
+        // --- SISTEMA DE HORARIOS DE CURSADA VISUAL ---
+        window.agregarHorario = function() {
+            const dia = parseInt(document.getElementById('horarioDia').value);
+            const inicio = document.getElementById('horarioInicio').value;
+            const fin = document.getElementById('horarioFin').value;
+            const materia = document.getElementById('horarioMateria').value.trim();
+
+            if(!inicio || !fin || !materia) { alert("Completá todos los campos del horario."); return; }
+            if(inicio >= fin) { alert("La hora de inicio debe ser menor a la de fin."); return; }
+
+            baseDeDatosHorarios.push({ id: Date.now(), dia: dia, inicio: inicio, fin: fin, materia: materia });
+            renderizarHorarios(); guardarDatosEnNube();
+            document.getElementById('horarioMateria').value = '';
+        }
+
+        window.limpiarHorarios = function() {
+            if(confirm("⚠️ ¿Estás seguro de querer borrar todos los horarios? Esta acción prepara la app para un nuevo cuatrimestre.")) {
+                baseDeDatosHorarios = [];
+                renderizarHorarios(); guardarDatosEnNube();
+            }
+        }
+
+        window.borrarHorario = function(id) {
+            if(confirm("¿Eliminar esta clase del cronograma?")) {
+                baseDeDatosHorarios = baseDeDatosHorarios.filter(h => h.id !== id);
+                renderizarHorarios(); guardarDatosEnNube();
+            }
+        }
+
+        function renderizarHorarios() {
+            const colHoras = document.getElementById('col-horas');
+            if(colHoras.children.length === 0) {
+                for(let i=8; i<=22; i++) {
+                    const slot = document.createElement('div');
+                    slot.className = 'horario-time-slot';
+                    slot.innerText = `${i.toString().padStart(2, '0')}:00`;
+                    colHoras.appendChild(slot);
+                }
+            }
+
+            for(let i=1; i<=5; i++) { document.getElementById(`col-dia-${i}`).innerHTML = ''; }
+
+            const colores = ['#3A5A81', '#A67C00', '#2E6954', '#8E44AD', '#D35400', '#2C3E50'];
+
+            baseDeDatosHorarios.forEach(h => {
+                if(h.dia >= 1 && h.dia <= 5) {
+                    const col = document.getElementById(`col-dia-${h.dia}`);
+                    
+                    const [startH, startM] = h.inicio.split(':').map(Number);
+                    const [endH, endM] = h.fin.split(':').map(Number);
+                    
+                    const topPx = ((startH - 8) * 60) + startM; 
+                    const heightPx = ((endH * 60) + endM) - ((startH * 60) + startM);
+
+                    let hash = 0;
+                    for (let i = 0; i < h.materia.length; i++) hash = h.materia.charCodeAt(i) + ((hash << 5) - hash);
+                    const color = colores[Math.abs(hash) % colores.length];
+
+                    const block = document.createElement('div');
+                    block.className = 'class-block';
+                    block.style.top = `${topPx}px`;
+                    block.style.height = `${heightPx}px`;
+                    block.style.backgroundColor = color;
+                    
+                    const titleStyle = heightPx < 40 ? 'font-size: 10px; margin-bottom: 0; white-space: nowrap;' : '';
+                    const timeStyle = heightPx < 40 ? 'display: none;' : '';
+
+                    block.innerHTML = `
+                        <button class="class-block-delete" onclick="borrarHorario(${h.id})" title="Borrar clase">✖</button>
+                        <strong style="${titleStyle}">${h.materia}</strong>
+                        <span style="${timeStyle}">⏱️ ${h.inicio} - ${h.fin}</span>
+                    `;
+                    col.appendChild(block);
+                }
+            });
         }
 
         function renderizarProgreso() {
@@ -822,52 +998,31 @@
                 const tr = document.createElement('tr'); const partesFecha = tema.fechaProximoRepaso.split('-'); const fechaFormateada = `${partesFecha[2]}/${partesFecha[1]}/${partesFecha[0]}`;
                 let claseFecha = 'fecha-futura'; let textoFecha = fechaFormateada;
                 if (tema.fechaProximoRepaso < fechaHoy) { claseFecha = 'fecha-pasada'; textoFecha += ' (Atrasado)'; } else if (tema.fechaProximoRepaso === fechaHoy) { claseFecha = 'fecha-hoy'; textoFecha = 'Hoy'; }
-                tr.innerHTML = `<td>${tema.materia}</td><td>${tema.titulo}</td><td class="${claseFecha}">${textoFecha}</td><td><button class="btn-eliminar" onclick="eliminarTema(${tema.id})">Borrar</button></td>`;
+                tr.innerHTML = `<td><strong style="color:var(--texto); font-weight:700;">${tema.materia}</strong></td><td>${tema.titulo}</td><td class="${claseFecha}">${textoFecha}</td><td><button class="btn-eliminar" onclick="eliminarTema(${tema.id})">Borrar</button></td>`;
                 cuerpoTabla.appendChild(tr);
             });
         }
 
-        // --- NUEVO: GENERADOR DE MACHETE PDF ---
         window.imprimirMachete = function() {
             if (baseDeDatos.length === 0) { alert("No hay tarjetas para imprimir."); return; }
-            
             let tarjetasAImprimir = baseDeDatos;
-            // Filtra si tenés seleccionada una etiqueta
-            if (window.filtroEtiquetaActual && window.filtroEtiquetaActual !== "") {
-                tarjetasAImprimir = baseDeDatos.filter(t => t.etiquetas && t.etiquetas.includes(window.filtroEtiquetaActual));
-            }
+            if (window.filtroEtiquetaActual && window.filtroEtiquetaActual !== "") { tarjetasAImprimir = baseDeDatos.filter(t => t.etiquetas && t.etiquetas.includes(window.filtroEtiquetaActual)); }
             if (tarjetasAImprimir.length === 0) { alert("No hay tarjetas con esa etiqueta para imprimir."); return; }
             
-            let html = `<h2 style="text-align:center; border-bottom: 2px solid black; padding-bottom: 10px;">Hoja de Repaso ${window.filtroEtiquetaActual ? '- Etiqueta: #' + window.filtroEtiquetaActual : ''}</h2>`;
-            
+            let html = `<h2 style="text-align:center; border-bottom: 2px solid black; padding-bottom: 10px; font-family:'Inter',sans-serif;">Hoja de Repaso ${window.filtroEtiquetaActual ? '- Etiqueta: #' + window.filtroEtiquetaActual : ''}</h2>`;
             tarjetasAImprimir.forEach(t => {
                 let imgHtml = t.imagenUrl ? `<img src="${t.imagenUrl}" class="machete-img">` : '';
                 let respuestaLimpia = t.respuesta ? t.respuesta : '';
-                html += `
-                <div class="machete-item">
-                    <p class="machete-pregunta">[${t.materia}] ${t.titulo}</p>
-                    <p class="machete-respuesta">${respuestaLimpia}</p>
-                    ${imgHtml}
-                </div>`;
+                html += `<div class="machete-item"><p class="machete-pregunta">[${t.materia}] ${t.titulo}</p><p class="machete-respuesta">${respuestaLimpia}</p>${imgHtml}</div>`;
             });
+            const zona = document.getElementById('zonaImpresion'); zona.innerHTML = html;
             
-            const zona = document.getElementById('zonaImpresion');
-            zona.innerHTML = html;
-            
-            // Renderizamos ecuaciones con MathJax antes de mandar al PDF
-            if (window.MathJax) {
-                MathJax.typesetPromise([zona]).then(() => {
-                    window.print();
-                    zona.innerHTML = ''; 
-                }).catch(err => console.log(err));
-            } else {
-                window.print();
-                zona.innerHTML = '';
-            }
+            if (window.MathJax) { MathJax.typesetPromise([zona]).then(() => { window.print(); zona.innerHTML = ''; }).catch(err => console.log(err)); } 
+            else { window.print(); zona.innerHTML = ''; }
         }
 
         window.exportarDatos = function() {
-            const datosCompletos = { repasos: baseDeDatos, cursada: baseDeDatosCursada, eventos: baseDeDatosEventos };
+            const datosCompletos = { repasos: baseDeDatos, cursada: baseDeDatosCursada, eventos: baseDeDatosEventos, horarios: baseDeDatosHorarios };
             const url = URL.createObjectURL(new Blob([JSON.stringify(datosCompletos)], { type: 'application/json' })); const link = document.createElement('a');
             link.href = url; link.download = 'app_estudio_backup.json'; document.body.appendChild(link); link.click(); document.body.removeChild(link); URL.revokeObjectURL(url);
         }
@@ -879,7 +1034,7 @@
             lector.onload = function(e) {
                 try {
                     const datosImportados = JSON.parse(e.target.result);
-                    if (datosImportados.repasos) { baseDeDatos = datosImportados.repasos; baseDeDatosCursada = datosImportados.cursada || []; baseDeDatosEventos = datosImportados.eventos || []; } else if (Array.isArray(datosImportados)) { baseDeDatos = datosImportados; }
+                    if (datosImportados.repasos) { baseDeDatos = datosImportados.repasos; baseDeDatosCursada = datosImportados.cursada || []; baseDeDatosEventos = datosImportados.eventos || []; baseDeDatosHorarios = datosImportados.horarios || []; } else if (Array.isArray(datosImportados)) { baseDeDatos = datosImportados; }
                     guardarDatosEnNube(); alert("¡Backup restaurado y subido a la nube!");
                 } catch (error) { alert("Error al leer el archivo JSON."); }
             };
@@ -894,49 +1049,18 @@
             if (graficoKanban) graficoKanban.destroy(); if (graficoRepasos) graficoRepasos.destroy();
 
             const ctxKanban = document.getElementById('chartKanban').getContext('2d');
-            graficoKanban = new Chart(ctxKanban, { type: 'doughnut', data: { labels: ['Por Hacer', 'En Progreso', 'Terminado'], datasets: [{ data: [countPorHacer, countEnProgreso, countTerminado], backgroundColor: ['#E74C3C', '#F39C12', '#2ECC71'], borderWidth: 0 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { color: 'var(--texto)' } } } } });
+            graficoKanban = new Chart(ctxKanban, { type: 'doughnut', data: { labels: ['Por Hacer', 'En Progreso', 'Terminado'], datasets: [{ data: [countPorHacer, countEnProgreso, countTerminado], backgroundColor: ['#E74C3C', '#F39C12', '#2ECC71'], borderWidth: 0, hoverOffset: 4 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { color: 'var(--texto)', font: {family: 'Inter', weight: 'bold'} } } }, cutout: '70%' } });
             
             const ctxRepasos = document.getElementById('chartRepasos').getContext('2d');
-            graficoRepasos = new Chart(ctxRepasos, { type: 'bar', data: { labels: ['Atrasados', 'Para Hoy', 'Futuros'], datasets: [{ label: 'Tarjetas', data: [countAtrasados, countHoy, countFuturos], backgroundColor: ['#E74C3C', '#F39C12', '#4A90E2'], borderRadius: 6 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, ticks: { stepSize: 1, color: 'var(--texto)' } }, x: { ticks: { color: 'var(--texto)' } } } } });
+            graficoRepasos = new Chart(ctxRepasos, { type: 'bar', data: { labels: ['Atrasados', 'Para Hoy', 'Futuros'], datasets: [{ label: 'Tarjetas', data: [countAtrasados, countHoy, countFuturos], backgroundColor: ['#E74C3C', '#F39C12', '#4A90E2'], borderRadius: 6 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, ticks: { stepSize: 1, color: 'var(--texto)', font: {family: 'Inter'} }, grid: {color: 'rgba(0,0,0,0.05)'} }, x: { ticks: { color: 'var(--texto)', font: {family: 'Inter', weight: 'bold'} }, grid: {display: false} } } } });
 
-            // --- NUEVO: GRÁFICO CURVA DEL OLVIDO ---
             if (graficoOlvido) graficoOlvido.destroy();
-            
-            let dias = ['Hoy', 'Día 1', 'Día 2', 'Día 3', 'Día 4', 'Día 5', 'Día 6', 'Día 7'];
-            let retencion = [100]; 
-            
-            // Calculamos tu Factor de Facilidad Promedio para la matemática de Ebbinghaus
+            let dias = ['Hoy', 'Día 1', 'Día 2', 'Día 3', 'Día 4', 'Día 5', 'Día 6', 'Día 7']; let retencion = [100]; 
             let efPromedio = baseDeDatos.length > 0 ? baseDeDatos.reduce((acc, curr) => acc + curr.ef, 0) / baseDeDatos.length : 2.5;
-            
-            for (let i = 1; i <= 7; i++) {
-                let r = 100 * Math.exp(-i / (efPromedio * 1.5));
-                retencion.push(Math.round(r));
-            }
+            for (let i = 1; i <= 7; i++) { let r = 100 * Math.exp(-i / (efPromedio * 1.5)); retencion.push(Math.round(r)); }
 
             const ctxOlvido = document.getElementById('chartOlvido').getContext('2d');
-            graficoOlvido = new Chart(ctxOlvido, { 
-                type: 'line', 
-                data: { 
-                    labels: dias, 
-                    datasets: [{ 
-                        label: '% Retención de Memoria', 
-                        data: retencion, 
-                        borderColor: '#9b59b6', 
-                        backgroundColor: 'rgba(155, 89, 182, 0.2)', 
-                        fill: true,
-                        tension: 0.4
-                    }] 
-                }, 
-                options: { 
-                    responsive: true, 
-                    maintainAspectRatio: false, 
-                    plugins: { legend: { display: false } },
-                    scales: { 
-                        y: { min: 0, max: 100, ticks: { callback: function(value){return value + '%'}, color: 'var(--texto)' } },
-                        x: { ticks: { color: 'var(--texto)' } }
-                    } 
-                } 
-            });
+            graficoOlvido = new Chart(ctxOlvido, { type: 'line', data: { labels: dias, datasets: [{ label: '% Retención de Memoria', data: retencion, borderColor: '#4A90E2', backgroundColor: 'rgba(74, 144, 226, 0.1)', fill: true, tension: 0.4, borderWidth: 3, pointBackgroundColor: '#4A90E2' }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { min: 0, max: 100, ticks: { callback: function(value){return value + '%'}, color: 'var(--texto)', font: {family: 'Inter'} }, grid: {color: 'rgba(0,0,0,0.05)'} }, x: { ticks: { color: 'var(--texto)', font: {family: 'Inter'} }, grid: {display: false} } } } });
         }
 
         if ('serviceWorker' in navigator) { window.addEventListener('load', () => { navigator.serviceWorker.register('./service-worker.js').catch(err => console.log('Fallo SW:', err)); }); }
