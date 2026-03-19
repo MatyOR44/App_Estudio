@@ -841,27 +841,71 @@
         window.borrarTareaKanban = function(idTarea) { if (confirm("¿Borrar este tema del programa?")) { baseDeDatosCursada = baseDeDatosCursada.filter(t => t.id !== idTarea); renderizarKanban(); guardarDatosEnNube(); } }
         
         window.autoPlanificar = function() {
-            const hoy = new Date(); hoy.setHours(0,0,0,0); let tareasModificadas = 0; const tareasPendientes = baseDeDatosCursada.filter(t => t.estado === 'por_hacer');
-            if(tareasPendientes.length === 0) { alert("No hay temas 'Por Hacer' para planificar."); return; }
+            const hoy = new Date(); hoy.setHours(0,0,0,0); 
+            let tareasModificadas = 0; 
+            const tareasPendientes = baseDeDatosCursada.filter(t => t.estado === 'por_hacer');
+
+            if(tareasPendientes.length === 0) {
+                alert("No hay temas 'Por Hacer' para planificar."); return;
+            }
+
             let grupos = {};
-            tareasPendientes.forEach(t => { const eventoId = t.eventoCortoId || t.eventoLargoId; if (eventoId) { if (!grupos[eventoId]) grupos[eventoId] = []; grupos[eventoId].push(t); } });
+            tareasPendientes.forEach(t => {
+                const eventoId = t.eventoCortoId || t.eventoLargoId; 
+                if (eventoId) {
+                    if (!grupos[eventoId]) grupos[eventoId] = [];
+                    grupos[eventoId].push(t);
+                }
+            });
 
             for (const eventoId in grupos) {
-                const evento = baseDeDatosEventos.find(e => e.id.toString() === eventoId.toString()); if (!evento) continue; 
-                const fechaExamen = new Date(evento.fecha); fechaExamen.setMinutes(fechaExamen.getMinutes() + fechaExamen.getTimezoneOffset());
-                const tareasGrupo = grupos[eventoId]; const puntosTotales = tareasGrupo.reduce((suma, t) => suma + (t.esfuerzo || 1), 0);
-                const diasTotales = Math.ceil((fechaExamen.getTime() - hoy.getTime()) / (1000 * 3600 * 24)); const diasDisponibles = Math.max(1, diasTotales - 2); 
-                const diasPorPunto = diasDisponibles / puntosTotales; let diasAcumulados = 0;
+                const evento = baseDeDatosEventos.find(e => e.id.toString() === eventoId.toString()); 
+                if (!evento) continue; 
 
-                tareasGrupo.forEach((tarea, index) => {
-                    const esfuerzoTarea = tarea.esfuerzo || 1; diasAcumulados += (esfuerzoTarea * diasPorPunto);
-                    const fechaObj = new Date(hoy); fechaObj.setDate(fechaObj.getDate() + Math.round(diasAcumulados));
-                    const indexReal = baseDeDatosCursada.findIndex(t => t.id === tarea.id); baseDeDatosCursada[indexReal].fecha_objetivo = fechaObj.toISOString().split('T')[0];
-                    const diasParaObjetivo = Math.ceil((fechaObj.getTime() - hoy.getTime()) / (1000 * 3600 * 24)); if (diasParaObjetivo <= 3) { baseDeDatosCursada[indexReal].estado = 'en_progreso'; }
+                const fechaExamen = new Date(evento.fecha); 
+                fechaExamen.setMinutes(fechaExamen.getMinutes() + fechaExamen.getTimezoneOffset());
+                fechaExamen.setHours(0,0,0,0); // Aseguramos que compare días exactos
+                
+                let tareasGrupo = grupos[eventoId];
+                
+                // SOLUCIÓN 2: Forzamos el orden cronológico exacto de creación
+                tareasGrupo.sort((a, b) => a.id - b.id);
+                
+                const puntosTotales = tareasGrupo.reduce((suma, t) => suma + (t.esfuerzo || 1), 0);
+                
+                const diasTotales = Math.ceil((fechaExamen.getTime() - hoy.getTime()) / (1000 * 3600 * 24)); 
+                const diasDisponibles = Math.max(1, diasTotales - 2); 
+                const diasPorPunto = diasDisponibles / puntosTotales; 
+                let diasAcumulados = 0;
+
+                tareasGrupo.forEach((tarea) => {
+                    const esfuerzoTarea = tarea.esfuerzo || 1; 
+                    
+                    const fechaObj = new Date(hoy); 
+                    // SOLUCIÓN 2 (Matemática): Asignamos la fecha ANTES de sumar el esfuerzo
+                    fechaObj.setDate(fechaObj.getDate() + Math.floor(diasAcumulados));
+                    
+                    // Sumamos el esfuerzo para empujar las siguientes tareas
+                    diasAcumulados += (esfuerzoTarea * diasPorPunto);
+                    
+                    const indexReal = baseDeDatosCursada.findIndex(t => t.id === tarea.id); 
+                    baseDeDatosCursada[indexReal].fecha_objetivo = fechaObj.toISOString().split('T')[0];
+                    
+                    // SOLUCIÓN 1: Cambiamos el límite de 3 días a 0 días
+                    const diasParaObjetivo = Math.ceil((fechaObj.getTime() - hoy.getTime()) / (1000 * 3600 * 24)); 
+                    if (diasParaObjetivo <= 0) { 
+                        baseDeDatosCursada[indexReal].estado = 'en_progreso'; 
+                    }
                     tareasModificadas++;
                 });
             }
-            if (tareasModificadas > 0) { renderizarKanban(); guardarDatosEnNube(); alert(`¡Cronograma generado! Se planificaron ${tareasModificadas} temas.`); } else { alert("Faltan hitos asignados."); }
+
+            if (tareasModificadas > 0) { 
+                renderizarKanban(); guardarDatosEnNube(); 
+                alert(`¡Cronograma generado! Se planificaron ${tareasModificadas} temas respetando el orden de carga. Solo las tareas de HOY pasaron al Foco Diario.`); 
+            } else { 
+                alert("Las tareas pendientes no tienen Hitos asignados. No se pudo planificar."); 
+            }
         }
 
         function renderizarFocoDiario() {
