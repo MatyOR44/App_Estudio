@@ -922,17 +922,15 @@
             if (!hayTareasPendientes) { contenedor.innerHTML = '<p class="mensaje-vacio">¡Completaste todas las subtareas de tus temas en progreso! Tu foco de hoy está limpio.</p>'; }
         }
 
-        /* --- PASO 3: MODIFICACIÓN EN RENDERIZAR KANBAN --- */
+        /* --- PASO 3: RENDERIZAR KANBAN (CON EXPANSIÓN PROGRESIVA) --- */
         function renderizarKanban() {
             const colPorHacer = document.getElementById('listaPorHacer'); const colEnProgreso = document.getElementById('listaEnProgreso'); const colTerminado = document.getElementById('listaTerminado');
             colPorHacer.innerHTML = ''; colEnProgreso.innerHTML = ''; colTerminado.innerHTML = '';
             
-            // Filtros y Reverso para Terminados
             let tareasPorHacer = baseDeDatosCursada.filter(t => t.estado === 'por_hacer');
             let tareasEnProgreso = baseDeDatosCursada.filter(t => t.estado === 'en_progreso');
             let tareasTerminado = baseDeDatosCursada.filter(t => t.estado === 'terminado').reverse();
 
-            // Función generadora de tarjeta
             const crearTarjeta = (tarea) => {
                 const div = document.createElement('div'); div.className = 'tarea-card'; const textoUnidad = tarea.unidad ? `${tarea.unidad} - ` : '';
                 let htmlChecklist = ''; if (tarea.subtareas && tarea.subtareas.length > 0) { htmlChecklist = '<div class="checklist">'; let bloqueoActivo = false; tarea.subtareas.forEach((sub, index) => { const claseCompletada = sub.completada ? 'completada' : ''; const inputChecked = sub.completada ? 'checked' : ''; let disabledAttr = (!sub.completada && bloqueoActivo) ? 'disabled' : ''; let opacityStyle = (!sub.completada && bloqueoActivo) ? 'opacity: 0.4; cursor: not-allowed;' : ''; htmlChecklist += `<label class="subtarea ${claseCompletada}" style="${opacityStyle}"><input type="checkbox" onchange="toggleSubtarea(${tarea.id}, ${index})" ${inputChecked} ${disabledAttr}> ${sub.nombre}</label>`; if (!sub.completada) { bloqueoActivo = true; } }); htmlChecklist += '</div>'; }
@@ -950,7 +948,6 @@
                 return div;
             };
 
-            // Llenado "Por Hacer" con botón "Ver más"
             tareasPorHacer.forEach(t => colPorHacer.appendChild(crearTarjeta(t)));
             if (tareasPorHacer.length > 3) {
                 const btn = document.createElement('button'); btn.className = 'btn-ver-mas';
@@ -959,10 +956,8 @@
                 colPorHacer.appendChild(btn);
             }
 
-            // Llenado "En Progreso"
             tareasEnProgreso.forEach(t => colEnProgreso.appendChild(crearTarjeta(t)));
 
-            // Llenado "Terminado" con botón "Ver más"
             tareasTerminado.forEach(t => colTerminado.appendChild(crearTarjeta(t)));
             if (tareasTerminado.length > 3) {
                 const btn = document.createElement('button'); btn.className = 'btn-ver-mas';
