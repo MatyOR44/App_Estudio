@@ -156,7 +156,8 @@
         .evento-tipo { font-size: 10px; text-transform: uppercase; font-weight: 800; color: var(--primario); display: block; margin-bottom: 6px; }
         .evento-dias { font-size: 24px; font-weight: 800; margin: 8px 0 0 0; letter-spacing: -0.5px; }
         .dias-lejos { color: var(--exito); } .dias-medio { color: var(--alerta); } .dias-cerca { color: var(--peligro); }
-        .btn-borrar-evento { position: absolute; top: 8px; right: 8px; background: none; border: none; color: var(--gris); cursor: pointer; font-size: 16px; width: 24px; height: 24px; border-radius: 50%; }
+        .btn-borrar-evento { position: absolute; top: 8px; right: 8px; background: none; border: none; color: var(--gris); cursor: pointer; font-size: 16px; width: 24px; height: 24px; border-radius: 50%; display: flex; justify-content: center; align-items: center;}
+        .btn-borrar-evento:hover { background-color: rgba(231, 76, 60, 0.1); color: var(--peligro); }
 
         .form-fila { display: flex; gap: 12px; }
         .form-fila > * { flex: 1; }
@@ -846,16 +847,33 @@
             const contenedor = document.getElementById('listaEventos'); contenedor.innerHTML = ''; actualizarSelectoresEventos(); 
             if (baseDeDatosEventos.length === 0) { contenedor.innerHTML = '<p class="mensaje-vacio" style="width: 100%;">No hay exámenes ni entregas registradas.</p>'; return; }
             const eventosOrdenados = [...baseDeDatosEventos].sort((a, b) => new Date(a.fecha) - new Date(b.fecha)); const hoy = new Date(); hoy.setHours(0,0,0,0);
+            
+            let eventosVisibles = 0;
+            
             eventosOrdenados.forEach(evento => {
                 const fechaEvento = new Date(evento.fecha); fechaEvento.setMinutes(fechaEvento.getMinutes() + fechaEvento.getTimezoneOffset());
                 const diasRestantes = Math.ceil((fechaEvento.getTime() - hoy.getTime()) / (1000 * 3600 * 24));
+                
+                // Si el evento ya pasó, lo omitimos y no lo dibujamos
+                if (diasRestantes < 0) return; 
+
+                eventosVisibles++;
+
                 let colorClase = 'dias-lejos'; let textoDias = `Faltan ${diasRestantes} días`;
-                if (diasRestantes < 0) { colorClase = ''; textoDias = 'Ya pasó'; } else if (diasRestantes === 0) { colorClase = 'dias-cerca'; textoDias = '¡Es HOY!'; } else if (diasRestantes <= 7) { colorClase = 'dias-cerca'; } else if (diasRestantes <= 15) { colorClase = 'dias-medio'; }
+                if (diasRestantes === 0) { colorClase = 'dias-cerca'; textoDias = '¡Es HOY!'; } 
+                else if (diasRestantes <= 7) { colorClase = 'dias-cerca'; } 
+                else if (diasRestantes <= 15) { colorClase = 'dias-medio'; }
+                
                 const partesFecha = evento.fecha.split('-'); const fechaLegible = `${partesFecha[2]}/${partesFecha[1]}/${partesFecha[0]}`;
                 const div = document.createElement('div'); div.className = 'evento-card';
                 div.innerHTML = `<button class="btn-borrar-evento" onclick="borrarEvento(${evento.id})">✖</button><span class="evento-tipo">${evento.tipo}</span><h4>${evento.materia}</h4><span style="font-size: 11px; color: var(--texto-suave); font-weight:600;">${fechaLegible}</span><p class="evento-dias ${colorClase}">${textoDias}</p>`;
                 contenedor.appendChild(div);
             });
+
+            // Si todos los eventos ya pasaron
+            if (eventosVisibles === 0) {
+                contenedor.innerHTML = '<p class="mensaje-vacio" style="width: 100%;">No hay eventos próximos. (Los eventos pasados siguen guardados en el sistema).</p>';
+            }
         }
 
         window.agregarTareaKanban = function() {
