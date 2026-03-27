@@ -878,19 +878,16 @@
                 alert("No hay temas 'Por Hacer' para planificar."); return;
             }
 
-            // 1. Agrupar todas las tareas por Materia
             let tareasPorMateria = {};
             tareasPendientes.forEach(t => {
                 if (!tareasPorMateria[t.materia]) tareasPorMateria[t.materia] = [];
                 tareasPorMateria[t.materia].push(t);
             });
 
-            // 2. Iterar por cada Materia de forma independiente
             for (const materia in tareasPorMateria) {
                 let tareasDeMateria = tareasPorMateria[materia];
                 let gruposPorHito = {};
 
-                // Agrupar por Hito dentro de la materia
                 tareasDeMateria.forEach(t => {
                     const eventoId = t.eventoCortoId || t.eventoLargoId; 
                     if (eventoId) {
@@ -899,12 +896,10 @@
                     }
                 });
 
-                // Obtener las fechas de los hitos y ordenarlos cronológicamente
                 let hitosOrdenados = [];
                 for (const eventoId in gruposPorHito) {
                     const evento = baseDeDatosEventos.find(e => e.id.toString() === eventoId.toString());
                     if (evento) {
-                        // Corrección de Zona Horaria para evitar desfasajes de días
                         const partes = evento.fecha.split('-');
                         const fechaEvento = new Date(partes[0], partes[1] - 1, partes[2]);
                         fechaEvento.setHours(0,0,0,0);
@@ -919,24 +914,20 @@
                 
                 hitosOrdenados.sort((a, b) => a.fecha - b.fecha);
 
-                // 3. Planificación en CASCADA (El siguiente hito arranca cuando termina el anterior)
                 let fechaInicioBloque = new Date(hoy);
 
                 hitosOrdenados.forEach(hito => {
-                    // Forzamos el orden de carga (id)
                     hito.tareas.sort((a, b) => a.id - b.id);
 
                     let fechaFinBloque = new Date(hito.fecha);
-                    fechaFinBloque.setDate(fechaFinBloque.getDate() - 2); // 2 días de changüí
+                    fechaFinBloque.setDate(fechaFinBloque.getDate() - 2); 
 
-                    // Si estamos atrasados y la fecha fin ya pasó el inicio, compactamos
                     if (fechaFinBloque < fechaInicioBloque) {
                         fechaFinBloque = new Date(fechaInicioBloque);
                     }
 
                     const puntosTotales = hito.tareas.reduce((sum, t) => sum + (t.esfuerzo || 1), 0);
                     const diasDisponibles = Math.ceil((fechaFinBloque.getTime() - fechaInicioBloque.getTime()) / (1000 * 3600 * 24));
-                    // Nos aseguramos de que haya al menos 1 día de distribución
                     const diasPorPunto = (diasDisponibles > 0 ? diasDisponibles : 1) / puntosTotales;
                     
                     let diasAcumulados = 0;
@@ -945,27 +936,22 @@
                         const esfuerzoTarea = tarea.esfuerzo || 1; 
                         
                         const fechaObj = new Date(fechaInicioBloque); 
-                        // Asignar fecha antes de sumar asegura que el tema 1 arranque el "Día 1" del bloque
                         fechaObj.setDate(fechaObj.getDate() + Math.floor(diasAcumulados));
                         
-                        // Guardar la fecha en la base de datos
                         const indexReal = baseDeDatosCursada.findIndex(t => t.id === tarea.id); 
                         baseDeDatosCursada[indexReal].fecha_objetivo = fechaObj.toISOString().split('T')[0];
                         
-                        // Si la fecha objetivo es igual o menor a HOY, pasa a En Progreso
                         const diasParaObjetivo = Math.ceil((fechaObj.getTime() - hoy.getTime()) / (1000 * 3600 * 24)); 
                         if (diasParaObjetivo <= 0) { 
                             baseDeDatosCursada[indexReal].estado = 'en_progreso'; 
                         } else {
-                            baseDeDatosCursada[indexReal].estado = 'por_hacer'; // Reseteo por si estaban mal
+                            baseDeDatosCursada[indexReal].estado = 'por_hacer'; 
                         }
                         
-                        // Acumular los días consumidos por este tema para el siguiente
                         diasAcumulados += (esfuerzoTarea * diasPorPunto);
                         tareasModificadas++;
                     });
 
-                    // El inicio del próximo bloque (ej. TP 2) arranca el día exacto de entrega del bloque actual (ej. TP 1)
                     fechaInicioBloque = new Date(hito.fecha);
                 });
             }
